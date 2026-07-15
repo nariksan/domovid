@@ -14,11 +14,10 @@
             --light-gray: #999; --bg: #f8f9fa; --border: #e9ecef;
             --shadow-sm: 0 2px 4px rgba(0,0,0,0.05); --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
             --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 20px;
-            --bottom-nav-height: 70px; --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--dark); min-height: 100vh; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
-        body.logged-in { padding-bottom: calc(var(--bottom-nav-height) + var(--safe-bottom)); }
+        
         .login-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; overflow-y: auto; }
         .login-screen.hidden { display: none; }
         .login-container { background: white; border-radius: var(--radius-xl); padding: 30px 24px; width: 100%; max-width: 400px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.4s ease; }
@@ -37,6 +36,7 @@
         .login-error { background: #fff5f5; border-left: 3px solid var(--danger); padding: 10px 12px; border-radius: 6px; margin-top: 14px; font-size: 0.85em; color: var(--danger); display: none; }
         .login-error.show { display: block; }
         .login-hint { background: #e7f3ff; border-left: 3px solid var(--info); padding: 10px 12px; border-radius: 6px; margin-top: 14px; font-size: 0.82em; color: #0c5460; line-height: 1.4; }
+        
         .app-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 16px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-md); }
         .header-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
         .header-title h1 { font-size: 1.3em; font-weight: 700; letter-spacing: 0.5px; }
@@ -48,27 +48,100 @@
         .clock-date { font-size: 0.7em; opacity: 0.9; margin-top: 1px; }
         .clock-separator { animation: blink 1s infinite; }
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
-        .desktop-nav { display: none; background: white; padding: 10px 20px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 99; box-shadow: var(--shadow-sm); }
-        .desktop-nav-inner { max-width: 1200px; margin: 0 auto; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
-        .desktop-nav button { padding: 8px 16px; border: none; background: transparent; color: var(--gray); border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.9em; transition: all 0.2s; }
-        .desktop-nav button:hover { background: var(--bg); color: var(--primary); }
-        .desktop-nav button.active { background: var(--primary); color: white; }
-        .logout-btn { background: transparent !important; color: var(--danger) !important; border: 1px solid var(--danger) !important; }
-        .logout-btn:hover { background: var(--danger) !important; color: white !important; }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid var(--border); box-shadow: 0 -2px 12px rgba(0,0,0,0.08); z-index: 100; padding-bottom: var(--safe-bottom); display: none; }
-        body.logged-in .bottom-nav { display: block; }
-        .bottom-nav-inner { display: flex; justify-content: space-around; align-items: center; height: var(--bottom-nav-height); max-width: 600px; margin: 0 auto; }
-        .bottom-nav button { flex: 1; background: none; border: none; padding: 6px 4px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--light-gray); transition: color 0.2s; font-size: 0.68em; font-weight: 600; min-height: 56px; }
-        .bottom-nav button .nav-icon { font-size: 1.7em; line-height: 1; transition: transform 0.2s; }
-        .bottom-nav button.active { color: var(--primary); }
-        .bottom-nav button.active .nav-icon { transform: scale(1.15); }
-        .bottom-nav button:active { transform: scale(0.95); }
-        .mobile-logout { display: block; width: calc(100% - 32px); margin: 8px 16px 12px; padding: 10px; background: #fff5f5; color: var(--danger); border: 1px solid var(--danger); border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; font-size: 0.9em; }
+        
+        /* НОВАЯ ВЕРХНЯЯ НАВИГАЦИЯ */
+        .top-nav {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+        
+        .top-nav-inner {
+            display: flex;
+            align-items: center;
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 0 8px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .top-nav-inner::-webkit-scrollbar { display: none; }
+        
+        .top-nav-btn {
+            flex-shrink: 0;
+            background: none;
+            border: none;
+            padding: 10px 12px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: var(--gray);
+            transition: all 0.2s;
+            font-size: 0.72em;
+            font-weight: 600;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            min-width: 60px;
+        }
+        
+        .top-nav-btn .nav-icon {
+            font-size: 1.5em;
+            line-height: 1;
+        }
+        
+        .top-nav-btn:hover {
+            background: var(--bg);
+            color: var(--primary);
+        }
+        
+        .top-nav-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .top-nav-btn.active .nav-icon {
+            transform: scale(1.1);
+        }
+        
+        .top-nav-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .top-nav-logout {
+            flex-shrink: 0;
+            background: #fff5f5;
+            color: var(--danger);
+            border: none;
+            padding: 8px 12px;
+            margin-left: auto;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 0.75em;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        
+        .top-nav-logout:hover {
+            background: var(--danger);
+            color: white;
+        }
+        
         .app-content { max-width: 1200px; margin: 0 auto; padding: 16px; }
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
         .section-title { font-size: 1.4em; font-weight: 700; color: var(--dark); margin-bottom: 14px; }
+        
         .schedule-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .date-card { background: white; padding: 14px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
         .date-card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.05em; text-align: center; padding-bottom: 8px; border-bottom: 2px solid var(--primary); display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap; }
@@ -97,6 +170,7 @@
         .employee-tag.kd { background: var(--gold); color: var(--dark); }
         .employee-tag.other { background: #6c757d; }
         .empty-message { text-align: center; color: var(--gray); padding: 30px 16px; background: white; border-radius: var(--radius-lg); font-size: 0.9em; line-height: 1.5; border: 1px dashed var(--border); }
+        
         .contests-list { display: grid; gap: 12px; }
         .contest-card { background: white; padding: 16px; border-radius: var(--radius-lg); border-left: 4px solid var(--success); box-shadow: var(--shadow-sm); }
         .contest-card.status-finished-card { border-left-color: #6c757d; }
@@ -120,6 +194,7 @@
         .final-result-winner { font-size: 1.05em; font-weight: 700; color: var(--dark); margin-bottom: 3px; }
         .final-result-description { color: #555; line-height: 1.4; font-size: 0.85em; }
         .final-result-date { font-size: 0.75em; color: #856404; margin-top: 4px; }
+        
         .materials-list { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .material-card { background: white; border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 14px; box-shadow: var(--shadow-sm); display: flex; flex-direction: column; }
         .material-card.type-text { border-left: 4px solid var(--info); }
@@ -141,17 +216,21 @@
         .file-size { color: var(--gray); font-size: 0.85em; margin-top: 1px; }
         .material-actions { display: flex; gap: 6px; margin-top: auto; flex-wrap: wrap; }
         .material-actions .btn { flex: 1; min-width: 90px; }
+        
         .info-block { background: white; padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
         .info-block h3 { color: var(--primary); margin-bottom: 8px; font-size: 1.05em; }
         .info-block p { color: #555; line-height: 1.5; font-size: 0.9em; }
+        
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .stat-card { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 16px 10px; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-sm); }
         .stat-number { font-size: 1.8em; font-weight: 800; margin-bottom: 3px; line-height: 1; }
         .stat-label { font-size: 0.75em; opacity: 0.95; line-height: 1.3; }
+        
         .dev-block { text-align: center; padding: 40px 16px; background: white; border-radius: var(--radius-xl); border: 2px dashed var(--primary); }
         .dev-icon { font-size: 3em; margin-bottom: 12px; display: block; }
         .dev-block h3 { color: var(--primary); margin-bottom: 8px; font-size: 1.2em; }
         .dev-block p { color: var(--gray); font-size: 0.9em; max-width: 500px; margin: 0 auto; line-height: 1.5; }
+        
         .btn { padding: 10px 16px; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 42px; }
         .btn:active { transform: scale(0.97); }
         .btn-primary { background: var(--primary); color: white; }
@@ -164,12 +243,14 @@
         .btn-block { width: 100%; }
         .btn-view { background: var(--info); color: white; }
         .btn-download { background: var(--warning); color: white; }
+        
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--dark); font-size: 0.85em; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 0.95em; background: white; font-family: inherit; transition: border-color 0.2s; min-height: 42px; }
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); }
         .form-group textarea { resize: vertical; min-height: 90px; }
         .form-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        
         .admin-tabs { display: flex; gap: 4px; overflow-x: auto; background: white; padding: 6px; border-radius: var(--radius-lg); margin-bottom: 14px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); scrollbar-width: none; }
         .admin-tabs::-webkit-scrollbar { display: none; }
         .admin-tab { flex-shrink: 0; padding: 8px 12px; border: none; background: transparent; color: var(--gray); border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.82em; transition: all 0.2s; white-space: nowrap; min-height: 38px; }
@@ -216,6 +297,7 @@
         .inline-form { background: #e7f3ff; padding: 12px; border-radius: var(--radius-sm); margin-top: 8px; border: 1px dashed #0066cc; }
         .inline-form h5 { color: #0066cc; margin-bottom: 8px; font-size: 0.85em; }
         .inline-form-actions { display: flex; gap: 5px; margin-top: 8px; flex-wrap: wrap; }
+        
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; padding: 16px; }
         .modal.open { display: flex; }
         .modal-content { background: white; border-radius: var(--radius-xl); max-width: 700px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -223,23 +305,7 @@
         .modal-header h3 { color: var(--primary); font-size: 1.1em; word-break: break-word; }
         .modal-close { background: none; border: none; font-size: 1.6em; cursor: pointer; color: var(--light-gray); line-height: 1; padding: 0 4px; min-width: 38px; min-height: 38px; }
         .modal-body { padding: 18px; overflow-y: auto; flex: 1; white-space: pre-wrap; word-break: break-word; line-height: 1.6; color: var(--dark); font-size: 0.92em; }
-        @media (min-width: 768px) {
-            body.logged-in { padding-bottom: 0; }
-            .bottom-nav { display: none !important; }
-            .desktop-nav { display: block; }
-            .app-header { padding: 24px 24px 20px; }
-            .header-title h1 { font-size: 1.8em; }
-            .header-subtitle { font-size: 0.85em; }
-            .clock-time { font-size: 1.6em; }
-            .clock-date { font-size: 0.85em; }
-            .app-content { padding: 24px; }
-            .section-title { font-size: 1.6em; }
-            .schedule-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-            .materials-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-            .form-row { grid-template-columns: 1fr 1fr; }
-            .admin-tabs { flex-wrap: wrap; }
-        }
+        
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
@@ -255,7 +321,7 @@
             </div>
             <div class="login-form">
                 <div class="form-group">
-                    <label> Телефон</label>
+                    <label>📱 Телефон</label>
                     <input type="tel" id="loginPhone" placeholder="89001234567" autocomplete="tel">
                 </div>
                 <div class="form-group">
@@ -294,16 +360,41 @@
         </div>
     </header>
 
-    <nav class="desktop-nav">
-        <div class="desktop-nav-inner">
-            <button onclick="showSection('schedule', this)" class="active">📅 График</button>
-            <button onclick="showSection('plan', this)">📈 План</button>
-            <button onclick="showSection('materials', this)"> Обучение</button>
-            <button onclick="showSection('contests', this)">🏆 Конкурсы</button>
-            <button onclick="showSection('info', this)">📢 Информация</button>
-            <button onclick="showSection('stats', this)">📊 Статистика</button>
-            <button onclick="showSection('admin', this)" id="desktopAdminBtn" style="display:none;">️ Админ</button>
-            <button onclick="doLogout()" class="logout-btn"> Выйти</button>
+    <!-- НОВАЯ ВЕРХНЯЯ НАВИГАЦИЯ -->
+    <nav class="top-nav" id="topNav" style="display:none;">
+        <div class="top-nav-inner">
+            <button class="top-nav-btn active" onclick="showSection('schedule', this)">
+                <span class="nav-icon">📅</span>
+                <span>График</span>
+            </button>
+            <button class="top-nav-btn" onclick="showSection('plan', this)">
+                <span class="nav-icon">📈</span>
+                <span>План</span>
+            </button>
+            <button class="top-nav-btn" onclick="showSection('materials', this)">
+                <span class="nav-icon">📚</span>
+                <span>Обучение</span>
+            </button>
+            <button class="top-nav-btn" onclick="showSection('contests', this)">
+                <span class="nav-icon">🏆</span>
+                <span>Конкурсы</span>
+            </button>
+            <button class="top-nav-btn" onclick="showSection('info', this)">
+                <span class="nav-icon">📢</span>
+                <span>Инфо</span>
+            </button>
+            <button class="top-nav-btn" onclick="showSection('stats', this)">
+                <span class="nav-icon">📊</span>
+                <span>Ещё</span>
+            </button>
+            <button class="top-nav-btn" onclick="showSection('admin', this)" id="topNavAdminBtn" style="display:none;">
+                <span class="nav-icon">⚙️</span>
+                <span>Админ</span>
+            </button>
+            <button class="top-nav-logout" onclick="doLogout()">
+                <span>🚪</span>
+                <span>Выйти</span>
+            </button>
         </div>
     </nav>
 
@@ -325,7 +416,7 @@
             <div id="materialsList" class="materials-list"></div>
         </div>
         <div id="contests" class="section">
-            <h2 class="section-title">🏆 Конкурсы персонала</h2>
+            <h2 class="section-title"> Конкурсы персонала</h2>
             <div id="contestsList" class="contests-list"></div>
         </div>
         <div id="info" class="section">
@@ -339,11 +430,11 @@
         <div id="admin" class="section">
             <h2 class="section-title">⚙️ Админ-панель</h2>
             <div class="admin-tabs">
-                <button class="admin-tab active" onclick="showAdminTab('schedule', this)">📅 График</button>
-                <button class="admin-tab" onclick="showAdminTab('employees', this)"> Сотрудники</button>
+                <button class="admin-tab active" onclick="showAdminTab('schedule', this)"> График</button>
+                <button class="admin-tab" onclick="showAdminTab('employees', this)">👥 Сотрудники</button>
                 <button class="admin-tab" onclick="showAdminTab('contests', this)">🏆 Конкурсы</button>
                 <button class="admin-tab" onclick="showAdminTab('materials', this)">📚 Обучение</button>
-                <button class="admin-tab" onclick="showAdminTab('info', this)">📢 Инфо</button>
+                <button class="admin-tab" onclick="showAdminTab('info', this)"> Инфо</button>
                 <button class="admin-tab" onclick="showAdminTab('settings', this)">⚙️ Настройки</button>
             </div>
             <div id="admin-schedule" class="admin-section active">
@@ -351,7 +442,7 @@
                     <div class="admin-card-title">➕ Добавить сотрудника в график</div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>📅 Дата</label>
+                            <label> Дата</label>
                             <input type="date" id="adminDate">
                         </div>
                         <div class="form-group">
@@ -369,7 +460,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label> Смена</label>
+                            <label>🕐 Смена</label>
                             <select id="adminShift">
                                 <option value="1">Смена 1 (10:00 - 19:00)</option>
                                 <option value="2">Смена 2 (12:00 - 21:00)</option>
@@ -380,7 +471,7 @@
                     <button class="btn btn-primary btn-block" onclick="addScheduleEntry()">➕ Добавить в график</button>
                 </div>
                 <div class="admin-card">
-                    <div class="admin-card-title">📋 Текущие записи графика</div>
+                    <div class="admin-card-title"> Текущие записи графика</div>
                     <div id="scheduleList"></div>
                 </div>
             </div>
@@ -442,7 +533,7 @@
             </div>
             <div id="admin-materials" class="admin-section">
                 <div class="admin-card" id="addMaterialSection" style="display: none; border: 2px solid var(--info);">
-                    <div class="admin-card-title" style="color: var(--info); border-bottom-color: var(--info);"> Новый материал</div>
+                    <div class="admin-card-title" style="color: var(--info); border-bottom-color: var(--info);">📚 Новый материал</div>
                     <div class="type-switcher">
                         <button type="button" id="typeTextBtn" class="active" onclick="switchMaterialType('text')">📝 Текст</button>
                         <button type="button" id="typeFileBtn" onclick="switchMaterialType('file')">📎 Файл</button>
@@ -496,23 +587,11 @@
                     <p style="color: var(--gray); font-size: 0.85em; margin-bottom: 12px; line-height: 1.4;">
                         Полный сброс всех данных сайта. Это действие нельзя отменить.
                     </p>
-                    <button class="btn btn-danger btn-block" onclick="resetAllData()">🗑️ Сбросить все данные</button>
+                    <button class="btn btn-danger btn-block" onclick="resetAllData()">️ Сбросить все данные</button>
                 </div>
             </div>
         </div>
     </main>
-
-    <nav class="bottom-nav">
-        <div class="bottom-nav-inner">
-            <button onclick="showSection('schedule', this)" class="active"><span class="nav-icon">📅</span><span>График</span></button>
-            <button onclick="showSection('materials', this)"><span class="nav-icon">📚</span><span>Обучение</span></button>
-            <button onclick="showSection('contests', this)"><span class="nav-icon">🏆</span><span>Конкурсы</span></button>
-            <button onclick="showSection('plan', this)"><span class="nav-icon">📈</span><span>План</span></button>
-            <button onclick="showSection('admin', this)" id="mobileAdminBtn" style="display:none;"><span class="nav-icon">⚙️</span><span>Админ</span></button>
-            <button onclick="showSection('stats', this)"><span class="nav-icon">📊</span><span>Ещё</span></button>
-        </div>
-        <button class="mobile-logout" onclick="doLogout()"> Выйти из аккаунта</button>
-    </nav>
 
     <div class="modal" id="materialModal">
         <div class="modal-content">
@@ -607,8 +686,8 @@
 
         function showLoginScreen() {
             currentUser = null;
-            document.body.classList.remove('logged-in');
             document.getElementById('loginScreen').classList.remove('hidden');
+            document.getElementById('topNav').style.display = 'none';
         }
 
         function showLoginError(msg) {
@@ -658,17 +737,16 @@
 
         function enterApp() {
             document.getElementById('loginScreen').classList.add('hidden');
-            document.body.classList.add('logged-in');
+            document.getElementById('topNav').style.display = 'block';
             document.getElementById('currentUserBadge').style.display = 'inline-flex';
             document.getElementById('currentUserName').textContent = currentUser.name;
             document.getElementById('currentUserRole').textContent = currentUser.role === 'admin' ? '👑 Админ' : '👤 Сотрудник';
             
             const isAdmin = currentUser.role === 'admin';
-            document.getElementById('desktopAdminBtn').style.display = isAdmin ? '' : 'none';
-            document.getElementById('mobileAdminBtn').style.display = isAdmin ? '' : 'none';
+            document.getElementById('topNavAdminBtn').style.display = isAdmin ? '' : 'none';
             
             if (!isAdmin && document.getElementById('admin').classList.contains('active')) {
-                showSection('schedule', document.querySelector('.desktop-nav button'));
+                showSection('schedule', document.querySelector('.top-nav-btn'));
             }
             renderAll();
         }
@@ -690,9 +768,8 @@
             }
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             document.getElementById(sectionId).classList.add('active');
-            document.querySelectorAll('.bottom-nav button, .desktop-nav button').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-            syncNavButtons(sectionId);
+            document.querySelectorAll('.top-nav-btn').forEach(b => b.classList.remove('active'));
+            if (btn && btn.classList) btn.classList.add('active');
             if (sectionId === 'schedule') renderSchedule();
             if (sectionId === 'materials') renderMaterials();
             if (sectionId === 'contests') renderContests();
@@ -701,27 +778,6 @@
             if (sectionId === 'admin') renderAdmin();
             window.scrollTo({ top: 0, behavior: 'smooth' });
         };
-
-        function syncNavButtons(sectionId) {
-            document.querySelectorAll('.bottom-nav button').forEach(b => {
-                const label = b.querySelector('span:last-child');
-                if (!label) return;
-                const map = { 'График': 'schedule', 'Обучение': 'materials', 'Конкурсы': 'contests', 'План': 'plan', 'Админ': 'admin', 'Ещё': 'stats' };
-                b.classList.toggle('active', map[label.textContent] === sectionId);
-            });
-            document.querySelectorAll('.desktop-nav button:not(.logout-btn)').forEach(b => {
-                const text = b.textContent.trim();
-                let match = false;
-                if (sectionId === 'schedule' && text.includes('График')) match = true;
-                if (sectionId === 'plan' && text.includes('План')) match = true;
-                if (sectionId === 'materials' && text.includes('Обучение')) match = true;
-                if (sectionId === 'contests' && text.includes('Конкурсы')) match = true;
-                if (sectionId === 'info' && text.includes('Информация')) match = true;
-                if (sectionId === 'stats' && text.includes('Статистика')) match = true;
-                if (sectionId === 'admin' && text.includes('Админ')) match = true;
-                b.classList.toggle('active', match);
-            });
-        }
 
         window.showAdminTab = function(tabName, btn) {
             document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
@@ -836,8 +892,8 @@
                 const roleBadge = emp.role === 'admin' ? '<span class="employee-admin-role role-admin-badge">👑 Админ</span>' : '<span class="employee-admin-role role-user-badge">👤 Сотрудник</span>';
                 const phoneText = emp.phone ? `📱 ${escapeHtml(emp.phone)}` : '<em style="color:#999;">телефон не указан</em>';
                 const isSelf = currentUser && currentUser.id === emp.id;
-                const deleteBtn = isSelf ? '<button class="btn btn-sm" style="background:#e9ecef;color:#999;" disabled>Вы</button>' : `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.id}')">🗑️</button>`;
-                item.innerHTML = `<div class="employee-admin-header"><div class="employee-admin-info"><div class="employee-admin-name">👤 ${escapeHtml(emp.name)} ${roleBadge}</div><div class="employee-admin-phone">${phoneText}</div></div>${deleteBtn}</div>`;
+                const deleteBtn = isSelf ? '<button class="btn btn-sm" style="background:#e9ecef;color:#999;" disabled>Вы</button>' : `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.id}')">️</button>`;
+                item.innerHTML = `<div class="employee-admin-header"><div class="employee-admin-info"><div class="employee-admin-name"> ${escapeHtml(emp.name)} ${roleBadge}</div><div class="employee-admin-phone">${phoneText}</div></div>${deleteBtn}</div>`;
                 list.appendChild(item);
             });
             document.getElementById('employeeCounter').textContent = data.employees.length + ' чел.';
@@ -951,7 +1007,7 @@
                 await loadAllDataFromFirebase();
                 renderScheduleList();
                 renderSchedule();
-                alert(`✅ Добавлен!\n📅 ${date}\n👤 ${employee}`);
+                alert(`✅ Добавлен!\n ${date}\n👤 ${employee}`);
             } catch (e) { alert('Ошибка: ' + e.message); }
         };
 
@@ -1076,11 +1132,11 @@
                 const statusText = contest.status === 'active' ? '🟢 Активный' : '⚫ Завершен';
                 let intermediateHtml = '';
                 if (contest.intermediateResults && contest.intermediateResults.length > 0) {
-                    intermediateHtml = `<div class="results-section"><h4>📊 Промежуточные результаты</h4>${[...contest.intermediateResults].sort((a, b) => a.date - b.date).map(r => `<div class="result-item"><div class="result-item-header"><span class="result-title">${escapeHtml(r.title)}</span><span class="result-date">${formatDateTime(r.date)}</span></div>${r.description ? `<div class="result-description">${escapeHtml(r.description)}</div>` : ''}</div>`).join('')}</div>`;
+                    intermediateHtml = `<div class="results-section"><h4> Промежуточные результаты</h4>${[...contest.intermediateResults].sort((a, b) => a.date - b.date).map(r => `<div class="result-item"><div class="result-item-header"><span class="result-title">${escapeHtml(r.title)}</span><span class="result-date">${formatDateTime(r.date)}</span></div>${r.description ? `<div class="result-description">${escapeHtml(r.description)}</div>` : ''}</div>`).join('')}</div>`;
                 }
                 let finalHtml = '';
                 if (contest.finalResult) {
-                    finalHtml = `<div class="results-section"><h4>🏆 Финальный результат</h4><div class="final-result"><div class="final-result-header"><div class="final-result-icon"></div><div class="final-result-title">ПОБЕДИТЕЛЬ</div></div><div class="final-result-winner">${escapeHtml(contest.finalResult.winner)}</div>${contest.finalResult.description ? `<div class="final-result-description">${escapeHtml(contest.finalResult.description)}</div>` : ''}<div class="final-result-date">📅 ${formatDateTime(contest.finalResult.date)}</div></div></div>`;
+                    finalHtml = `<div class="results-section"><h4>🏆 Финальный результат</h4><div class="final-result"><div class="final-result-header"><div class="final-result-icon">🥇</div><div class="final-result-title">ПОБЕДИТЕЛЬ</div></div><div class="final-result-winner">${escapeHtml(contest.finalResult.winner)}</div>${contest.finalResult.description ? `<div class="final-result-description">${escapeHtml(contest.finalResult.description)}</div>` : ''}<div class="final-result-date">📅 ${formatDateTime(contest.finalResult.date)}</div></div></div>`;
                 }
                 card.innerHTML = `<span class="contest-status ${statusClass}">${statusText}</span><h3>${escapeHtml(contest.name)}</h3><div class="contest-description">${escapeHtml(contest.description)}</div>${intermediateHtml}${finalHtml}`;
                 list.appendChild(card);
@@ -1096,18 +1152,18 @@
                 const item = document.createElement('div');
                 item.className = `admin-contest-item ${contest.status === 'finished' ? 'status-finished-item' : ''}`;
                 const statusText = contest.status === 'active' ? '🟢 Активный' : '⚫ Завершен';
-                const toggleBtnText = contest.status === 'active' ? '⏸️ Завершить' : '▶️ Возобновить';
+                const toggleBtnText = contest.status === 'active' ? '️ Завершить' : '▶️ Возобновить';
                 let intResultsHtml = (contest.intermediateResults && contest.intermediateResults.length > 0)
-                    ? [...contest.intermediateResults].sort((a, b) => a.date - b.date).map(r => `<div class="admin-result-item"><div class="admin-result-info"><strong>${escapeHtml(r.title)}</strong><small>${formatDateTime(r.date)}</small>${r.description ? `<div style="color:#555;font-size:0.82em;margin-top:2px;">${escapeHtml(r.description)}</div>` : ''}</div><button class="btn btn-danger btn-sm" onclick="deleteIntermediateResult('${contest.id}', '${r.id}')"></button></div>`).join('')
+                    ? [...contest.intermediateResults].sort((a, b) => a.date - b.date).map(r => `<div class="admin-result-item"><div class="admin-result-info"><strong>${escapeHtml(r.title)}</strong><small>${formatDateTime(r.date)}</small>${r.description ? `<div style="color:#555;font-size:0.82em;margin-top:2px;">${escapeHtml(r.description)}</div>` : ''}</div><button class="btn btn-danger btn-sm" onclick="deleteIntermediateResult('${contest.id}', '${r.id}')">✕</button></div>`).join('')
                     : '<div class="no-employees">Нет промежуточных результатов</div>';
                 let finalResultHtml = contest.finalResult
-                    ? `<div class="admin-result-item final"><div class="admin-result-info"><strong> ${escapeHtml(contest.finalResult.winner)}</strong><small>${formatDateTime(contest.finalResult.date)}</small>${contest.finalResult.description ? `<div style="color:#555;font-size:0.82em;margin-top:2px;">${escapeHtml(contest.finalResult.description)}</div>` : ''}</div><button class="btn btn-danger btn-sm" onclick="deleteFinalResult('${contest.id}')">✕</button></div>`
+                    ? `<div class="admin-result-item final"><div class="admin-result-info"><strong>🏆 ${escapeHtml(contest.finalResult.winner)}</strong><small>${formatDateTime(contest.finalResult.date)}</small>${contest.finalResult.description ? `<div style="color:#555;font-size:0.82em;margin-top:2px;">${escapeHtml(contest.finalResult.description)}</div>` : ''}</div><button class="btn btn-danger btn-sm" onclick="deleteFinalResult('${contest.id}')">✕</button></div>`
                     : '<div class="no-employees">Финальный результат не определён</div>';
                 let formHtml = '';
                 if (openResultForms[contest.id] === 'intermediate') {
                     formHtml = `<div class="inline-form"><h5>📊 Новый промежуточный результат</h5><div class="form-group" style="margin-bottom:8px;"><input type="text" id="intTitle_${contest.id}" placeholder="Название этапа"></div><div class="form-group" style="margin-bottom:0;"><textarea id="intDesc_${contest.id}" rows="2" placeholder="Описание (необязательно)"></textarea></div><div class="inline-form-actions"><button class="btn btn-info btn-sm" onclick="saveIntermediateResult('${contest.id}')">💾 Сохранить</button><button class="btn btn-danger btn-sm" onclick="toggleResultForm('${contest.id}', 'intermediate')">✕ Отмена</button></div></div>`;
                 } else if (openResultForms[contest.id] === 'final') {
-                    formHtml = `<div class="inline-form" style="background:#fff9e6;border-color:#ffc107;"><h5 style="color:#856404;">🏆 Финальный результат</h5><div class="form-group" style="margin-bottom:8px;"><input type="text" id="finalWinner_${contest.id}" placeholder="Имя победителя"></div><div class="form-group" style="margin-bottom:0;"><textarea id="finalDesc_${contest.id}" rows="2" placeholder="Комментарий (необязательно)"></textarea></div><div class="inline-form-actions"><button class="btn btn-gold btn-sm" onclick="saveFinalResult('${contest.id}')"> Сохранить</button><button class="btn btn-danger btn-sm" onclick="toggleResultForm('${contest.id}', 'final')">✕ Отмена</button></div></div>`;
+                    formHtml = `<div class="inline-form" style="background:#fff9e6;border-color:#ffc107;"><h5 style="color:#856404;">🏆 Финальный результат</h5><div class="form-group" style="margin-bottom:8px;"><input type="text" id="finalWinner_${contest.id}" placeholder="Имя победителя"></div><div class="form-group" style="margin-bottom:0;"><textarea id="finalDesc_${contest.id}" rows="2" placeholder="Комментарий (необязательно)"></textarea></div><div class="inline-form-actions"><button class="btn btn-gold btn-sm" onclick="saveFinalResult('${contest.id}')">💾 Сохранить</button><button class="btn btn-danger btn-sm" onclick="toggleResultForm('${contest.id}', 'final')">✕ Отмена</button></div></div>`;
                 }
                 item.innerHTML = `<div class="admin-contest-header"><div><div class="admin-contest-title">${escapeHtml(contest.name)}</div><div style="font-size:0.78em;color:var(--gray);margin-top:2px;">${statusText}</div></div><div class="admin-contest-actions"><button class="btn btn-info btn-sm" onclick="toggleResultForm('${contest.id}', 'intermediate')">📊</button><button class="btn btn-gold btn-sm" onclick="toggleResultForm('${contest.id}', 'final')">🏆</button><button class="btn btn-warning btn-sm" onclick="toggleContestStatus('${contest.id}')">${toggleBtnText}</button><button class="btn btn-danger btn-sm" onclick="deleteContest('${contest.id}')">️</button></div></div><div class="admin-contest-results"><h5>📊 Промежуточные</h5>${intResultsHtml}<h5>🏆 Финальный</h5>${finalResultHtml}</div>${formHtml}`;
                 list.appendChild(item);
@@ -1194,16 +1250,16 @@
         }
 
         function getFileIcon(mimeType) {
-            if (!mimeType) return '';
-            if (mimeType.startsWith('image/')) return '🖼️';
+            if (!mimeType) return '📄';
+            if (mimeType.startsWith('image/')) return '️';
             if (mimeType.startsWith('video/')) return '🎬';
             if (mimeType.startsWith('audio/')) return '🎵';
             if (mimeType.includes('pdf')) return '📕';
-            if (mimeType.includes('word') || mimeType.includes('document')) return '📘';
+            if (mimeType.includes('word') || mimeType.includes('document')) return '';
             if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return '📗';
             if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) return '📙';
             if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('archive')) return '🗜️';
-            return '📄';
+            return '';
         }
 
         function getSortedDates() {
@@ -1228,7 +1284,7 @@
             data.materials.forEach(material => {
                 const card = document.createElement('div');
                 card.className = `material-card type-${material.type}`;
-                const icon = material.type === 'text' ? '📝' : (material.file ? getFileIcon(material.file.mimeType) : '📄');
+                const icon = material.type === 'text' ? '' : (material.file ? getFileIcon(material.file.mimeType) : '📄');
                 const tagClass = material.type === 'text' ? 'tag-text' : 'tag-file';
                 const tagText = material.type === 'text' ? 'Текст' : 'Файл';
                 let previewHtml = '';
