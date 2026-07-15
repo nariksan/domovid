@@ -74,8 +74,6 @@
         .date-card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.05em; text-align: center; padding-bottom: 8px; border-bottom: 2px solid var(--primary); display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap; }
         .date-card.past { background: #fafafa; border-color: #ddd; opacity: 0.7; }
         .date-card.past h3 { color: #888; border-bottom-color: #bbb; text-decoration: line-through; }
-        .date-card.past .shift { opacity: 0.7; }
-        .date-card.past .employee-tag { text-decoration: line-through; opacity: 0.75; }
         .date-card.today { border-color: var(--success); border-width: 2px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15); }
         .date-card.today h3 { color: var(--success); border-bottom-color: var(--success); }
         .past-badge, .today-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.65em; font-weight: 700; text-transform: uppercase; text-decoration: none !important; }
@@ -257,7 +255,7 @@
             </div>
             <div class="login-form">
                 <div class="form-group">
-                    <label>📱 Телефон</label>
+                    <label> Телефон</label>
                     <input type="tel" id="loginPhone" placeholder="89001234567" autocomplete="tel">
                 </div>
                 <div class="form-group">
@@ -300,12 +298,12 @@
         <div class="desktop-nav-inner">
             <button onclick="showSection('schedule', this)" class="active">📅 График</button>
             <button onclick="showSection('plan', this)">📈 План</button>
-            <button onclick="showSection('materials', this)">📚 Обучение</button>
+            <button onclick="showSection('materials', this)"> Обучение</button>
             <button onclick="showSection('contests', this)">🏆 Конкурсы</button>
             <button onclick="showSection('info', this)">📢 Информация</button>
             <button onclick="showSection('stats', this)">📊 Статистика</button>
-            <button onclick="showSection('admin', this)" id="desktopAdminBtn" style="display:none;">⚙️ Админ</button>
-            <button onclick="doLogout()" class="logout-btn">🚪 Выйти</button>
+            <button onclick="showSection('admin', this)" id="desktopAdminBtn" style="display:none;">️ Админ</button>
+            <button onclick="doLogout()" class="logout-btn"> Выйти</button>
         </div>
     </nav>
 
@@ -342,7 +340,7 @@
             <h2 class="section-title">⚙️ Админ-панель</h2>
             <div class="admin-tabs">
                 <button class="admin-tab active" onclick="showAdminTab('schedule', this)">📅 График</button>
-                <button class="admin-tab" onclick="showAdminTab('employees', this)">👥 Сотрудники</button>
+                <button class="admin-tab" onclick="showAdminTab('employees', this)"> Сотрудники</button>
                 <button class="admin-tab" onclick="showAdminTab('contests', this)">🏆 Конкурсы</button>
                 <button class="admin-tab" onclick="showAdminTab('materials', this)">📚 Обучение</button>
                 <button class="admin-tab" onclick="showAdminTab('info', this)">📢 Инфо</button>
@@ -371,7 +369,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>🕐 Смена</label>
+                            <label> Смена</label>
                             <select id="adminShift">
                                 <option value="1">Смена 1 (10:00 - 19:00)</option>
                                 <option value="2">Смена 2 (12:00 - 21:00)</option>
@@ -399,7 +397,7 @@
                             <input type="tel" id="newEmployeePhone" placeholder="89001234567">
                         </div>
                         <div class="form-group">
-                            <label>🔒 Пароль</label>
+                            <label> Пароль</label>
                             <input type="text" id="newEmployeePassword" placeholder="Пароль для входа">
                         </div>
                     </div>
@@ -419,7 +417,7 @@
             </div>
             <div id="admin-contests" class="admin-section">
                 <div class="admin-card">
-                    <div class="admin-card-title">➕ Добавить конкурс</div>
+                    <div class="admin-card-title"> Добавить конкурс</div>
                     <div class="form-group">
                         <label>🏆 Название конкурса</label>
                         <input type="text" id="contestName" placeholder="Введите название конкурса">
@@ -444,7 +442,7 @@
             </div>
             <div id="admin-materials" class="admin-section">
                 <div class="admin-card" id="addMaterialSection" style="display: none; border: 2px solid var(--info);">
-                    <div class="admin-card-title" style="color: var(--info); border-bottom-color: var(--info);">📚 Новый материал</div>
+                    <div class="admin-card-title" style="color: var(--info); border-bottom-color: var(--info);"> Новый материал</div>
                     <div class="type-switcher">
                         <button type="button" id="typeTextBtn" class="active" onclick="switchMaterialType('text')">📝 Текст</button>
                         <button type="button" id="typeFileBtn" onclick="switchMaterialType('file')">📎 Файл</button>
@@ -513,7 +511,7 @@
             <button onclick="showSection('admin', this)" id="mobileAdminBtn" style="display:none;"><span class="nav-icon">⚙️</span><span>Админ</span></button>
             <button onclick="showSection('stats', this)"><span class="nav-icon">📊</span><span>Ещё</span></button>
         </div>
-        <button class="mobile-logout" onclick="doLogout()">🚪 Выйти из аккаунта</button>
+        <button class="mobile-logout" onclick="doLogout()"> Выйти из аккаунта</button>
     </nav>
 
     <div class="modal" id="materialModal">
@@ -526,18 +524,17 @@
         </div>
     </div>
 
-    <!-- FIREBASE И ЛОГИКА ПРИЛОЖЕНИЯ -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getFirestore, collection, query, where, getDocs, addDoc, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyCfqwFifdkvc2nsm-Y8WJGE2_1zf6V4jYM",
-            authDomain: "domovid-853c1.firebaseapp.com",
-            projectId: "domovid-853c1",
-            storageBucket: "domovid-853c1.firebasestorage.app",
-            messagingSenderId: "659487311850",
-            appId: "1:659487311850:web:3bedbc0e6a729bab551493"
+            apiKey: "AIzaSyDTHWwfpt059YCSt5YI9Aou1n1GjHxgQ6s",
+            authDomain: "domovidi.firebaseapp.com",
+            projectId: "domovidi",
+            storageBucket: "domovidi.firebasestorage.app",
+            messagingSenderId: "261930585857",
+            appId: "1:261930585857:web:856cf36981d8e0c2d51500"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -607,14 +604,6 @@
         }
 
         function normalizePhone(phone) { return (phone || '').replace(/\D/g, ''); }
-
-        function checkAuth() {
-            const session = localStorage.getItem('domovidSession');
-            if (!session) { showLoginScreen(); return; }
-            // При перезагрузке просто показываем экран входа, т.к. данные нужно тянуть из Firebase
-            // Для полноценного автовхода можно сохранить phone/password в session, но для безопасности лучше требовать ввод
-            showLoginScreen();
-        }
 
         function showLoginScreen() {
             currentUser = null;
@@ -1091,7 +1080,7 @@
                 }
                 let finalHtml = '';
                 if (contest.finalResult) {
-                    finalHtml = `<div class="results-section"><h4>🏆 Финальный результат</h4><div class="final-result"><div class="final-result-header"><div class="final-result-icon">🥇</div><div class="final-result-title">ПОБЕДИТЕЛЬ</div></div><div class="final-result-winner">${escapeHtml(contest.finalResult.winner)}</div>${contest.finalResult.description ? `<div class="final-result-description">${escapeHtml(contest.finalResult.description)}</div>` : ''}<div class="final-result-date">📅 ${formatDateTime(contest.finalResult.date)}</div></div></div>`;
+                    finalHtml = `<div class="results-section"><h4>🏆 Финальный результат</h4><div class="final-result"><div class="final-result-header"><div class="final-result-icon"></div><div class="final-result-title">ПОБЕДИТЕЛЬ</div></div><div class="final-result-winner">${escapeHtml(contest.finalResult.winner)}</div>${contest.finalResult.description ? `<div class="final-result-description">${escapeHtml(contest.finalResult.description)}</div>` : ''}<div class="final-result-date">📅 ${formatDateTime(contest.finalResult.date)}</div></div></div>`;
                 }
                 card.innerHTML = `<span class="contest-status ${statusClass}">${statusText}</span><h3>${escapeHtml(contest.name)}</h3><div class="contest-description">${escapeHtml(contest.description)}</div>${intermediateHtml}${finalHtml}`;
                 list.appendChild(card);
@@ -1109,18 +1098,18 @@
                 const statusText = contest.status === 'active' ? '🟢 Активный' : '⚫ Завершен';
                 const toggleBtnText = contest.status === 'active' ? '⏸️ Завершить' : '▶️ Возобновить';
                 let intResultsHtml = (contest.intermediateResults && contest.intermediateResults.length > 0)
-                    ? [...contest.intermediateResults].sort((a, b) => a.date - b.date).map(r => `<div class="admin-result-item"><div class="admin-result-info"><strong>${escapeHtml(r.title)}</strong><small>${formatDateTime(r.date)}</small>${r.description ? `<div style="color:#555;font-size:0.82em;margin-top:2px;">${escapeHtml(r.description)}</div>` : ''}</div><button class="btn btn-danger btn-sm" onclick="deleteIntermediateResult('${contest.id}', '${r.id}')">✕</button></div>`).join('')
+                    ? [...contest.intermediateResults].sort((a, b) => a.date - b.date).map(r => `<div class="admin-result-item"><div class="admin-result-info"><strong>${escapeHtml(r.title)}</strong><small>${formatDateTime(r.date)}</small>${r.description ? `<div style="color:#555;font-size:0.82em;margin-top:2px;">${escapeHtml(r.description)}</div>` : ''}</div><button class="btn btn-danger btn-sm" onclick="deleteIntermediateResult('${contest.id}', '${r.id}')"></button></div>`).join('')
                     : '<div class="no-employees">Нет промежуточных результатов</div>';
                 let finalResultHtml = contest.finalResult
-                    ? `<div class="admin-result-item final"><div class="admin-result-info"><strong>🏆 ${escapeHtml(contest.finalResult.winner)}</strong><small>${formatDateTime(contest.finalResult.date)}</small>${contest.finalResult.description ? `<div style="color:#555;font-size:0.82em;margin-top:2px;">${escapeHtml(contest.finalResult.description)}</div>` : ''}</div><button class="btn btn-danger btn-sm" onclick="deleteFinalResult('${contest.id}')">✕</button></div>`
+                    ? `<div class="admin-result-item final"><div class="admin-result-info"><strong> ${escapeHtml(contest.finalResult.winner)}</strong><small>${formatDateTime(contest.finalResult.date)}</small>${contest.finalResult.description ? `<div style="color:#555;font-size:0.82em;margin-top:2px;">${escapeHtml(contest.finalResult.description)}</div>` : ''}</div><button class="btn btn-danger btn-sm" onclick="deleteFinalResult('${contest.id}')">✕</button></div>`
                     : '<div class="no-employees">Финальный результат не определён</div>';
                 let formHtml = '';
                 if (openResultForms[contest.id] === 'intermediate') {
                     formHtml = `<div class="inline-form"><h5>📊 Новый промежуточный результат</h5><div class="form-group" style="margin-bottom:8px;"><input type="text" id="intTitle_${contest.id}" placeholder="Название этапа"></div><div class="form-group" style="margin-bottom:0;"><textarea id="intDesc_${contest.id}" rows="2" placeholder="Описание (необязательно)"></textarea></div><div class="inline-form-actions"><button class="btn btn-info btn-sm" onclick="saveIntermediateResult('${contest.id}')">💾 Сохранить</button><button class="btn btn-danger btn-sm" onclick="toggleResultForm('${contest.id}', 'intermediate')">✕ Отмена</button></div></div>`;
                 } else if (openResultForms[contest.id] === 'final') {
-                    formHtml = `<div class="inline-form" style="background:#fff9e6;border-color:#ffc107;"><h5 style="color:#856404;">🏆 Финальный результат</h5><div class="form-group" style="margin-bottom:8px;"><input type="text" id="finalWinner_${contest.id}" placeholder="Имя победителя"></div><div class="form-group" style="margin-bottom:0;"><textarea id="finalDesc_${contest.id}" rows="2" placeholder="Комментарий (необязательно)"></textarea></div><div class="inline-form-actions"><button class="btn btn-gold btn-sm" onclick="saveFinalResult('${contest.id}')">💾 Сохранить</button><button class="btn btn-danger btn-sm" onclick="toggleResultForm('${contest.id}', 'final')">✕ Отмена</button></div></div>`;
+                    formHtml = `<div class="inline-form" style="background:#fff9e6;border-color:#ffc107;"><h5 style="color:#856404;">🏆 Финальный результат</h5><div class="form-group" style="margin-bottom:8px;"><input type="text" id="finalWinner_${contest.id}" placeholder="Имя победителя"></div><div class="form-group" style="margin-bottom:0;"><textarea id="finalDesc_${contest.id}" rows="2" placeholder="Комментарий (необязательно)"></textarea></div><div class="inline-form-actions"><button class="btn btn-gold btn-sm" onclick="saveFinalResult('${contest.id}')"> Сохранить</button><button class="btn btn-danger btn-sm" onclick="toggleResultForm('${contest.id}', 'final')">✕ Отмена</button></div></div>`;
                 }
-                item.innerHTML = `<div class="admin-contest-header"><div><div class="admin-contest-title">${escapeHtml(contest.name)}</div><div style="font-size:0.78em;color:var(--gray);margin-top:2px;">${statusText}</div></div><div class="admin-contest-actions"><button class="btn btn-info btn-sm" onclick="toggleResultForm('${contest.id}', 'intermediate')">📊</button><button class="btn btn-gold btn-sm" onclick="toggleResultForm('${contest.id}', 'final')">🏆</button><button class="btn btn-warning btn-sm" onclick="toggleContestStatus('${contest.id}')">${toggleBtnText}</button><button class="btn btn-danger btn-sm" onclick="deleteContest('${contest.id}')">🗑️</button></div></div><div class="admin-contest-results"><h5>📊 Промежуточные</h5>${intResultsHtml}<h5>🏆 Финальный</h5>${finalResultHtml}</div>${formHtml}`;
+                item.innerHTML = `<div class="admin-contest-header"><div><div class="admin-contest-title">${escapeHtml(contest.name)}</div><div style="font-size:0.78em;color:var(--gray);margin-top:2px;">${statusText}</div></div><div class="admin-contest-actions"><button class="btn btn-info btn-sm" onclick="toggleResultForm('${contest.id}', 'intermediate')">📊</button><button class="btn btn-gold btn-sm" onclick="toggleResultForm('${contest.id}', 'final')">🏆</button><button class="btn btn-warning btn-sm" onclick="toggleContestStatus('${contest.id}')">${toggleBtnText}</button><button class="btn btn-danger btn-sm" onclick="deleteContest('${contest.id}')">️</button></div></div><div class="admin-contest-results"><h5>📊 Промежуточные</h5>${intResultsHtml}<h5>🏆 Финальный</h5>${finalResultHtml}</div>${formHtml}`;
                 list.appendChild(item);
             });
         };
@@ -1205,7 +1194,7 @@
         }
 
         function getFileIcon(mimeType) {
-            if (!mimeType) return '📄';
+            if (!mimeType) return '';
             if (mimeType.startsWith('image/')) return '🖼️';
             if (mimeType.startsWith('video/')) return '🎬';
             if (mimeType.startsWith('audio/')) return '🎵';
@@ -1290,7 +1279,7 @@
             }
         };
 
-        checkAuth();
+        showLoginScreen();
     </script>
 </body>
 </html>
