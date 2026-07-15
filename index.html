@@ -2,12 +2,10 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="theme-color" content="#667eea">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>ДОМОВИД</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ДОМОВИД - Рабочая группа</title>
     
-    <!-- Firebase SDK -->
+    <!-- Firebase -->
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
@@ -27,864 +25,314 @@
             --light-gray: #999;
             --bg: #f8f9fa;
             --border: #e9ecef;
-            --shadow-sm: 0 2px 4px rgba(0,0,0,0.05);
-            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
-            --radius-sm: 8px;
-            --radius-md: 12px;
-            --radius-lg: 16px;
-            --radius-xl: 20px;
-            --bottom-nav-height: 70px;
-            --safe-bottom: env(safe-area-inset-bottom, 0px);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-        html, body {
+        body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--dark);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             min-height: 100vh;
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        body.logged-in { padding-bottom: calc(var(--bottom-nav-height) + var(--safe-bottom)); }
-
-        /* Загрузка */
-        .loading-screen {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            z-index: 99999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            gap: 20px;
-        }
-
-        .loading-screen.hidden { display: none; }
-
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(255,255,255,0.3);
-            border-top-color: white;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ЭКРАН ВХОДА */
-        .login-screen {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 20px;
-            overflow-y: auto;
         }
 
-        .login-screen.hidden { display: none; }
-
-        .login-container {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             background: white;
-            border-radius: var(--radius-xl);
-            padding: 30px 24px;
-            width: 100%;
-            max-width: 400px;
+            border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: slideUp 0.4s ease;
+            overflow: hidden;
         }
 
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .login-logo { text-align: center; margin-bottom: 24px; }
-        .login-logo-icon { font-size: 3em; margin-bottom: 8px; }
-        .login-logo h2 { color: var(--primary); font-size: 1.6em; margin-bottom: 4px; }
-        .login-logo p { color: var(--gray); font-size: 0.9em; }
-
-        .login-form .form-group { margin-bottom: 14px; }
-
-        .login-form label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: var(--dark);
-            font-size: 0.85em;
-        }
-
-        .login-form input {
-            width: 100%;
-            padding: 12px 14px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 1em;
-            background: white;
-            min-height: 46px;
-            transition: border-color 0.2s;
-        }
-
-        .login-form input:focus { outline: none; border-color: var(--primary); }
-
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-weight: 700;
-            font-size: 1em;
-            cursor: pointer;
-            margin-top: 8px;
-            transition: all 0.2s;
-            min-height: 48px;
-        }
-
-        .login-btn:hover { background: var(--primary-dark); }
-        .login-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        .login-error {
-            background: #fff5f5;
-            border-left: 3px solid var(--danger);
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin-top: 14px;
-            font-size: 0.85em;
-            color: var(--danger);
-            display: none;
-        }
-
-        .login-error.show { display: block; }
-
-        .login-hint {
-            background: #e7f3ff;
-            border-left: 3px solid var(--info);
-            padding: 10px 12px;
-            border-radius: 6px;
-            margin-top: 14px;
-            font-size: 0.82em;
-            color: #0c5460;
-            line-height: 1.4;
-        }
-
-        /* HEADER */
-        .app-header {
+        header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 16px;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: var(--shadow-md);
+            padding: 20px;
+            text-align: center;
         }
 
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 12px;
-        }
+        header h1 { font-size: 2em; margin-bottom: 10px; }
 
-        .header-title h1 { font-size: 1.3em; font-weight: 700; }
-
-        .header-subtitle {
-            font-size: 0.75em;
-            opacity: 0.85;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-
-        .current-user-badge {
+        .user-info {
             background: rgba(255,255,255,0.2);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.9em;
+            padding: 8px 16px;
+            border-radius: 20px;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 8px;
+            font-size: 0.9em;
         }
 
         .role-badge {
             background: var(--gold);
             color: var(--dark);
-            padding: 1px 6px;
-            border-radius: 8px;
-            font-size: 0.85em;
+            padding: 2px 8px;
+            border-radius: 10px;
             font-weight: 700;
+            font-size: 0.85em;
         }
 
-        .header-clock {
-            background: rgba(255,255,255,0.15);
-            backdrop-filter: blur(10px);
-            padding: 6px 12px;
-            border-radius: var(--radius-md);
-            text-align: center;
-            flex-shrink: 0;
-        }
-
-        .clock-time { font-size: 1.2em; font-weight: 700; font-variant-numeric: tabular-nums; }
-        .clock-date { font-size: 0.7em; opacity: 0.9; margin-top: 1px; }
-        .clock-separator { animation: blink 1s infinite; }
-        @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
-
-        /* DESKTOP NAV */
-        .desktop-nav {
-            display: none;
-            background: white;
-            padding: 10px 20px;
-            border-bottom: 1px solid var(--border);
-            position: sticky;
-            top: 0;
-            z-index: 99;
-        }
-
-        .desktop-nav-inner {
-            max-width: 1200px;
-            margin: 0 auto;
+        nav {
             display: flex;
-            gap: 6px;
             justify-content: center;
+            gap: 10px;
+            padding: 15px;
+            background: var(--bg);
             flex-wrap: wrap;
+            border-bottom: 1px solid var(--border);
         }
 
-        .desktop-nav button {
-            padding: 8px 16px;
+        nav button {
+            padding: 10px 20px;
             border: none;
-            background: transparent;
-            color: var(--gray);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9em;
-            transition: all 0.2s;
-        }
-
-        .desktop-nav button:hover { background: var(--bg); color: var(--primary); }
-        .desktop-nav button.active { background: var(--primary); color: white; }
-
-        .logout-btn {
-            background: transparent !important;
-            color: var(--danger) !important;
-            border: 1px solid var(--danger) !important;
-        }
-
-        /* BOTTOM NAV */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
             background: white;
-            border-top: 1px solid var(--border);
-            z-index: 100;
-            padding-bottom: var(--safe-bottom);
-            display: none;
-        }
-
-        body.logged-in .bottom-nav { display: block; }
-
-        .bottom-nav-inner {
-            display: flex;
-            justify-content: space-around;
-            height: var(--bottom-nav-height);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .bottom-nav button {
-            flex: 1;
-            background: none;
-            border: none;
-            padding: 6px 4px;
+            color: var(--primary);
+            border-radius: 8px;
             cursor: pointer;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 2px;
-            color: var(--light-gray);
-            font-size: 0.68em;
             font-weight: 600;
+            transition: all 0.3s;
         }
 
-        .bottom-nav button .nav-icon { font-size: 1.7em; transition: transform 0.2s; }
-        .bottom-nav button.active { color: var(--primary); }
-        .bottom-nav button.active .nav-icon { transform: scale(1.15); }
+        nav button:hover { background: var(--primary); color: white; transform: translateY(-2px); }
+        nav button.active { background: var(--primary); color: white; }
 
-        .mobile-logout {
-            display: block;
-            width: calc(100% - 32px);
-            margin: 8px 16px 12px;
-            padding: 10px;
-            background: #fff5f5;
-            color: var(--danger);
-            border: 1px solid var(--danger);
-            border-radius: var(--radius-sm);
-            font-weight: 600;
-            cursor: pointer;
+        .content { padding: 30px; }
+        .section { display: none; }
+        .section.active { display: block; animation: fadeIn 0.3s; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        h2 { color: var(--primary); margin-bottom: 20px; font-size: 1.8em; }
+
+        /* Schedule */
+        .schedule-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
         }
-
-        /* CONTENT */
-        .app-content { max-width: 1200px; margin: 0 auto; padding: 16px; }
-        .section { display: none; animation: fadeIn 0.3s ease; }
-        .section.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .section-title { font-size: 1.4em; font-weight: 700; margin-bottom: 14px; }
-
-        /* CARDS */
-        .schedule-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
 
         .date-card {
             background: white;
-            padding: 14px;
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--border);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 15px;
         }
 
         .date-card h3 {
             color: var(--primary);
-            margin-bottom: 10px;
-            font-size: 1.05em;
+            margin-bottom: 12px;
             text-align: center;
-            padding-bottom: 8px;
+            padding-bottom: 10px;
             border-bottom: 2px solid var(--primary);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-            flex-wrap: wrap;
         }
 
-        .date-card.past { background: #fafafa; opacity: 0.7; }
-        .date-card.past h3 { color: #888; text-decoration: line-through; }
-        .date-card.today { border-color: var(--success); border-width: 2px; }
+        .date-card.past { opacity: 0.6; }
+        .date-card.past h3 { text-decoration: line-through; color: var(--gray); }
+        .date-card.today { border-color: var(--success); border-width: 3px; }
         .date-card.today h3 { color: var(--success); border-bottom-color: var(--success); }
-
-        .past-badge, .today-badge {
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.65em;
-            font-weight: 700;
-            text-decoration: none !important;
-        }
-
-        .past-badge { background: var(--danger); color: white; }
-        .today-badge { background: var(--success); color: white; }
 
         .shift {
             background: var(--bg);
             padding: 10px;
-            margin: 6px 0;
-            border-radius: var(--radius-sm);
+            margin: 8px 0;
+            border-radius: 8px;
             border-left: 4px solid var(--primary);
         }
 
         .shift.kassa { border-left-color: var(--success); }
         .shift.kd { border-left-color: var(--gold); }
-        .shift.other { border-left-color: #6c757d; }
+        .shift.other { border-left-color: var(--gray); }
 
         .shift-header {
             display: flex;
             justify-content: space-between;
             margin-bottom: 6px;
             flex-wrap: wrap;
-            gap: 4px;
+            gap: 5px;
         }
 
-        .shift-type { font-weight: 600; font-size: 0.9em; }
-        .shift-time { color: var(--gray); font-size: 0.75em; }
+        .shift-type { font-weight: 600; }
+        .shift-time { color: var(--gray); font-size: 0.85em; }
 
         .shift-badge {
             padding: 2px 8px;
             border-radius: 10px;
-            font-size: 0.7em;
+            font-size: 0.75em;
             font-weight: 700;
             color: white;
         }
 
         .badge-kassa { background: var(--success); }
         .badge-kd { background: var(--gold); color: var(--dark); }
-        .badge-other { background: #6c757d; }
-
-        .shift-employees {
-            margin-top: 6px;
-            padding-top: 6px;
-            border-top: 1px solid var(--border);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 4px;
-        }
+        .badge-other { background: var(--gray); }
 
         .employee-tag {
+            display: inline-block;
             background: var(--primary);
             color: white;
-            padding: 3px 9px;
+            padding: 4px 10px;
             border-radius: 12px;
-            font-size: 0.78em;
+            margin: 2px;
+            font-size: 0.85em;
         }
 
         .employee-tag.kassa { background: var(--success); }
         .employee-tag.kd { background: var(--gold); color: var(--dark); }
 
-        .empty-message {
-            text-align: center;
-            color: var(--gray);
-            padding: 30px 16px;
-            background: white;
-            border-radius: var(--radius-lg);
-            border: 1px dashed var(--border);
+        /* Forms */
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--dark); }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 1em;
         }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
 
-        /* BUTTONS */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
         .btn {
-            padding: 10px 16px;
+            padding: 12px 24px;
             border: none;
-            border-radius: var(--radius-sm);
+            border-radius: 8px;
             font-weight: 600;
             cursor: pointer;
-            font-size: 0.9em;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 5px;
-            min-height: 42px;
+            transition: all 0.3s;
+            font-size: 1em;
         }
 
-        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
         .btn-success { background: var(--success); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-warning { background: var(--warning); color: white; }
-        .btn-info { background: var(--info); color: white; }
-        .btn-gold { background: var(--gold); color: var(--dark); }
-        .btn-sm { padding: 6px 12px; font-size: 0.82em; min-height: 34px; }
+        .btn-sm { padding: 6px 12px; font-size: 0.85em; }
         .btn-block { width: 100%; }
-        .btn-view { background: var(--info); color: white; }
-        .btn-download { background: var(--warning); color: white; }
 
-        /* FORMS */
-        .form-group { margin-bottom: 14px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.85em; }
-        .form-group input, .form-group select, .form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 2px solid var(--border);
-            border-radius: var(--radius-sm);
-            font-size: 0.95em;
-            background: white;
-            min-height: 42px;
-        }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
-        .form-group textarea { resize: vertical; min-height: 90px; }
-        .form-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
-
-        /* ADMIN */
-        .admin-tabs {
-            display: flex;
-            gap: 4px;
-            overflow-x: auto;
-            background: white;
-            padding: 6px;
-            border-radius: var(--radius-lg);
-            margin-bottom: 14px;
-            border: 1px solid var(--border);
-        }
-
-        .admin-tab {
-            flex-shrink: 0;
-            padding: 8px 12px;
-            border: none;
-            background: transparent;
-            color: var(--gray);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.82em;
-            white-space: nowrap;
-        }
-
-        .admin-tab.active { background: var(--primary); color: white; }
-        .admin-section { display: none; }
-        .admin-section.active { display: block; }
-
+        /* Admin */
         .admin-card {
             background: white;
-            padding: 16px;
-            border-radius: var(--radius-lg);
-            margin-bottom: 12px;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 15px;
             border: 1px solid var(--border);
         }
 
-        .admin-card-title {
-            font-size: 1em;
-            font-weight: 700;
+        .admin-card h3 {
             color: var(--primary);
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
             border-bottom: 2px solid var(--border);
         }
 
-        .admin-card.danger-zone { background: #fff5f5; border: 2px dashed var(--danger); }
-        .admin-card.danger-zone .admin-card-title { color: var(--danger); }
-
-        .employee-admin-item {
+        .employee-list-item {
             background: var(--bg);
             padding: 12px;
-            border-radius: var(--radius-md);
+            border-radius: 8px;
             margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-left: 4px solid var(--primary);
         }
 
-        .employee-admin-item.role-admin { border-left-color: var(--gold); }
+        .employee-list-item.admin { border-left-color: var(--gold); }
 
-        .employee-admin-name { font-weight: 700; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-        .employee-admin-phone { color: var(--gray); font-size: 0.82em; margin-top: 2px; }
-
-        .employee-admin-role {
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.7em;
-            font-weight: 700;
-        }
-
-        .role-admin-badge { background: var(--gold); color: var(--dark); }
-        .role-user-badge { background: #e9ecef; color: var(--gray); }
-
-        .materials-list { display: grid; grid-template-columns: 1fr; gap: 12px; }
-
-        .material-card {
-            background: white;
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 14px;
-        }
-
-        .material-card.type-text { border-left: 4px solid var(--info); }
-        .material-card.type-file { border-left: 4px solid var(--warning); }
-
-        .material-header { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
-        .material-icon { font-size: 1.6em; }
-        .material-title { font-size: 1em; font-weight: 600; flex: 1; word-break: break-word; }
-
-        .material-actions { display: flex; gap: 6px; margin-top: 10px; }
-        .material-actions .btn { flex: 1; }
-
-        .info-block {
-            background: white;
-            padding: 16px;
-            border-radius: var(--radius-lg);
-            margin-bottom: 12px;
-            border: 1px solid var(--border);
-        }
-
-        .info-block h3 { color: var(--primary); margin-bottom: 8px; }
-
-        .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-
-        .stat-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 16px 10px;
-            border-radius: var(--radius-lg);
+        .empty-message {
             text-align: center;
-        }
-
-        .stat-number { font-size: 1.8em; font-weight: 800; margin-bottom: 3px; }
-        .stat-label { font-size: 0.75em; opacity: 0.95; }
-
-        .dev-block {
-            text-align: center;
-            padding: 40px 16px;
-            background: white;
-            border-radius: var(--radius-xl);
-            border: 2px dashed var(--primary);
-        }
-
-        .dev-icon { font-size: 3em; margin-bottom: 12px; }
-
-        .contests-list { display: grid; gap: 12px; }
-
-        .contest-card {
-            background: white;
-            padding: 16px;
-            border-radius: var(--radius-lg);
-            border-left: 4px solid var(--success);
-        }
-
-        .contest-card h3 { color: var(--success); margin-bottom: 6px; }
-        .contest-description { color: #555; line-height: 1.5; margin-bottom: 10px; font-size: 0.9em; }
-
-        .contest-status {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 12px;
-            font-size: 0.75em;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
-
-        .status-active { background: var(--success); color: white; }
-        .status-finished { background: #6c757d; color: white; }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-        }
-
-        .modal.open { display: flex; }
-
-        .modal-content {
-            background: white;
-            border-radius: var(--radius-xl);
-            max-width: 700px;
-            width: 100%;
-            max-height: 90vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .modal-header {
-            padding: 16px 18px;
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .modal-header h3 { color: var(--primary); font-size: 1.1em; }
-
-        .modal-close {
-            background: none;
-            border: none;
-            font-size: 1.6em;
-            cursor: pointer;
-            color: var(--light-gray);
-        }
-
-        .modal-body {
-            padding: 18px;
-            overflow-y: auto;
-            flex: 1;
-            white-space: pre-wrap;
-            line-height: 1.6;
-        }
-
-        .schedule-item {
-            background: var(--bg);
-            padding: 10px;
-            border-radius: var(--radius-sm);
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .schedule-item-info { display: flex; gap: 8px; flex-wrap: wrap; font-size: 0.82em; }
-        .schedule-item-info span { font-weight: 600; }
-
-        .type-switcher {
-            display: flex;
-            gap: 4px;
-            margin-bottom: 14px;
-            background: var(--bg);
-            padding: 4px;
-            border-radius: var(--radius-sm);
-        }
-
-        .type-switcher button {
-            flex: 1;
-            padding: 8px;
-            border: none;
-            background: transparent;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
             color: var(--gray);
-            font-size: 0.85em;
+            padding: 40px;
+            background: var(--bg);
+            border-radius: 12px;
         }
 
-        .type-switcher button.active { background: white; color: var(--primary); }
-
-        .file-warning {
-            background: #fff3cd;
-            border-left: 4px solid var(--gold);
-            padding: 8px 10px;
-            border-radius: 6px;
-            margin-top: 8px;
-            font-size: 0.82em;
-            color: #856404;
+        .logout-btn {
+            background: var(--danger);
+            color: white;
+            margin-top: 20px;
         }
 
-        @media (min-width: 768px) {
-            body.logged-in { padding-bottom: 0; }
-            .bottom-nav { display: none !important; }
-            .desktop-nav { display: block; }
-            .app-header { padding: 24px; }
-            .header-title h1 { font-size: 1.8em; }
-            .clock-time { font-size: 1.6em; }
-            .app-content { padding: 24px; }
-            .schedule-grid { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
-            .materials-list { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); }
-            .stats-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
-            .form-row { grid-template-columns: 1fr 1fr; }
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .schedule-grid { grid-template-columns: 1fr; }
+            nav { flex-direction: column; }
+            nav button { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <!-- Загрузка -->
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-spinner"></div>
-        <div>Подключение к базе данных...</div>
-    </div>
+    <div class="container">
+        <header>
+            <h1>🏠 ДОМОВИД</h1>
+            <p>Рабочая группа</p>
+            <div class="user-info" id="userInfo" style="display:none;">
+                <span>👤 <span id="userName"></span></span>
+                <span class="role-badge" id="userRole"></span>
+            </div>
+        </header>
 
-    <!-- Вход -->
-    <div class="login-screen hidden" id="loginScreen">
-        <div class="login-container">
-            <div class="login-logo">
-                <div class="login-logo-icon">🏠</div>
-                <h2>ДОМОВИД</h2>
-                <p>Вход в рабочую группу</p>
+        <nav id="mainNav" style="display:none;">
+            <button onclick="showSection('schedule')" class="active">📅 График</button>
+            <button onclick="showSection('materials')">📚 Обучение</button>
+            <button onclick="showSection('contests')"> Конкурсы</button>
+            <button onclick="showSection('info')">📢 Информация</button>
+            <button onclick="showSection('stats')">📊 Статистика</button>
+            <button onclick="showSection('admin')" id="adminBtn" style="display:none;">️ Админ</button>
+        </nav>
+
+        <div class="content">
+            <!-- Schedule -->
+            <div id="schedule" class="section active">
+                <h2>📅 График работы</h2>
+                <div id="scheduleGrid" class="schedule-grid"></div>
             </div>
 
-            <div class="login-form">
-                <div class="form-group">
-                    <label>📱 Телефон</label>
-                    <input type="tel" id="loginPhone" placeholder="89001234567">
-                </div>
-                <div class="form-group">
-                    <label>🔒 Пароль</label>
-                    <input type="password" id="loginPassword" placeholder="Введите пароль">
-                </div>
-                <button class="login-btn" id="loginBtn" onclick="doLogin()">Войти</button>
-                <div class="login-error" id="loginError"></div>
-                <div class="login-hint">
-                    💡 Тестовый вход:<br>
-                    Телефон: <strong>89004346000</strong><br>
-                    Пароль: <strong>6000</strong>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Header -->
-    <header class="app-header">
-        <div class="header-top">
-            <div class="header-title">
-                <div>
-                    <h1>🏠 ДОМОВИД</h1>
-                    <div class="header-subtitle">
-                        <span>Рабочая группа</span>
-                        <span class="current-user-badge" id="currentUserBadge" style="display:none;">
-                            👤 <span id="currentUserName"></span>
-                            <span class="role-badge" id="currentUserRole"></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="header-clock">
-                <div class="clock-time" id="clockTime">--:--:--</div>
-                <div class="clock-date" id="clockDate">...</div>
-            </div>
-        </div>
-    </header>
-
-    <!-- Desktop Nav -->
-    <nav class="desktop-nav">
-        <div class="desktop-nav-inner">
-            <button onclick="showSection('schedule', this)" class="active">📅 График</button>
-            <button onclick="showSection('plan', this)">📈 План</button>
-            <button onclick="showSection('materials', this)">📚 Обучение</button>
-            <button onclick="showSection('contests', this)">🏆 Конкурсы</button>
-            <button onclick="showSection('info', this)">📢 Информация</button>
-            <button onclick="showSection('stats', this)">📊 Статистика</button>
-            <button onclick="showSection('admin', this)" id="desktopAdminBtn" style="display:none;">⚙️ Админ</button>
-            <button onclick="doLogout()" class="logout-btn">🚪 Выйти</button>
-        </div>
-    </nav>
-
-    <!-- Content -->
-    <main class="app-content">
-        <div id="schedule" class="section active">
-            <h2 class="section-title">📅 График работы</h2>
-            <div id="scheduleGrid" class="schedule-grid"></div>
-        </div>
-
-        <div id="plan" class="section">
-            <h2 class="section-title">📈 План на месяц</h2>
-            <div class="dev-block">
-                <div class="dev-icon">🚧</div>
-                <h3>Раздел в разработке</h3>
-                <p>Здесь скоро появится финансовый план на месяц.</p>
-            </div>
-        </div>
-
-        <div id="materials" class="section">
-            <h2 class="section-title">📚 Обучающие материалы</h2>
-            <div id="materialsList" class="materials-list"></div>
-        </div>
-
-        <div id="contests" class="section">
-            <h2 class="section-title">🏆 Конкурсы персонала</h2>
-            <div id="contestsList" class="contests-list"></div>
-        </div>
-
-        <div id="info" class="section">
-            <h2 class="section-title">📢 Информация</h2>
-            <div id="infoContent"></div>
-        </div>
-
-        <div id="stats" class="section">
-            <h2 class="section-title">📊 Статистика</h2>
-            <div id="statsContent"></div>
-        </div>
-
-        <div id="admin" class="section">
-            <h2 class="section-title">⚙️ Админ-панель</h2>
-
-            <div class="admin-tabs">
-                <button class="admin-tab active" onclick="showAdminTab('schedule', this)">📅 График</button>
-                <button class="admin-tab" onclick="showAdminTab('employees', this)">👥 Сотрудники</button>
-                <button class="admin-tab" onclick="showAdminTab('contests', this)">🏆 Конкурсы</button>
-                <button class="admin-tab" onclick="showAdminTab('materials', this)">📚 Обучение</button>
-                <button class="admin-tab" onclick="showAdminTab('info', this)">📢 Инфо</button>
-                <button class="admin-tab" onclick="showAdminTab('settings', this)">⚙️ Настройки</button>
+            <!-- Materials -->
+            <div id="materials" class="section">
+                <h2> Обучающие материалы</h2>
+                <div id="materialsList"></div>
             </div>
 
-            <div id="admin-schedule" class="admin-section active">
+            <!-- Contests -->
+            <div id="contests" class="section">
+                <h2>🏆 Конкурсы персонала</h2>
+                <div id="contestsList"></div>
+            </div>
+
+            <!-- Info -->
+            <div id="info" class="section">
+                <h2>📢 Информация</h2>
+                <div id="infoContent"></div>
+            </div>
+
+            <!-- Stats -->
+            <div id="stats" class="section">
+                <h2>📊 Статистика</h2>
+                <div id="statsContent"></div>
+            </div>
+
+            <!-- Admin -->
+            <div id="admin" class="section">
+                <h2>⚙️ Админ-панель</h2>
+                
                 <div class="admin-card">
-                    <div class="admin-card-title">➕ Добавить в график</div>
+                    <h3>📅 Добавить в график</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>📅 Дата</label>
+                            <label>Дата</label>
                             <input type="date" id="adminDate">
                         </div>
                         <div class="form-group">
-                            <label>👤 Сотрудник</label>
-                            <select id="adminEmployee"><option value="">-- Выберите --</option></select>
+                            <label>Сотрудник</label>
+                            <select id="adminEmployee"></select>
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>💼 Тип работы</label>
+                            <label>Тип работы</label>
                             <select id="adminType">
                                 <option value="kassa">Касса</option>
                                 <option value="kd">КД</option>
@@ -892,11 +340,11 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>🕐 Смена</label>
+                            <label>Смена</label>
                             <select id="adminShift">
-                                <option value="1">Смена 1 (10:00 - 19:00)</option>
-                                <option value="2">Смена 2 (12:00 - 21:00)</option>
-                                <option value="3">Смена 3 (10:00 - 21:00)</option>
+                                <option value="1">10:00 - 19:00</option>
+                                <option value="2">12:00 - 21:00</option>
+                                <option value="3">10:00 - 21:00</option>
                             </select>
                         </div>
                     </div>
@@ -904,297 +352,184 @@
                 </div>
 
                 <div class="admin-card">
-                    <div class="admin-card-title">📋 Записи графика</div>
-                    <div id="scheduleList"></div>
-                </div>
-            </div>
-
-            <div id="admin-employees" class="admin-section">
-                <div class="admin-card">
-                    <div class="admin-card-title">➕ Добавить сотрудника</div>
-                    <div class="form-group">
-                        <label>👤 ФИО</label>
-                        <input type="text" id="newEmployeeName" placeholder="Иванов Иван">
+                    <h3>👥 Сотрудники</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>ФИО</label>
+                            <input type="text" id="newEmployeeName">
+                        </div>
+                        <div class="form-group">
+                            <label>Телефон</label>
+                            <input type="tel" id="newEmployeePhone">
+                        </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>📱 Телефон</label>
-                            <input type="tel" id="newEmployeePhone" placeholder="89001234567">
+                            <label>Пароль</label>
+                            <input type="text" id="newEmployeePassword">
                         </div>
                         <div class="form-group">
-                            <label>🔒 Пароль</label>
-                            <input type="text" id="newEmployeePassword" placeholder="Пароль">
+                            <label>Роль</label>
+                            <select id="newEmployeeRole">
+                                <option value="user">Сотрудник</option>
+                                <option value="admin">Администратор</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>🛡️ Роль</label>
-                        <select id="newEmployeeRole">
-                            <option value="user">👤 Сотрудник</option>
-                            <option value="admin">👑 Администратор</option>
-                        </select>
-                    </div>
-                    <button class="btn btn-success btn-block" onclick="addEmployee()">➕ Добавить</button>
+                    <button class="btn btn-success btn-block" onclick="addEmployee()">➕ Добавить сотрудника</button>
+                    <div id="employeesList" style="margin-top: 15px;"></div>
                 </div>
 
                 <div class="admin-card">
-                    <div class="admin-card-title">👥 Список сотрудников</div>
-                    <div id="employeesList"></div>
-                </div>
-            </div>
-
-            <div id="admin-contests" class="admin-section">
-                <div class="admin-card">
-                    <div class="admin-card-title">➕ Добавить конкурс</div>
+                    <h3>🏆 Добавить конкурс</h3>
                     <div class="form-group">
-                        <label>🏆 Название</label>
+                        <label>Название</label>
                         <input type="text" id="contestName">
                     </div>
                     <div class="form-group">
-                        <label>📝 Описание</label>
+                        <label>Описание</label>
                         <textarea id="contestDescription" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>📊 Статус</label>
-                        <select id="contestStatus">
-                            <option value="active">Активный</option>
-                            <option value="finished">Завершен</option>
-                        </select>
                     </div>
                     <button class="btn btn-primary btn-block" onclick="addContest()">➕ Добавить</button>
                 </div>
-            </div>
 
-            <div id="admin-materials" class="admin-section">
                 <div class="admin-card">
-                    <div class="admin-card-title">➕ Добавить материал</div>
-                    <div class="type-switcher">
-                        <button id="typeTextBtn" class="active" onclick="switchMaterialType('text')">📝 Текст</button>
-                        <button id="typeFileBtn" onclick="switchMaterialType('file')">📎 Файл</button>
-                    </div>
+                    <h3>📢 Добавить информацию</h3>
                     <div class="form-group">
-                        <label>📌 Название</label>
-                        <input type="text" id="materialTitle">
-                    </div>
-                    <div id="textForm">
-                        <div class="form-group">
-                            <label>📄 Текст</label>
-                            <textarea id="materialText" rows="6"></textarea>
-                        </div>
-                    </div>
-                    <div id="fileForm" style="display:none;">
-                        <div class="form-group">
-                            <label>📎 Файл</label>
-                            <input type="file" id="materialFile">
-                            <div id="fileWarning" class="file-warning" style="display:none;">⚠️ Рекомендуется до 2 МБ.</div>
-                            <div id="fileInfo" style="margin-top:8px;font-size:0.85em;color:var(--gray);"></div>
-                        </div>
-                    </div>
-                    <button class="btn btn-success btn-block" id="saveMaterialBtn" onclick="saveMaterial()">💾 Сохранить</button>
-                </div>
-            </div>
-
-            <div id="admin-info" class="admin-section">
-                <div class="admin-card">
-                    <div class="admin-card-title">📢 Добавить информацию</div>
-                    <div class="form-group">
-                        <label>📌 Заголовок</label>
+                        <label>Заголовок</label>
                         <input type="text" id="infoTitle">
                     </div>
                     <div class="form-group">
-                        <label>📝 Текст</label>
+                        <label>Текст</label>
                         <textarea id="infoText" rows="4"></textarea>
                     </div>
                     <button class="btn btn-primary btn-block" onclick="addInfo()">➕ Добавить</button>
                 </div>
-            </div>
 
-            <div id="admin-settings" class="admin-section">
-                <div class="admin-card danger-zone">
-                    <div class="admin-card-title">⚠️ Опасная зона</div>
-                    <p style="color:var(--gray);font-size:0.85em;margin-bottom:12px;">Полный сброс всех данных.</p>
-                    <button class="btn btn-danger btn-block" onclick="resetAllData()">🗑️ Сбросить</button>
+                <div class="admin-card" style="background: #fff5f5; border: 2px dashed var(--danger);">
+                    <h3 style="color: var(--danger);">⚠️ Опасная зона</h3>
+                    <button class="btn btn-danger btn-block" onclick="resetAllData()">️ Сбросить все данные</button>
                 </div>
-            </div>
-        </div>
-    </main>
 
-    <!-- Bottom Nav -->
-    <nav class="bottom-nav">
-        <div class="bottom-nav-inner">
-            <button onclick="showSection('schedule', this)" class="active">
-                <span class="nav-icon">📅</span><span>График</span>
-            </button>
-            <button onclick="showSection('materials', this)">
-                <span class="nav-icon">📚</span><span>Обучение</span>
-            </button>
-            <button onclick="showSection('contests', this)">
-                <span class="nav-icon">🏆</span><span>Конкурсы</span>
-            </button>
-            <button onclick="showSection('plan', this)">
-                <span class="nav-icon">📈</span><span>План</span>
-            </button>
-            <button onclick="showSection('admin', this)" id="mobileAdminBtn" style="display:none;">
-                <span class="nav-icon">⚙️</span><span>Админ</span>
-            </button>
-            <button onclick="showSection('stats', this)">
-                <span class="nav-icon">📊</span><span>Ещё</span>
-            </button>
-        </div>
-        <button class="mobile-logout" onclick="doLogout()">🚪 Выйти</button>
-    </nav>
-
-    <!-- Modal -->
-    <div class="modal" id="materialModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">Название</h3>
-                <button class="modal-close" onclick="closeModal()">×</button>
+                <button class="btn logout-btn btn-block" onclick="doLogout()">🚪 Выйти</button>
             </div>
-            <div class="modal-body" id="modalBody"></div>
         </div>
     </div>
 
     <script>
-        // ═══════════════════════════════════════════════════════════════
-        // 🔥 FIREBASE КОНФИГУРАЦИЯ
-        // ═══════════════════════════════════════════════════════════════
-        // ЗАМЕНИ ЭТИ ДАННЫЕ НА СВОИ из Firebase Console!
+        // FIREBASE CONFIG
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+            apiKey: "AIzaSyDx5QGxg6nx3X4JDHiyqLI4zdIm3E2VrIk",
+            authDomain: "domovid.firebaseapp.com",
+            projectId: "domovid",
+            storageBucket: "domovid.firebasestorage.app",
+            messagingSenderId: "670604814973",
+            appId: "1:670604814973:web:e69867d18de3e801651f14"
         };
 
-        // Инициализация Firebase
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const storage = firebase.storage();
 
-        // ═══════════════════════════════════════════════════════════════
-        // КОНСТАНТЫ
-        // ═══════════════════════════════════════════════════════════════
-        const shiftTimes = { 1: '10:00 - 19:00', 2: '12:00 - 21:00', 3: '10:00 - 21:00' };
-        const typeLabels = { kassa: 'Касса', kd: 'КД', other: 'Без указания' };
-        const MONTH_NAMES = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
-        const WEEKDAY_NAMES = ['Воскресенье', 'Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота'];
-
-        // ═══════════════════════════════════════════════════════════════
-        // СОСТОЯНИЕ
-        // ═══════════════════════════════════════════════════════════════
         let currentUser = null;
-        let data = {
-            employees: [],
-            schedule: {},
-            materials: [],
-            contests: [],
-            info: []
-        };
-        let currentMaterialType = 'text';
-        let selectedFile = null;
+        let data = { employees: [], schedule: {}, materials: [], contests: [], info: [] };
 
-        // ═══════════════════════════════════════════════════════════════
-        // ЧАСЫ
-        // ═══════════════════════════════════════════════════════════════
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('clockDate').textContent = 
-                `${WEEKDAY_NAMES[now.getDay()]}, ${now.getDate()} ${MONTH_NAMES[now.getMonth()]}`;
-            document.getElementById('clockTime').innerHTML = 
-                `${String(now.getHours()).padStart(2,'0')}<span class="clock-separator">:</span>${String(now.getMinutes()).padStart(2,'0')}<span class="clock-separator">:</span>${String(now.getSeconds()).padStart(2,'0')}`;
-        }
-        updateClock();
-        setInterval(updateClock, 1000);
-
-        // ═══════════════════════════════════════════════════════════════
-        // УТИЛИТЫ
-        // ═══════════════════════════════════════════════════════════════
-        function normalizePhone(phone) {
-            return (phone || '').replace(/\D/g, '');
-        }
-
-        function formatDate(dateStr) {
-            if (!dateStr) return '';
-            const [year, month, day] = dateStr.split('-');
-            return `${day}.${month}.${year}`;
-        }
-
-        function formatDateTime(timestamp) {
-            if (!timestamp) return '';
-            const d = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
-            return `${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}.${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + ' Б';
-            if (bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' КБ';
-            return (bytes/(1024*1024)).toFixed(2) + ' МБ';
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text || '';
-            return div.innerHTML;
-        }
-
-        function getDateStatus(dateStr) {
-            const [day, month, year] = dateStr.split('.').map(Number);
-            const date = new Date(year, month-1, day);
-            const today = new Date();
-            today.setHours(0,0,0,0);
-            date.setHours(0,0,0,0);
-            const diff = date.getTime() - today.getTime();
-            if (diff < 0) return 'past';
-            if (diff === 0) return 'today';
-            return 'future';
-        }
-
-        function getSortedDates() {
-            return Object.keys(data.schedule).sort((a,b) => {
-                const [dA,mA,yA] = a.split('.').map(Number);
-                const [dB,mB,yB] = b.split('.').map(Number);
-                return new Date(yA,mA-1,dA) - new Date(yB,mB-1,dB);
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // FIREBASE: ИНИЦИАЛИЗАЦИЯ ДАННЫХ
-        // ═══════════════════════════════════════════════════════════════
-        async function initializeData() {
-            // Проверяем, есть ли тестовый админ
-            const usersSnap = await db.collection('users').where('phone', '==', '89004346000').get();
-            
-            if (usersSnap.empty) {
-                // Создаём тестового админа
-                await db.collection('users').add({
-                    name: 'Тест',
-                    phone: '89004346000',
-                    password: '6000',
-                    role: 'admin',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        // AUTH
+        function checkAuth() {
+            const session = localStorage.getItem('domovidSession');
+            if (session) {
+                const userData = JSON.parse(session);
+                db.collection('users').doc(userData.id).get().then(doc => {
+                    if (doc.exists) {
+                        currentUser = { id: doc.id, ...doc.data() };
+                        showApp();
+                    } else {
+                        showLogin();
+                    }
                 });
-                console.log('✅ Тестовый админ создан');
+            } else {
+                showLogin();
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // FIREBASE: ПОДПИСКИ НА ДАННЫЕ (REAL-TIME)
-        // ═══════════════════════════════════════════════════════════════
+        function showLogin() {
+            document.body.innerHTML = `
+                <div class="container" style="max-width: 400px; margin-top: 100px; padding: 40px;">
+                    <h1 style="text-align: center; margin-bottom: 30px;">🏠 ДОМОВИД</h1>
+                    <div class="form-group">
+                        <label>📱 Телефон</label>
+                        <input type="tel" id="loginPhone" placeholder="89004346000">
+                    </div>
+                    <div class="form-group">
+                        <label> Пароль</label>
+                        <input type="password" id="loginPassword" placeholder="Введите пароль">
+                    </div>
+                    <button class="btn btn-primary btn-block" onclick="doLogin()">Войти</button>
+                    <div id="loginError" style="color: var(--danger); margin-top: 15px; display: none;"></div>
+                    <div style="margin-top: 20px; padding: 15px; background: #e7f3ff; border-radius: 8px; font-size: 0.9em;">
+                        <strong>Тестовый вход:</strong><br>
+                        Телефон: 89004346000<br>
+                        Пароль: 6000
+                    </div>
+                </div>
+            `;
+        }
+
+        function doLogin() {
+            const phone = document.getElementById('loginPhone').value.replace(/\D/g, '');
+            const password = document.getElementById('loginPassword').value;
+
+            db.collection('users').where('phone', '==', phone).where('password', '==', password).get()
+                .then(snapshot => {
+                    if (snapshot.empty) {
+                        const errorDiv = document.getElementById('loginError');
+                        errorDiv.textContent = '❌ Неверный телефон или пароль';
+                        errorDiv.style.display = 'block';
+                    } else {
+                        const doc = snapshot.docs[0];
+                        currentUser = { id: doc.id, ...doc.data() };
+                        localStorage.setItem('domovidSession', JSON.stringify({ id: doc.id }));
+                        showApp();
+                    }
+                });
+        }
+
+        function showApp() {
+            location.reload();
+        }
+
+        function doLogout() {
+            localStorage.removeItem('domovidSession');
+            location.reload();
+        }
+
+        // NAVIGATION
+        function showSection(sectionId) {
+            if (sectionId === 'admin' && currentUser.role !== 'admin') {
+                alert('⛔ Доступ только для администраторов');
+                return;
+            }
+
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (sectionId === 'schedule') renderSchedule();
+            if (sectionId === 'materials') renderMaterials();
+            if (sectionId === 'contests') renderContests();
+            if (sectionId === 'info') renderInfo();
+            if (sectionId === 'stats') renderStats();
+            if (sectionId === 'admin') renderAdmin();
+        }
+
+        // DATA SUBSCRIPTIONS
         function subscribeToData() {
-            // Сотрудники
             db.collection('users').onSnapshot(snapshot => {
-                data.employees = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                renderEmployeesList();
-                renderEmployeeSelect();
-                if (currentUser) renderAll();
+                data.employees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                if (currentUser) renderAdmin();
             });
 
-            // График
             db.collection('schedule').onSnapshot(snapshot => {
                 data.schedule = {};
                 snapshot.docs.forEach(doc => {
@@ -1202,204 +537,215 @@
                     data.schedule[d.date] = d.entries || [];
                 });
                 renderSchedule();
-                renderScheduleList();
             });
 
-            // Материалы
             db.collection('materials').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-                data.materials = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
+                data.materials = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderMaterials();
             });
 
-            // Конкурсы
             db.collection('contests').onSnapshot(snapshot => {
-                data.contests = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
+                data.contests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderContests();
             });
 
-            // Информация
             db.collection('info').onSnapshot(snapshot => {
-                data.info = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
+                data.info = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderInfo();
             });
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // АВТОРИЗАЦИЯ
-        // ═══════════════════════════════════════════════════════════════
-        function checkAuth() {
-            const session = localStorage.getItem('domovidSession');
-            if (session) {
-                try {
-                    const sessionData = JSON.parse(session);
-                    // Проверяем, существует ли пользователь
-                    const unsub = db.collection('users').doc(sessionData.id).onSnapshot(doc => {
-                        if (doc.exists) {
-                            const emp = doc.data();
-                            currentUser = { id: doc.id, ...emp };
-                            enterApp();
-                        } else {
-                            localStorage.removeItem('domovidSession');
-                            showLoginScreen();
-                        }
-                        unsub(); // Отписываемся после первой проверки
-                    });
-                } catch (e) {
-                    localStorage.removeItem('domovidSession');
-                    showLoginScreen();
-                }
-            } else {
-                showLoginScreen();
-            }
-        }
-
-        function showLoginScreen() {
-            document.getElementById('loadingScreen').classList.add('hidden');
-            document.getElementById('loginScreen').classList.remove('hidden');
-            document.body.classList.remove('logged-in');
-        }
-
-        async function doLogin() {
-            const phone = normalizePhone(document.getElementById('loginPhone').value);
-            const password = document.getElementById('loginPassword').value;
-            const btn = document.getElementById('loginBtn');
-            const errorEl = document.getElementById('loginError');
-
-            if (!phone || !password) {
-                errorEl.textContent = 'Введите телефон и пароль';
-                errorEl.classList.add('show');
+        // RENDER FUNCTIONS
+        function renderSchedule() {
+            const grid = document.getElementById('scheduleGrid');
+            if (!grid) return;
+            
+            const dates = Object.keys(data.schedule).sort();
+            if (dates.length === 0) {
+                grid.innerHTML = '<div class="empty-message">📅 График пустой</div>';
                 return;
             }
 
-            btn.disabled = true;
-            btn.textContent = 'Вход...';
-            errorEl.classList.remove('show');
-
-            try {
-                const snapshot = await db.collection('users')
-                    .where('phone', '==', phone)
-                    .where('password', '==', password)
-                    .get();
-
-                if (snapshot.empty) {
-                    errorEl.textContent = '❌ Неверный телефон или пароль';
-                    errorEl.classList.add('show');
-                    btn.disabled = false;
-                    btn.textContent = 'Войти';
-                    return;
-                }
-
-                const doc = snapshot.docs[0];
-                const emp = doc.data();
+            grid.innerHTML = dates.map(date => {
+                const entries = data.schedule[date];
+                const today = new Date();
+                const [day, month, year] = date.split('.').map(Number);
+                const cardDate = new Date(year, month - 1, day);
+                const isToday = cardDate.toDateString() === today.toDateString();
+                const isPast = cardDate < today;
                 
-                localStorage.setItem('domovidSession', JSON.stringify({ id: doc.id }));
-                currentUser = { id: doc.id, ...emp };
-                enterApp();
-            } catch (e) {
-                errorEl.textContent = 'Ошибка входа: ' + e.message;
-                errorEl.classList.add('show');
-                btn.disabled = false;
-                btn.textContent = 'Войти';
-            }
-        }
+                const grouped = {};
+                entries.forEach(e => {
+                    const key = `${e.shift}-${e.type}`;
+                    if (!grouped[key]) grouped[key] = { shift: e.shift, type: e.type, employees: [] };
+                    grouped[key].employees.push(e.employee);
+                });
 
-        function enterApp() {
-            document.getElementById('loadingScreen').classList.add('hidden');
-            document.getElementById('loginScreen').classList.add('hidden');
-            document.body.classList.add('logged-in');
-            
-            document.getElementById('currentUserBadge').style.display = 'inline-flex';
-            document.getElementById('currentUserName').textContent = currentUser.name;
-            document.getElementById('currentUserRole').textContent = 
-                currentUser.role === 'admin' ? '👑 Админ' : '👤 Сотрудник';
-            
-            const isAdmin = currentUser.role === 'admin';
-            document.getElementById('desktopAdminBtn').style.display = isAdmin ? '' : 'none';
-            document.getElementById('mobileAdminBtn').style.display = isAdmin ? '' : 'none';
-            
-            renderAll();
-        }
-
-        function doLogout() {
-            if (!confirm('Выйти из аккаунта?')) return;
-            localStorage.removeItem('domovidSession');
-            currentUser = null;
-            document.getElementById('loginPhone').value = '';
-            document.getElementById('loginPassword').value = '';
-            showLoginScreen();
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // НАВИГАЦИЯ
-        // ═══════════════════════════════════════════════════════════════
-        function showSection(sectionId, btn) {
-            if (sectionId === 'admin' && (!currentUser || currentUser.role !== 'admin')) {
-                alert('⛔ Доступ только для администраторов');
-                return;
-            }
-
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-
-            document.querySelectorAll('.bottom-nav button, .desktop-nav button').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
-
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function showAdminTab(tabName, btn) {
-            document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('admin-' + tabName).classList.add('active');
-            if (btn) btn.classList.add('active');
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // СОТРУДНИКИ
-        // ═══════════════════════════════════════════════════════════════
-        function renderEmployeesList() {
-            const list = document.getElementById('employeesList');
-            if (!list) return;
-            list.innerHTML = '';
-            
-            if (data.employees.length === 0) {
-                list.innerHTML = '<div class="empty-message">Список пуст</div>';
-                return;
-            }
-            
-            data.employees.forEach(emp => {
-                const item = document.createElement('div');
-                item.className = `employee-admin-item ${emp.role === 'admin' ? 'role-admin' : ''}`;
-                
-                const roleBadge = emp.role === 'admin' 
-                    ? '<span class="employee-admin-role role-admin-badge">👑 Админ</span>'
-                    : '<span class="employee-admin-role role-user-badge">👤 Сотрудник</span>';
-                
-                const isSelf = currentUser && currentUser.id === emp.id;
-                const deleteBtn = isSelf 
-                    ? '<button class="btn btn-sm" disabled>Вы</button>'
-                    : `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.id}')">🗑️</button>`;
-                
-                item.innerHTML = `
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;">
-                        <div style="flex:1;">
-                            <div class="employee-admin-name">👤 ${escapeHtml(emp.name)} ${roleBadge}</div>
-                            <div class="employee-admin-phone">📱 ${escapeHtml(emp.phone || '')}</div>
-                        </div>
-                        ${deleteBtn}
+                return `
+                    <div class="date-card ${isPast ? 'past' : ''} ${isToday ? 'today' : ''}">
+                        <h3>📅 ${date} ${isToday ? ' Сегодня' : ''} ${isPast ? '✅ Прошло' : ''}</h3>
+                        ${Object.values(grouped).map(g => `
+                            <div class="shift ${g.type}">
+                                <div class="shift-header">
+                                    <div>
+                                        <div class="shift-type">Смена ${g.shift}</div>
+                                        <div class="shift-time">${getShiftTime(g.shift)}</div>
+                                    </div>
+                                    <span class="shift-badge badge-${g.type}">${getTypeLabel(g.type)}</span>
+                                </div>
+                                <div>${g.employees.map(emp => `<span class="employee-tag ${g.type}">${emp}</span>`).join('')}</div>
+                            </div>
+                        `).join('')}
                     </div>
                 `;
-                list.appendChild(item);
-            });
+            }).join('');
+        }
+
+        function getShiftTime(shift) {
+            const times = { 1: '10:00 - 19:00', 2: '12:00 - 21:00', 3: '10:00 - 21:00' };
+            return times[shift] || '';
+        }
+
+        function getTypeLabel(type) {
+            const labels = { kassa: 'Касса', kd: 'КД', other: 'Без указания' };
+            return labels[type] || type;
+        }
+
+        function renderMaterials() {
+            const list = document.getElementById('materialsList');
+            if (!list) return;
+            
+            if (data.materials.length === 0) {
+                list.innerHTML = '<div class="empty-message">📚 Материалов пока нет</div>';
+                return;
+            }
+
+            list.innerHTML = data.materials.map(m => `
+                <div class="admin-card">
+                    <h3>${m.type === 'text' ? '' : '📎'} ${m.title}</h3>
+                    ${m.type === 'text' 
+                        ? `<p style="color: var(--gray); line-height: 1.6;">${m.content}</p>`
+                        : `<a href="${m.fileUrl}" target="_blank" class="btn btn-primary">⬇️ Скачать файл</a>`
+                    }
+                </div>
+            `).join('');
+        }
+
+        function renderContests() {
+            const list = document.getElementById('contestsList');
+            if (!list) return;
+            
+            if (data.contests.length === 0) {
+                list.innerHTML = '<div class="empty-message">🏆 Конкурсов пока нет</div>';
+                return;
+            }
+
+            list.innerHTML = data.contests.map(c => `
+                <div class="admin-card">
+                    <h3>${c.name}</h3>
+                    <p style="color: var(--gray); margin-bottom: 10px;">${c.description}</p>
+                    <span style="display: inline-block; padding: 4px 12px; border-radius: 12px; background: ${c.status === 'active' ? 'var(--success)' : 'var(--gray)'}; color: white; font-size: 0.85em;">
+                        ${c.status === 'active' ? '🟢 Активный' : ' Завершен'}
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        function renderInfo() {
+            const content = document.getElementById('infoContent');
+            if (!content) return;
+            
+            if (data.info.length === 0) {
+                content.innerHTML = '<div class="empty-message">📢 Информации пока нет</div>';
+                return;
+            }
+
+            content.innerHTML = data.info.map(i => `
+                <div class="admin-card">
+                    <h3>${i.title}</h3>
+                    <p style="color: var(--gray); line-height: 1.6;">${i.text}</p>
+                </div>
+            `).join('');
+        }
+
+        function renderStats() {
+            const content = document.getElementById('statsContent');
+            if (!content) return;
+
+            let totalEntries = 0;
+            Object.values(data.schedule).forEach(entries => totalEntries += entries.length);
+
+            content.innerHTML = `
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                    <div class="admin-card" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold;">${data.employees.length}</div>
+                        <div>Сотрудников</div>
+                    </div>
+                    <div class="admin-card" style="background: linear-gradient(135deg, var(--success), #20c997); color: white; text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold;">${totalEntries}</div>
+                        <div>Записей в графике</div>
+                    </div>
+                    <div class="admin-card" style="background: linear-gradient(135deg, var(--info), #20c997); color: white; text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold;">${data.materials.length}</div>
+                        <div>Материалов</div>
+                    </div>
+                    <div class="admin-card" style="background: linear-gradient(135deg, var(--gold), var(--warning)); color: white; text-align: center;">
+                        <div style="font-size: 2.5em; font-weight: bold;">${data.contests.length}</div>
+                        <div>Конкурсов</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderAdmin() {
+            // Employee select
+            const select = document.getElementById('adminEmployee');
+            if (select) {
+                select.innerHTML = '<option value="">-- Выберите --</option>' + 
+                    data.employees.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
+            }
+
+            // Employee list
+            const list = document.getElementById('employeesList');
+            if (list) {
+                list.innerHTML = data.employees.map(emp => `
+                    <div class="employee-list-item ${emp.role === 'admin' ? 'admin' : ''}">
+                        <div>
+                            <strong>${emp.name}</strong> 
+                            <span style="font-size: 0.8em; color: var(--gray);">(${emp.phone})</span>
+                            <span style="margin-left: 10px; padding: 2px 8px; border-radius: 8px; background: ${emp.role === 'admin' ? 'var(--gold)' : '#e9ecef'}; font-size: 0.8em;">
+                                ${emp.role === 'admin' ? '👑 Админ' : '👤 Сотрудник'}
+                            </span>
+                        </div>
+                        ${emp.id !== currentUser.id ? `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.id}')">✕</button>` : '<span style="color: var(--gray); font-size: 0.85em;">Вы</span>'}
+                    </div>
+                `).join('');
+            }
+        }
+
+        // ADMIN ACTIONS
+        async function addScheduleEntry() {
+            const dateInput = document.getElementById('adminDate').value;
+            const employee = document.getElementById('adminEmployee').value;
+            const type = document.getElementById('adminType').value;
+            const shift = document.getElementById('adminShift').value;
+
+            if (!dateInput || !employee) { alert('Заполните все поля'); return; }
+
+            const [year, month, day] = dateInput.split('-');
+            const date = `${day}.${month}.${year}`;
+            const docId = dateInput;
+
+            try {
+                const docRef = db.collection('schedule').doc(docId);
+                const doc = await docRef.get();
+                let entries = doc.exists ? doc.data().entries || [] : [];
+                entries.push({ employee, type, shift });
+                await docRef.set({ date, entries });
+                alert('✅ Добавлено!');
+            } catch (e) {
+                alert('Ошибка: ' + e.message);
+            }
         }
 
         async function addEmployee() {
@@ -1408,31 +754,10 @@
             const password = document.getElementById('newEmployeePassword').value;
             const role = document.getElementById('newEmployeeRole').value;
 
-            if (!name || !phone || !password) {
-                alert('Заполните все поля');
-                return;
-            }
-
-            if (password.length < 3) {
-                alert('Пароль минимум 3 символа');
-                return;
-            }
-
-            const normalizedPhone = normalizePhone(phone);
-            if (data.employees.some(e => normalizePhone(e.phone) === normalizedPhone)) {
-                alert('❌ Сотрудник с таким телефоном уже есть!');
-                return;
-            }
+            if (!name || !phone || !password) { alert('Заполните все поля'); return; }
 
             try {
-                await db.collection('users').add({
-                    name,
-                    phone,
-                    password,
-                    role,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-
+                await db.collection('users').add({ name, phone, password, role });
                 document.getElementById('newEmployeeName').value = '';
                 document.getElementById('newEmployeePhone').value = '';
                 document.getElementById('newEmployeePassword').value = '';
@@ -1444,10 +769,7 @@
 
         async function deleteEmployee(id) {
             if (!confirm('Удалить сотрудника?')) return;
-            if (currentUser && currentUser.id === id) {
-                alert('⛔ Нельзя удалить себя!');
-                return;
-            }
+            if (id === currentUser.id) { alert('Нельзя удалить себя!'); return; }
             try {
                 await db.collection('users').doc(id).delete();
             } catch (e) {
@@ -1455,290 +777,13 @@
             }
         }
 
-        function renderEmployeeSelect() {
-            const select = document.getElementById('adminEmployee');
-            if (!select) return;
-            select.innerHTML = '<option value="">-- Выберите --</option>';
-            data.employees.forEach(emp => {
-                const option = document.createElement('option');
-                option.value = emp.name;
-                option.textContent = emp.name;
-                select.appendChild(option);
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // ГРАФИК
-        // ═══════════════════════════════════════════════════════════════
-        function renderSchedule() {
-            const grid = document.getElementById('scheduleGrid');
-            if (!grid) return;
-            grid.innerHTML = '';
-            const dates = getSortedDates();
-            if (dates.length === 0) {
-                grid.innerHTML = '<div class="empty-message">📅 График пустой</div>';
-                return;
-            }
-            dates.forEach(date => {
-                const entries = data.schedule[date];
-                if (!entries || entries.length === 0) return;
-                const status = getDateStatus(date);
-                const card = document.createElement('div');
-                card.className = `date-card ${status}`;
-                let badge = status === 'past' ? '<span class="past-badge">Прошло</span>' : 
-                           (status === 'today' ? '<span class="today-badge">Сегодня</span>' : '');
-                card.innerHTML = `<h3>📅 ${date} ${badge}</h3>`;
-                
-                const grouped = {};
-                entries.forEach(entry => {
-                    const key = `${entry.shift}-${entry.type}`;
-                    if (!grouped[key]) grouped[key] = { shift: entry.shift, type: entry.type, employees: [] };
-                    grouped[key].employees.push(entry.employee);
-                });
-                
-                Object.values(grouped).sort((a,b) => a.shift - b.shift).forEach(group => {
-                    const badgeClass = group.type === 'kassa' ? 'badge-kassa' : 
-                                      group.type === 'kd' ? 'badge-kd' : 'badge-other';
-                    const shiftDiv = document.createElement('div');
-                    shiftDiv.className = `shift ${group.type}`;
-                    shiftDiv.innerHTML = `
-                        <div class="shift-header">
-                            <div><span class="shift-type">Смена ${group.shift}</span><span class="shift-time">(${shiftTimes[group.shift]})</span></div>
-                            <span class="shift-badge ${badgeClass}">${typeLabels[group.type]}</span>
-                        </div>
-                        <div class="shift-employees">${group.employees.map(e => `<span class="employee-tag ${group.type}">${e}</span>`).join('')}</div>
-                    `;
-                    card.appendChild(shiftDiv);
-                });
-                grid.appendChild(card);
-            });
-        }
-
-        function renderScheduleList() {
-            const list = document.getElementById('scheduleList');
-            if (!list) return;
-            list.innerHTML = '';
-            const dates = getSortedDates();
-            if (dates.length === 0) {
-                list.innerHTML = '<div class="empty-message">Записей нет</div>';
-                return;
-            }
-            dates.forEach(date => {
-                data.schedule[date].forEach((entry, idx) => {
-                    const item = document.createElement('div');
-                    item.className = 'schedule-item';
-                    item.innerHTML = `
-                        <div class="schedule-item-info">
-                            <span>📅 ${date}</span>
-                            <span>👤 ${entry.employee}</span>
-                            <span>${typeLabels[entry.type]}</span>
-                            <span>Смена ${entry.shift}</span>
-                        </div>
-                        <button class="btn btn-danger btn-sm" onclick="deleteScheduleEntry('${date}', ${idx})">✕</button>
-                    `;
-                    list.appendChild(item);
-                });
-            });
-        }
-
-        async function addScheduleEntry() {
-            const dateInput = document.getElementById('adminDate').value;
-            const employee = document.getElementById('adminEmployee').value;
-            const type = document.getElementById('adminType').value;
-            const shift = document.getElementById('adminShift').value;
-
-            if (!dateInput || !employee) {
-                alert('Заполните дату и выберите сотрудника');
-                return;
-            }
-
-            const date = formatDate(dateInput);
-            
-            try {
-                const docRef = db.collection('schedule').doc(date.replace(/\./g, '-'));
-                const doc = await docRef.get();
-                
-                let entries = [];
-                if (doc.exists) {
-                    entries = doc.data().entries || [];
-                }
-                
-                entries.push({ employee, type, shift });
-                
-                await docRef.set({
-                    date,
-                    entries,
-                    updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
-                
-                alert(`✅ Добавлен!\n📅 ${date}\n👤 ${employee}`);
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            }
-        }
-
-        async function deleteScheduleEntry(date, index) {
-            if (!confirm('Удалить запись?')) return;
-            try {
-                const docRef = db.collection('schedule').doc(date.replace(/\./g, '-'));
-                const doc = await docRef.get();
-                if (doc.exists) {
-                    let entries = doc.data().entries || [];
-                    entries.splice(index, 1);
-                    if (entries.length === 0) {
-                        await docRef.delete();
-                    } else {
-                        await docRef.update({ entries });
-                    }
-                }
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            }
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // МАТЕРИАЛЫ
-        // ═══════════════════════════════════════════════════════════════
-        function switchMaterialType(type) {
-            currentMaterialType = type;
-            document.getElementById('typeTextBtn').classList.toggle('active', type === 'text');
-            document.getElementById('typeFileBtn').classList.toggle('active', type === 'file');
-            document.getElementById('textForm').style.display = type === 'text' ? 'block' : 'none';
-            document.getElementById('fileForm').style.display = type === 'file' ? 'block' : 'none';
-        }
-
-        document.addEventListener('change', function(e) {
-            if (e.target.id === 'materialFile') {
-                const file = e.target.files[0];
-                if (!file) { selectedFile = null; return; }
-                if (file.size > 5*1024*1024) {
-                    alert('⚠️ Файл больше 5 МБ');
-                    e.target.value = '';
-                    selectedFile = null;
-                    return;
-                }
-                selectedFile = file;
-                document.getElementById('fileInfo').textContent = `✅ ${file.name} (${formatFileSize(file.size)})`;
-                document.getElementById('fileWarning').style.display = file.size > 2*1024*1024 ? 'block' : 'none';
-            }
-        });
-
-        async function saveMaterial() {
-            const title = document.getElementById('materialTitle').value.trim();
-            if (!title) { alert('Введите название'); return; }
-
-            const btn = document.getElementById('saveMaterialBtn');
-            btn.disabled = true;
-            btn.textContent = 'Сохранение...';
-
-            try {
-                let materialData = {
-                    title,
-                    type: currentMaterialType,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                };
-
-                if (currentMaterialType === 'text') {
-                    const text = document.getElementById('materialText').value.trim();
-                    if (!text) { alert('Введите текст'); btn.disabled = false; btn.textContent = '💾 Сохранить'; return; }
-                    materialData.content = text;
-                } else {
-                    if (!selectedFile) { alert('Выберите файл'); btn.disabled = false; btn.textContent = '💾 Сохранить'; return; }
-                    
-                    // Загружаем файл в Storage
-                    const fileRef = storage.ref(`materials/${Date.now()}_${selectedFile.name}`);
-                    await fileRef.put(selectedFile);
-                    const url = await fileRef.getDownloadURL();
-                    
-                    materialData.fileUrl = url;
-                    materialData.fileName = selectedFile.name;
-                    materialData.fileSize = selectedFile.size;
-                    materialData.mimeType = selectedFile.type;
-                }
-
-                await db.collection('materials').add(materialData);
-                
-                document.getElementById('materialTitle').value = '';
-                document.getElementById('materialText').value = '';
-                document.getElementById('materialFile').value = '';
-                document.getElementById('fileInfo').textContent = '';
-                selectedFile = null;
-                
-                alert('✅ Материал добавлен!');
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = '💾 Сохранить';
-            }
-        }
-
-        function renderMaterials() {
-            const list = document.getElementById('materialsList');
-            if (!list) return;
-            list.innerHTML = '';
-
-            if (data.materials.length === 0) {
-                list.innerHTML = '<div class="empty-message">📚 Материалов пока нет</div>';
-                return;
-            }
-
-            data.materials.forEach(m => {
-                const card = document.createElement('div');
-                card.className = `material-card type-${m.type}`;
-                const icon = m.type === 'text' ? '📝' : '📎';
-                const actionBtn = m.type === 'text'
-                    ? `<button class="btn btn-view btn-sm" onclick="viewMaterial('${m.id}')">👁️ Читать</button>`
-                    : `<button class="btn btn-download btn-sm" onclick="downloadMaterial('${m.id}')">⬇️ Скачать</button>`;
-                
-                card.innerHTML = `
-                    <div class="material-header">
-                        <div class="material-icon">${icon}</div>
-                        <div class="material-title">${escapeHtml(m.title)}</div>
-                    </div>
-                    <div class="material-actions">${actionBtn}</div>
-                `;
-                list.appendChild(card);
-            });
-        }
-
-        function viewMaterial(id) {
-            const m = data.materials.find(x => x.id === id);
-            if (!m) return;
-            document.getElementById('modalTitle').textContent = m.title;
-            document.getElementById('modalBody').textContent = m.content;
-            document.getElementById('materialModal').classList.add('open');
-        }
-
-        function downloadMaterial(id) {
-            const m = data.materials.find(x => x.id === id);
-            if (!m || !m.fileUrl) return;
-            window.open(m.fileUrl, '_blank');
-        }
-
-        function closeModal() {
-            document.getElementById('materialModal').classList.remove('open');
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // КОНКУРСЫ
-        // ═══════════════════════════════════════════════════════════════
         async function addContest() {
             const name = document.getElementById('contestName').value.trim();
             const description = document.getElementById('contestDescription').value.trim();
-            const status = document.getElementById('contestStatus').value;
-
             if (!name || !description) { alert('Заполните все поля'); return; }
 
             try {
-                await db.collection('contests').add({
-                    name,
-                    description,
-                    status,
-                    intermediateResults: [],
-                    finalResult: null,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                await db.collection('contests').add({ name, description, status: 'active' });
                 document.getElementById('contestName').value = '';
                 document.getElementById('contestDescription').value = '';
                 alert('✅ Конкурс добавлен!');
@@ -1747,44 +792,13 @@
             }
         }
 
-        function renderContests() {
-            const list = document.getElementById('contestsList');
-            if (!list) return;
-            list.innerHTML = '';
-
-            if (data.contests.length === 0) {
-                list.innerHTML = '<div class="empty-message">🏆 Конкурсов пока нет</div>';
-                return;
-            }
-
-            data.contests.forEach(c => {
-                const card = document.createElement('div');
-                card.className = 'contest-card';
-                const statusClass = c.status === 'active' ? 'status-active' : 'status-finished';
-                const statusText = c.status === 'active' ? '🟢 Активный' : '⚫ Завершен';
-                card.innerHTML = `
-                    <span class="contest-status ${statusClass}">${statusText}</span>
-                    <h3>${escapeHtml(c.name)}</h3>
-                    <div class="contest-description">${escapeHtml(c.description)}</div>
-                `;
-                list.appendChild(card);
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // ИНФОРМАЦИЯ
-        // ═══════════════════════════════════════════════════════════════
         async function addInfo() {
             const title = document.getElementById('infoTitle').value.trim();
             const text = document.getElementById('infoText').value.trim();
             if (!title || !text) { alert('Заполните все поля'); return; }
 
             try {
-                await db.collection('info').add({
-                    title,
-                    text,
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                });
+                await db.collection('info').add({ title, text });
                 document.getElementById('infoTitle').value = '';
                 document.getElementById('infoText').value = '';
                 alert('✅ Информация добавлена!');
@@ -1793,54 +807,9 @@
             }
         }
 
-        function renderInfo() {
-            const content = document.getElementById('infoContent');
-            if (!content) return;
-            content.innerHTML = '';
-            if (data.info.length === 0) {
-                content.innerHTML = '<div class="empty-message">📢 Информации пока нет</div>';
-                return;
-            }
-            data.info.forEach(item => {
-                const block = document.createElement('div');
-                block.className = 'info-block';
-                block.innerHTML = `<h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.text)}</p>`;
-                content.appendChild(block);
-            });
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // СТАТИСТИКА
-        // ═══════════════════════════════════════════════════════════════
-        function renderStats() {
-            const content = document.getElementById('statsContent');
-            if (!content) return;
-
-            let totalEntries = 0, kassaCount = 0, kdCount = 0;
-            Object.values(data.schedule).forEach(entries => {
-                entries.forEach(e => {
-                    totalEntries++;
-                    if (e.type === 'kassa') kassaCount++;
-                    if (e.type === 'kd') kdCount++;
-                });
-            });
-
-            content.innerHTML = `
-                <div class="stats-grid">
-                    <div class="stat-card"><div class="stat-number">${data.employees.length}</div><div class="stat-label">Сотрудников</div></div>
-                    <div class="stat-card" style="background:linear-gradient(135deg,#28a745,#20c997);"><div class="stat-number">${totalEntries}</div><div class="stat-label">Записей в графике</div></div>
-                    <div class="stat-card" style="background:linear-gradient(135deg,#17a2b8,#20c997);"><div class="stat-number">${data.materials.length}</div><div class="stat-label">Материалов</div></div>
-                    <div class="stat-card" style="background:linear-gradient(135deg,#ffc107,#fd7e14);"><div class="stat-number">${data.contests.length}</div><div class="stat-label">Конкурсов</div></div>
-                </div>
-            `;
-        }
-
-        // ═══════════════════════════════════════════════════════════════
-        // СБРОС
-        // ═══════════════════════════════════════════════════════════════
         async function resetAllData() {
-            if (!confirm('⚠️ ВСЕ данные будут удалены!')) return;
-            if (!confirm('Точно-точно?')) return;
+            if (!confirm('⚠️ ВСЕ данные будут удалены! Продолжить?')) return;
+            if (!confirm('Точно-точно? Это последнее предупреждение!')) return;
 
             try {
                 const collections = ['users', 'schedule', 'materials', 'contests', 'info'];
@@ -1850,59 +819,33 @@
                     snap.docs.forEach(doc => batch.delete(doc.ref));
                     await batch.commit();
                 }
-                
-                // Пересоздаём тестового админа
+                // Recreate test admin
                 await db.collection('users').add({
                     name: 'Тест',
                     phone: '89004346000',
                     password: '6000',
-                    role: 'admin',
-                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    role: 'admin'
                 });
-                
+                alert('✅ Данные сброшены!');
                 doLogout();
             } catch (e) {
                 alert('Ошибка: ' + e.message);
             }
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // ОБЩЕЕ
-        // ═══════════════════════════════════════════════════════════════
-        function renderAll() {
-            renderSchedule();
-            renderScheduleList();
-            renderMaterials();
-            renderContests();
-            renderInfo();
-            renderStats();
-            if (currentUser && currentUser.role === 'admin') {
-                renderEmployeesList();
-                renderEmployeeSelect();
+        // INIT
+        if (currentUser) {
+            document.getElementById('userInfo').style.display = 'inline-flex';
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = currentUser.role === 'admin' ? '👑 Админ' : '👤 Сотрудник';
+            document.getElementById('mainNav').style.display = 'flex';
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminBtn').style.display = 'inline-block';
             }
+            subscribeToData();
         }
 
-        // ═══════════════════════════════════════════════════════════════
-        // СТАРТ
-        // ═══════════════════════════════════════════════════════════════
-        async function start() {
-            try {
-                await initializeData();
-                subscribeToData();
-                checkAuth();
-            } catch (e) {
-                document.getElementById('loadingScreen').innerHTML = `
-                    <div style="text-align:center;padding:20px;color:white;">
-                        <div style="font-size:3em;margin-bottom:20px;">⚠️</div>
-                        <h2 style="margin-bottom:10px;">Ошибка подключения</h2>
-                        <p style="margin-bottom:20px;">${e.message}</p>
-                        <p style="font-size:0.9em;opacity:0.8;">Проверьте конфигурацию Firebase в коде</p>
-                    </div>
-                `;
-            }
-        }
-
-        start();
+        checkAuth();
     </script>
 </body>
 </html>
