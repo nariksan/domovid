@@ -2,422 +2,201 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>ДОМОВИД - Рабочая группа</title>
-    
-    <!-- Firebase -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ДОМОВИД</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
-    
     <style>
-        :root {
-            --primary: #667eea;
-            --primary-dark: #5568d3;
-            --secondary: #764ba2;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #fd7e14;
-            --info: #17a2b8;
-            --gold: #ffc107;
-            --dark: #333;
-            --gray: #666;
-            --light-gray: #999;
-            --bg: #f8f9fa;
-            --border: #e9ecef;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-
         .container {
-            max-width: 1200px;
+            max-width: 600px;
             margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
-
-        header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            color: white;
-            padding: 20px;
-            text-align: center;
-        }
-
-        header h1 { font-size: 2em; margin-bottom: 10px; }
-
-        .user-info {
-            background: rgba(255,255,255,0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.9em;
-        }
-
-        .role-badge {
-            background: var(--gold);
-            color: var(--dark);
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.85em;
-        }
-
-        nav {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            padding: 15px;
-            background: var(--bg);
-            flex-wrap: wrap;
-            border-bottom: 1px solid var(--border);
-        }
-
-        nav button {
-            padding: 10px 20px;
-            border: none;
-            background: white;
-            color: var(--primary);
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-
-        nav button:hover { background: var(--primary); color: white; transform: translateY(-2px); }
-        nav button.active { background: var(--primary); color: white; }
-
-        .content { padding: 30px; }
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.3s; }
-
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        h2 { color: var(--primary); margin-bottom: 20px; font-size: 1.8em; }
-
-        /* Schedule */
-        .schedule-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 15px;
-        }
-
-        .date-card {
-            background: white;
-            border: 2px solid var(--border);
-            border-radius: 12px;
-            padding: 15px;
-        }
-
-        .date-card h3 {
-            color: var(--primary);
-            margin-bottom: 12px;
-            text-align: center;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--primary);
-        }
-
-        .date-card.past { opacity: 0.6; }
-        .date-card.past h3 { text-decoration: line-through; color: var(--gray); }
-        .date-card.today { border-color: var(--success); border-width: 3px; }
-        .date-card.today h3 { color: var(--success); border-bottom-color: var(--success); }
-
-        .shift {
-            background: var(--bg);
-            padding: 10px;
-            margin: 8px 0;
-            border-radius: 8px;
-            border-left: 4px solid var(--primary);
-        }
-
-        .shift.kassa { border-left-color: var(--success); }
-        .shift.kd { border-left-color: var(--gold); }
-        .shift.other { border-left-color: var(--gray); }
-
-        .shift-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-            flex-wrap: wrap;
-            gap: 5px;
-        }
-
-        .shift-type { font-weight: 600; }
-        .shift-time { color: var(--gray); font-size: 0.85em; }
-
-        .shift-badge {
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-size: 0.75em;
-            font-weight: 700;
-            color: white;
-        }
-
-        .badge-kassa { background: var(--success); }
-        .badge-kd { background: var(--gold); color: var(--dark); }
-        .badge-other { background: var(--gray); }
-
-        .employee-tag {
-            display: inline-block;
-            background: var(--primary);
-            color: white;
-            padding: 4px 10px;
-            border-radius: 12px;
-            margin: 2px;
-            font-size: 0.85em;
-        }
-
-        .employee-tag.kassa { background: var(--success); }
-        .employee-tag.kd { background: var(--gold); color: var(--dark); }
-
-        /* Forms */
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--dark); }
-        .form-group input, .form-group select, .form-group textarea {
+        h1 { color: #667eea; text-align: center; margin-bottom: 30px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 600; color: #333; }
+        input, select {
             width: 100%;
-            padding: 10px;
-            border: 2px solid var(--border);
+            padding: 12px;
+            border: 2px solid #e0e0e0;
             border-radius: 8px;
-            font-size: 1em;
+            font-size: 16px;
         }
-        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
-
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-
-        .btn {
-            padding: 12px 24px;
+        input:focus { outline: none; border-color: #667eea; }
+        button {
+            width: 100%;
+            padding: 14px;
+            background: #667eea;
+            color: white;
             border: none;
             border-radius: 8px;
+            font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1em;
         }
-
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-warning { background: var(--warning); color: white; }
-        .btn-sm { padding: 6px 12px; font-size: 0.85em; }
-        .btn-block { width: 100%; }
-
-        /* Admin */
-        .admin-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid var(--border);
-        }
-
-        .admin-card h3 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--border);
-        }
-
-        .employee-list-item {
-            background: var(--bg);
+        button:hover { background: #5568d3; }
+        .error {
+            background: #fff5f5;
+            color: #dc3545;
             padding: 12px;
             border-radius: 8px;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-left: 4px solid var(--primary);
+            margin-top: 15px;
+            display: none;
         }
-
-        .employee-list-item.admin { border-left-color: var(--gold); }
-
-        .empty-message {
-            text-align: center;
-            color: var(--gray);
-            padding: 40px;
-            background: var(--bg);
-            border-radius: 12px;
-        }
-
-        .logout-btn {
-            background: var(--danger);
-            color: white;
+        .hint {
+            background: #e7f3ff;
+            padding: 15px;
+            border-radius: 8px;
             margin-top: 20px;
+            font-size: 14px;
         }
-
-        @media (max-width: 768px) {
-            .form-row { grid-template-columns: 1fr; }
-            .schedule-grid { grid-template-columns: 1fr; }
-            nav { flex-direction: column; }
-            nav button { width: 100%; }
+        .user-info {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-top: 10px;
         }
+        nav {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        nav button {
+            width: auto;
+            padding: 10px 20px;
+            background: white;
+            color: #667eea;
+        }
+        nav button.active { background: #667eea; color: white; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+        .logout { background: #dc3545; margin-top: 20px; }
+        .logout:hover { background: #c82333; }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
-            <h1>🏠 ДОМОВИД</h1>
-            <p>Рабочая группа</p>
-            <div class="user-info" id="userInfo" style="display:none;">
-                <span>👤 <span id="userName"></span></span>
-                <span class="role-badge" id="userRole"></span>
+        <h1>🏠 ДОМОВИД</h1>
+        
+        <!-- LOGIN FORM -->
+        <div id="loginForm">
+            <div class="form-group">
+                <label>📱 Телефон</label>
+                <input type="tel" id="phone" placeholder="89004346000">
             </div>
-        </header>
+            <div class="form-group">
+                <label> Пароль</label>
+                <input type="password" id="password" placeholder="Введите пароль">
+            </div>
+            <button onclick="login()">Войти</button>
+            <div id="errorMsg" class="error"></div>
+            <div class="hint">
+                <strong>Тестовый вход:</strong><br>
+                Телефон: 89004346000<br>
+                Пароль: 6000
+            </div>
+        </div>
 
-        <nav id="mainNav" style="display:none;">
-            <button onclick="showSection('schedule')" class="active">📅 График</button>
-            <button onclick="showSection('materials')">📚 Обучение</button>
-            <button onclick="showSection('contests')"> Конкурсы</button>
-            <button onclick="showSection('info')">📢 Информация</button>
-            <button onclick="showSection('stats')">📊 Статистика</button>
-            <button onclick="showSection('admin')" id="adminBtn" style="display:none;">️ Админ</button>
-        </nav>
+        <!-- MAIN APP -->
+        <div id="mainApp" style="display:none;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                <div class="user-info">
+                     <span id="userName"></span> 
+                    <span id="userRole" style="background: #ffc107; padding: 2px 10px; border-radius: 10px; margin-left: 10px;"></span>
+                </div>
+            </div>
 
-        <div class="content">
-            <!-- Schedule -->
+            <nav>
+                <button onclick="show('schedule')" class="active"> График</button>
+                <button onclick="show('admin')" id="adminNav" style="display:none;">⚙️ Админ</button>
+                <button onclick="logout()" class="logout"> Выйти</button>
+            </nav>
+
             <div id="schedule" class="section active">
-                <h2>📅 График работы</h2>
-                <div id="scheduleGrid" class="schedule-grid"></div>
+                <h2> График работы</h2>
+                <div id="scheduleList"></div>
             </div>
 
-            <!-- Materials -->
-            <div id="materials" class="section">
-                <h2> Обучающие материалы</h2>
-                <div id="materialsList"></div>
-            </div>
-
-            <!-- Contests -->
-            <div id="contests" class="section">
-                <h2>🏆 Конкурсы персонала</h2>
-                <div id="contestsList"></div>
-            </div>
-
-            <!-- Info -->
-            <div id="info" class="section">
-                <h2>📢 Информация</h2>
-                <div id="infoContent"></div>
-            </div>
-
-            <!-- Stats -->
-            <div id="stats" class="section">
-                <h2>📊 Статистика</h2>
-                <div id="statsContent"></div>
-            </div>
-
-            <!-- Admin -->
             <div id="admin" class="section">
                 <h2>⚙️ Админ-панель</h2>
                 
-                <div class="admin-card">
-                    <h3>📅 Добавить в график</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Дата</label>
-                            <input type="date" id="adminDate">
-                        </div>
-                        <div class="form-group">
-                            <label>Сотрудник</label>
-                            <select id="adminEmployee"></select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Тип работы</label>
-                            <select id="adminType">
-                                <option value="kassa">Касса</option>
-                                <option value="kd">КД</option>
-                                <option value="other">Без указания</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Смена</label>
-                            <select id="adminShift">
-                                <option value="1">10:00 - 19:00</option>
-                                <option value="2">12:00 - 21:00</option>
-                                <option value="3">10:00 - 21:00</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button class="btn btn-primary btn-block" onclick="addScheduleEntry()">➕ Добавить</button>
-                </div>
-
-                <div class="admin-card">
-                    <h3>👥 Сотрудники</h3>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>ФИО</label>
-                            <input type="text" id="newEmployeeName">
-                        </div>
-                        <div class="form-group">
-                            <label>Телефон</label>
-                            <input type="tel" id="newEmployeePhone">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Пароль</label>
-                            <input type="text" id="newEmployeePassword">
-                        </div>
-                        <div class="form-group">
-                            <label>Роль</label>
-                            <select id="newEmployeeRole">
-                                <option value="user">Сотрудник</option>
-                                <option value="admin">Администратор</option>
-                            </select>
-                        </div>
-                    </div>
-                    <button class="btn btn-success btn-block" onclick="addEmployee()">➕ Добавить сотрудника</button>
-                    <div id="employeesList" style="margin-top: 15px;"></div>
-                </div>
-
-                <div class="admin-card">
-                    <h3>🏆 Добавить конкурс</h3>
+                <div class="card">
+                    <h3>Добавить в график</h3>
                     <div class="form-group">
-                        <label>Название</label>
-                        <input type="text" id="contestName">
+                        <label>Дата</label>
+                        <input type="date" id="schedDate">
                     </div>
                     <div class="form-group">
-                        <label>Описание</label>
-                        <textarea id="contestDescription" rows="3"></textarea>
-                    </div>
-                    <button class="btn btn-primary btn-block" onclick="addContest()">➕ Добавить</button>
-                </div>
-
-                <div class="admin-card">
-                    <h3>📢 Добавить информацию</h3>
-                    <div class="form-group">
-                        <label>Заголовок</label>
-                        <input type="text" id="infoTitle">
+                        <label>Сотрудник</label>
+                        <select id="schedEmployee"></select>
                     </div>
                     <div class="form-group">
-                        <label>Текст</label>
-                        <textarea id="infoText" rows="4"></textarea>
+                        <label>Тип</label>
+                        <select id="schedType">
+                            <option value="kassa">Касса</option>
+                            <option value="kd">КД</option>
+                            <option value="other">Без указания</option>
+                        </select>
                     </div>
-                    <button class="btn btn-primary btn-block" onclick="addInfo()">➕ Добавить</button>
+                    <div class="form-group">
+                        <label>Смена</label>
+                        <select id="schedShift">
+                            <option value="1">10:00 - 19:00</option>
+                            <option value="2">12:00 - 21:00</option>
+                            <option value="3">10:00 - 21:00</option>
+                        </select>
+                    </div>
+                    <button onclick="addSchedule()">➕ Добавить</button>
                 </div>
 
-                <div class="admin-card" style="background: #fff5f5; border: 2px dashed var(--danger);">
-                    <h3 style="color: var(--danger);">⚠️ Опасная зона</h3>
-                    <button class="btn btn-danger btn-block" onclick="resetAllData()">️ Сбросить все данные</button>
+                <div class="card">
+                    <h3>Добавить сотрудника</h3>
+                    <div class="form-group">
+                        <label>ФИО</label>
+                        <input type="text" id="newName">
+                    </div>
+                    <div class="form-group">
+                        <label>Телефон</label>
+                        <input type="tel" id="newPhone">
+                    </div>
+                    <div class="form-group">
+                        <label>Пароль</label>
+                        <input type="text" id="newPassword">
+                    </div>
+                    <button onclick="addEmployee()">➕ Добавить</button>
                 </div>
 
-                <button class="btn logout-btn btn-block" onclick="doLogout()">🚪 Выйти</button>
+                <div class="card">
+                    <h3>Сотрудники</h3>
+                    <div id="employeeList"></div>
+                </div>
+
+                <button onclick="logout()" class="logout">🚪 Выйти</button>
             </div>
         </div>
     </div>
 
     <script>
-        // FIREBASE CONFIG
+        // Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyDx5QGxg6nx3X4JDHiyqLI4zdIm3E2VrIk",
             authDomain: "domovid.firebaseapp.com",
@@ -429,423 +208,206 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-
         let currentUser = null;
-        let data = { employees: [], schedule: {}, materials: [], contests: [], info: [] };
 
-        // AUTH
-        function checkAuth() {
+        // Check auth on load
+        window.onload = function() {
             const session = localStorage.getItem('domovidSession');
             if (session) {
                 const userData = JSON.parse(session);
                 db.collection('users').doc(userData.id).get().then(doc => {
                     if (doc.exists) {
                         currentUser = { id: doc.id, ...doc.data() };
-                        showApp();
+                        showMainApp();
                     } else {
-                        showLogin();
+                        localStorage.removeItem('domovidSession');
                     }
+                }).catch(err => {
+                    console.error('Error:', err);
                 });
-            } else {
-                showLogin();
             }
-        }
+        };
 
-        function showLogin() {
-            document.body.innerHTML = `
-                <div class="container" style="max-width: 400px; margin-top: 100px; padding: 40px;">
-                    <h1 style="text-align: center; margin-bottom: 30px;">🏠 ДОМОВИД</h1>
-                    <div class="form-group">
-                        <label>📱 Телефон</label>
-                        <input type="tel" id="loginPhone" placeholder="89004346000">
-                    </div>
-                    <div class="form-group">
-                        <label> Пароль</label>
-                        <input type="password" id="loginPassword" placeholder="Введите пароль">
-                    </div>
-                    <button class="btn btn-primary btn-block" onclick="doLogin()">Войти</button>
-                    <div id="loginError" style="color: var(--danger); margin-top: 15px; display: none;"></div>
-                    <div style="margin-top: 20px; padding: 15px; background: #e7f3ff; border-radius: 8px; font-size: 0.9em;">
-                        <strong>Тестовый вход:</strong><br>
-                        Телефон: 89004346000<br>
-                        Пароль: 6000
-                    </div>
-                </div>
-            `;
-        }
+        function login() {
+            const phone = document.getElementById('phone').value.replace(/\D/g, '');
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('errorMsg');
 
-        function doLogin() {
-            const phone = document.getElementById('loginPhone').value.replace(/\D/g, '');
-            const password = document.getElementById('loginPassword').value;
+            if (!phone || !password) {
+                errorDiv.textContent = 'Введите телефон и пароль';
+                errorDiv.style.display = 'block';
+                return;
+            }
 
-            db.collection('users').where('phone', '==', phone).where('password', '==', password).get()
+            db.collection('users')
+                .where('phone', '==', phone)
+                .where('password', '==', password)
+                .get()
                 .then(snapshot => {
                     if (snapshot.empty) {
-                        const errorDiv = document.getElementById('loginError');
                         errorDiv.textContent = '❌ Неверный телефон или пароль';
                         errorDiv.style.display = 'block';
                     } else {
                         const doc = snapshot.docs[0];
                         currentUser = { id: doc.id, ...doc.data() };
                         localStorage.setItem('domovidSession', JSON.stringify({ id: doc.id }));
-                        showApp();
+                        showMainApp();
                     }
+                })
+                .catch(error => {
+                    errorDiv.textContent = 'Ошибка: ' + error.message;
+                    errorDiv.style.display = 'block';
+                    console.error('Login error:', error);
                 });
         }
 
-        function showApp() {
-            location.reload();
+        function showMainApp() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('userName').textContent = currentUser.name;
+            document.getElementById('userRole').textContent = 
+                currentUser.role === 'admin' ? '👑 Админ' : '👤 Сотрудник';
+            
+            if (currentUser.role === 'admin') {
+                document.getElementById('adminNav').style.display = 'inline-block';
+                loadEmployees();
+            }
+            
+            loadSchedule();
+            
+            // Real-time updates
+            db.collection('schedule').onSnapshot(() => loadSchedule());
+            if (currentUser.role === 'admin') {
+                db.collection('users').onSnapshot(() => loadEmployees());
+            }
         }
 
-        function doLogout() {
+        function show(section) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+            document.getElementById(section).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function loadSchedule() {
+            db.collection('schedule').orderBy('date').onSnapshot(snapshot => {
+                const list = document.getElementById('scheduleList');
+                if (snapshot.empty) {
+                    list.innerHTML = '<div class="card">📅 График пустой</div>';
+                    return;
+                }
+                
+                list.innerHTML = snapshot.docs.map(doc => {
+                    const data = doc.data();
+                    return `
+                        <div class="card">
+                            <strong>📅 ${data.date}</strong><br>
+                            ${data.entries.map(e => `
+                                <div style="margin: 8px 0; padding: 8px; background: white; border-radius: 4px;">
+                                    👤 ${e.employee} | 
+                                    ${e.type === 'kassa' ? ' Касса' : e.type === 'kd' ? '📋 КД' : ' Другое'} | 
+                                    Смена ${e.shift}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        function loadEmployees() {
+            db.collection('users').onSnapshot(snapshot => {
+                const list = document.getElementById('employeeList');
+                const select = document.getElementById('schedEmployee');
+                
+                if (snapshot.empty) {
+                    list.innerHTML = '<p style="color: #999;">Нет сотрудников</p>';
+                    return;
+                }
+                
+                list.innerHTML = snapshot.docs.map(doc => {
+                    const emp = doc.data();
+                    return `
+                        <div style="padding: 10px; background: white; margin: 5px 0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <strong>${emp.name}</strong><br>
+                                <small style="color: #666;">${emp.phone} | ${emp.role === 'admin' ? '👑 Админ' : '👤 Сотрудник'}</small>
+                            </div>
+                            ${doc.id !== currentUser.id ? `<button onclick="deleteEmployee('${doc.id}')" style="width: auto; padding: 5px 10px; background: #dc3545; font-size: 12px;">✕</button>` : '<small>Вы</small>'}
+                        </div>
+                    `;
+                }).join('');
+                
+                select.innerHTML = '<option value="">-- Выберите --</option>' + 
+                    snapshot.docs.map(doc => `<option value="${doc.data().name}">${doc.data().name}</option>`).join('');
+            });
+        }
+
+        function addSchedule() {
+            const date = document.getElementById('schedDate').value;
+            const employee = document.getElementById('schedEmployee').value;
+            const type = document.getElementById('schedType').value;
+            const shift = document.getElementById('schedShift').value;
+
+            if (!date || !employee) {
+                alert('Выберите дату и сотрудника');
+                return;
+            }
+
+            const [year, month, day] = date.split('-');
+            const formattedDate = `${day}.${month}.${year}`;
+
+            db.collection('schedule').doc(date).get().then(doc => {
+                let entries = doc.exists ? doc.data().entries || [] : [];
+                entries.push({ employee, type, shift });
+                db.collection('schedule').doc(date).set({
+                    date: formattedDate,
+                    entries: entries
+                }).then(() => {
+                    alert('✅ Добавлено!');
+                    document.getElementById('schedDate').value = '';
+                    document.getElementById('schedEmployee').value = '';
+                });
+            });
+        }
+
+        function addEmployee() {
+            const name = document.getElementById('newName').value.trim();
+            const phone = document.getElementById('newPhone').value.trim();
+            const password = document.getElementById('newPassword').value;
+
+            if (!name || !phone || !password) {
+                alert('Заполните все поля');
+                return;
+            }
+
+            db.collection('users').add({
+                name,
+                phone,
+                password,
+                role: 'user'
+            }).then(() => {
+                alert('✅ Сотрудник добавлен!');
+                document.getElementById('newName').value = '';
+                document.getElementById('newPhone').value = '';
+                document.getElementById('newPassword').value = '';
+            });
+        }
+
+        function deleteEmployee(id) {
+            if (id === currentUser.id) {
+                alert('Нельзя удалить себя!');
+                return;
+            }
+            if (confirm('Удалить сотрудника?')) {
+                db.collection('users').doc(id).delete();
+            }
+        }
+
+        function logout() {
             localStorage.removeItem('domovidSession');
             location.reload();
         }
-
-        // NAVIGATION
-        function showSection(sectionId) {
-            if (sectionId === 'admin' && currentUser.role !== 'admin') {
-                alert('⛔ Доступ только для администраторов');
-                return;
-            }
-
-            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-            document.getElementById(sectionId).classList.add('active');
-            
-            document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-
-            if (sectionId === 'schedule') renderSchedule();
-            if (sectionId === 'materials') renderMaterials();
-            if (sectionId === 'contests') renderContests();
-            if (sectionId === 'info') renderInfo();
-            if (sectionId === 'stats') renderStats();
-            if (sectionId === 'admin') renderAdmin();
-        }
-
-        // DATA SUBSCRIPTIONS
-        function subscribeToData() {
-            db.collection('users').onSnapshot(snapshot => {
-                data.employees = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                if (currentUser) renderAdmin();
-            });
-
-            db.collection('schedule').onSnapshot(snapshot => {
-                data.schedule = {};
-                snapshot.docs.forEach(doc => {
-                    const d = doc.data();
-                    data.schedule[d.date] = d.entries || [];
-                });
-                renderSchedule();
-            });
-
-            db.collection('materials').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
-                data.materials = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderMaterials();
-            });
-
-            db.collection('contests').onSnapshot(snapshot => {
-                data.contests = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderContests();
-            });
-
-            db.collection('info').onSnapshot(snapshot => {
-                data.info = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderInfo();
-            });
-        }
-
-        // RENDER FUNCTIONS
-        function renderSchedule() {
-            const grid = document.getElementById('scheduleGrid');
-            if (!grid) return;
-            
-            const dates = Object.keys(data.schedule).sort();
-            if (dates.length === 0) {
-                grid.innerHTML = '<div class="empty-message">📅 График пустой</div>';
-                return;
-            }
-
-            grid.innerHTML = dates.map(date => {
-                const entries = data.schedule[date];
-                const today = new Date();
-                const [day, month, year] = date.split('.').map(Number);
-                const cardDate = new Date(year, month - 1, day);
-                const isToday = cardDate.toDateString() === today.toDateString();
-                const isPast = cardDate < today;
-                
-                const grouped = {};
-                entries.forEach(e => {
-                    const key = `${e.shift}-${e.type}`;
-                    if (!grouped[key]) grouped[key] = { shift: e.shift, type: e.type, employees: [] };
-                    grouped[key].employees.push(e.employee);
-                });
-
-                return `
-                    <div class="date-card ${isPast ? 'past' : ''} ${isToday ? 'today' : ''}">
-                        <h3>📅 ${date} ${isToday ? ' Сегодня' : ''} ${isPast ? '✅ Прошло' : ''}</h3>
-                        ${Object.values(grouped).map(g => `
-                            <div class="shift ${g.type}">
-                                <div class="shift-header">
-                                    <div>
-                                        <div class="shift-type">Смена ${g.shift}</div>
-                                        <div class="shift-time">${getShiftTime(g.shift)}</div>
-                                    </div>
-                                    <span class="shift-badge badge-${g.type}">${getTypeLabel(g.type)}</span>
-                                </div>
-                                <div>${g.employees.map(emp => `<span class="employee-tag ${g.type}">${emp}</span>`).join('')}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function getShiftTime(shift) {
-            const times = { 1: '10:00 - 19:00', 2: '12:00 - 21:00', 3: '10:00 - 21:00' };
-            return times[shift] || '';
-        }
-
-        function getTypeLabel(type) {
-            const labels = { kassa: 'Касса', kd: 'КД', other: 'Без указания' };
-            return labels[type] || type;
-        }
-
-        function renderMaterials() {
-            const list = document.getElementById('materialsList');
-            if (!list) return;
-            
-            if (data.materials.length === 0) {
-                list.innerHTML = '<div class="empty-message">📚 Материалов пока нет</div>';
-                return;
-            }
-
-            list.innerHTML = data.materials.map(m => `
-                <div class="admin-card">
-                    <h3>${m.type === 'text' ? '' : '📎'} ${m.title}</h3>
-                    ${m.type === 'text' 
-                        ? `<p style="color: var(--gray); line-height: 1.6;">${m.content}</p>`
-                        : `<a href="${m.fileUrl}" target="_blank" class="btn btn-primary">⬇️ Скачать файл</a>`
-                    }
-                </div>
-            `).join('');
-        }
-
-        function renderContests() {
-            const list = document.getElementById('contestsList');
-            if (!list) return;
-            
-            if (data.contests.length === 0) {
-                list.innerHTML = '<div class="empty-message">🏆 Конкурсов пока нет</div>';
-                return;
-            }
-
-            list.innerHTML = data.contests.map(c => `
-                <div class="admin-card">
-                    <h3>${c.name}</h3>
-                    <p style="color: var(--gray); margin-bottom: 10px;">${c.description}</p>
-                    <span style="display: inline-block; padding: 4px 12px; border-radius: 12px; background: ${c.status === 'active' ? 'var(--success)' : 'var(--gray)'}; color: white; font-size: 0.85em;">
-                        ${c.status === 'active' ? '🟢 Активный' : ' Завершен'}
-                    </span>
-                </div>
-            `).join('');
-        }
-
-        function renderInfo() {
-            const content = document.getElementById('infoContent');
-            if (!content) return;
-            
-            if (data.info.length === 0) {
-                content.innerHTML = '<div class="empty-message">📢 Информации пока нет</div>';
-                return;
-            }
-
-            content.innerHTML = data.info.map(i => `
-                <div class="admin-card">
-                    <h3>${i.title}</h3>
-                    <p style="color: var(--gray); line-height: 1.6;">${i.text}</p>
-                </div>
-            `).join('');
-        }
-
-        function renderStats() {
-            const content = document.getElementById('statsContent');
-            if (!content) return;
-
-            let totalEntries = 0;
-            Object.values(data.schedule).forEach(entries => totalEntries += entries.length);
-
-            content.innerHTML = `
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
-                    <div class="admin-card" style="background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; text-align: center;">
-                        <div style="font-size: 2.5em; font-weight: bold;">${data.employees.length}</div>
-                        <div>Сотрудников</div>
-                    </div>
-                    <div class="admin-card" style="background: linear-gradient(135deg, var(--success), #20c997); color: white; text-align: center;">
-                        <div style="font-size: 2.5em; font-weight: bold;">${totalEntries}</div>
-                        <div>Записей в графике</div>
-                    </div>
-                    <div class="admin-card" style="background: linear-gradient(135deg, var(--info), #20c997); color: white; text-align: center;">
-                        <div style="font-size: 2.5em; font-weight: bold;">${data.materials.length}</div>
-                        <div>Материалов</div>
-                    </div>
-                    <div class="admin-card" style="background: linear-gradient(135deg, var(--gold), var(--warning)); color: white; text-align: center;">
-                        <div style="font-size: 2.5em; font-weight: bold;">${data.contests.length}</div>
-                        <div>Конкурсов</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderAdmin() {
-            // Employee select
-            const select = document.getElementById('adminEmployee');
-            if (select) {
-                select.innerHTML = '<option value="">-- Выберите --</option>' + 
-                    data.employees.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
-            }
-
-            // Employee list
-            const list = document.getElementById('employeesList');
-            if (list) {
-                list.innerHTML = data.employees.map(emp => `
-                    <div class="employee-list-item ${emp.role === 'admin' ? 'admin' : ''}">
-                        <div>
-                            <strong>${emp.name}</strong> 
-                            <span style="font-size: 0.8em; color: var(--gray);">(${emp.phone})</span>
-                            <span style="margin-left: 10px; padding: 2px 8px; border-radius: 8px; background: ${emp.role === 'admin' ? 'var(--gold)' : '#e9ecef'}; font-size: 0.8em;">
-                                ${emp.role === 'admin' ? '👑 Админ' : '👤 Сотрудник'}
-                            </span>
-                        </div>
-                        ${emp.id !== currentUser.id ? `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.id}')">✕</button>` : '<span style="color: var(--gray); font-size: 0.85em;">Вы</span>'}
-                    </div>
-                `).join('');
-            }
-        }
-
-        // ADMIN ACTIONS
-        async function addScheduleEntry() {
-            const dateInput = document.getElementById('adminDate').value;
-            const employee = document.getElementById('adminEmployee').value;
-            const type = document.getElementById('adminType').value;
-            const shift = document.getElementById('adminShift').value;
-
-            if (!dateInput || !employee) { alert('Заполните все поля'); return; }
-
-            const [year, month, day] = dateInput.split('-');
-            const date = `${day}.${month}.${year}`;
-            const docId = dateInput;
-
-            try {
-                const docRef = db.collection('schedule').doc(docId);
-                const doc = await docRef.get();
-                let entries = doc.exists ? doc.data().entries || [] : [];
-                entries.push({ employee, type, shift });
-                await docRef.set({ date, entries });
-                alert('✅ Добавлено!');
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            }
-        }
-
-        async function addEmployee() {
-            const name = document.getElementById('newEmployeeName').value.trim();
-            const phone = document.getElementById('newEmployeePhone').value.trim();
-            const password = document.getElementById('newEmployeePassword').value;
-            const role = document.getElementById('newEmployeeRole').value;
-
-            if (!name || !phone || !password) { alert('Заполните все поля'); return; }
-
-            try {
-                await db.collection('users').add({ name, phone, password, role });
-                document.getElementById('newEmployeeName').value = '';
-                document.getElementById('newEmployeePhone').value = '';
-                document.getElementById('newEmployeePassword').value = '';
-                alert('✅ Сотрудник добавлен!');
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            }
-        }
-
-        async function deleteEmployee(id) {
-            if (!confirm('Удалить сотрудника?')) return;
-            if (id === currentUser.id) { alert('Нельзя удалить себя!'); return; }
-            try {
-                await db.collection('users').doc(id).delete();
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            }
-        }
-
-        async function addContest() {
-            const name = document.getElementById('contestName').value.trim();
-            const description = document.getElementById('contestDescription').value.trim();
-            if (!name || !description) { alert('Заполните все поля'); return; }
-
-            try {
-                await db.collection('contests').add({ name, description, status: 'active' });
-                document.getElementById('contestName').value = '';
-                document.getElementById('contestDescription').value = '';
-                alert('✅ Конкурс добавлен!');
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            }
-        }
-
-        async function addInfo() {
-            const title = document.getElementById('infoTitle').value.trim();
-            const text = document.getElementById('infoText').value.trim();
-            if (!title || !text) { alert('Заполните все поля'); return; }
-
-            try {
-                await db.collection('info').add({ title, text });
-                document.getElementById('infoTitle').value = '';
-                document.getElementById('infoText').value = '';
-                alert('✅ Информация добавлена!');
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            }
-        }
-
-        async function resetAllData() {
-            if (!confirm('⚠️ ВСЕ данные будут удалены! Продолжить?')) return;
-            if (!confirm('Точно-точно? Это последнее предупреждение!')) return;
-
-            try {
-                const collections = ['users', 'schedule', 'materials', 'contests', 'info'];
-                for (const col of collections) {
-                    const snap = await db.collection(col).get();
-                    const batch = db.batch();
-                    snap.docs.forEach(doc => batch.delete(doc.ref));
-                    await batch.commit();
-                }
-                // Recreate test admin
-                await db.collection('users').add({
-                    name: 'Тест',
-                    phone: '89004346000',
-                    password: '6000',
-                    role: 'admin'
-                });
-                alert('✅ Данные сброшены!');
-                doLogout();
-            } catch (e) {
-                alert('Ошибка: ' + e.message);
-            }
-        }
-
-        // INIT
-        if (currentUser) {
-            document.getElementById('userInfo').style.display = 'inline-flex';
-            document.getElementById('userName').textContent = currentUser.name;
-            document.getElementById('userRole').textContent = currentUser.role === 'admin' ? '👑 Админ' : '👤 Сотрудник';
-            document.getElementById('mainNav').style.display = 'flex';
-            if (currentUser.role === 'admin') {
-                document.getElementById('adminBtn').style.display = 'inline-block';
-            }
-            subscribeToData();
-        }
-
-        checkAuth();
     </script>
 </body>
 </html>
