@@ -8,7 +8,6 @@
 * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Arial, sans-serif; }
 body { background: #f5f5f5; }
 
-/* LOGIN SCREEN */
 #loginScreen {
   position: fixed; top: 0; left: 0; width: 100%; height: 100%;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -37,7 +36,6 @@ body { background: #f5f5f5; }
   margin-top: 20px; font-size: 13px; color: #856404;
 }
 
-/* MAIN APP */
 #mainApp { display: none; }
 .header {
   background: white; padding: 15px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
@@ -88,7 +86,6 @@ body { background: #f5f5f5; }
 .btn-primary:hover { background: #5568d3; }
 .btn-danger { background: #dc3545; color: white; }
 .btn-danger:hover { background: #c82333; }
-.btn-success { background: #28a745; color: white; }
 
 table { width: 100%; border-collapse: collapse; margin-top: 15px; }
 th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
@@ -128,18 +125,7 @@ tr:hover { background: #f8f9fa; }
   transition: width 0.3s;
 }
 
-.loading {
-  text-align: center; padding: 40px; color: #666;
-}
-.loading::after {
-  content: '...'; animation: dots 1.5s infinite;
-}
-@keyframes dots {
-  0%, 20% { content: '.'; }
-  40% { content: '..'; }
-  60%, 100% { content: '...'; }
-}
-
+.loading { text-align: center; padding: 40px; color: #666; }
 .error-msg { color: #dc3545; margin-top: 10px; font-size: 14px; }
 .success-msg { color: #28a745; margin-top: 10px; font-size: 14px; }
 
@@ -152,7 +138,6 @@ tr:hover { background: #f8f9fa; }
 </head>
 <body>
 
-<!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <div class="login-box">
     <h1> ДОМОВИД</h1>
@@ -169,7 +154,6 @@ tr:hover { background: #f8f9fa; }
   </div>
 </div>
 
-<!-- MAIN APP -->
 <div id="mainApp">
   <div class="header">
     <h2>🏠 ДОМОВИД</h2>
@@ -180,24 +164,23 @@ tr:hover { background: #f8f9fa; }
   </div>
 
   <div class="nav-tabs">
-    <div class="nav-tab active" onclick="showSection('schedule')">📅 График</div>
-    <div class="nav-tab" onclick="showSection('plan')">📈 План</div>
-    <div class="nav-tab" onclick="showSection('materials')"> Обучение</div>
-    <div class="nav-tab" onclick="showSection('competitions')"> Конкурсы</div>
-    <div class="nav-tab" onclick="showSection('news')">📢 Информация</div>
-    <div class="nav-tab" onclick="showSection('stats')"> Статистика</div>
-    <div class="nav-tab" id="adminTab" onclick="showSection('admin')" style="display:none;">⚙️ Админ</div>
+    <div class="nav-tab active" onclick="showSection('schedule', this)">📅 График</div>
+    <div class="nav-tab" onclick="showSection('plan', this)">📈 План</div>
+    <div class="nav-tab" onclick="showSection('materials', this)">📚 Обучение</div>
+    <div class="nav-tab" onclick="showSection('competitions', this)">🏆 Конкурсы</div>
+    <div class="nav-tab" onclick="showSection('news', this)">📢 Информация</div>
+    <div class="nav-tab" onclick="showSection('stats', this)"> Статистика</div>
+    <div class="nav-tab" id="adminTab" onclick="showSection('admin', this)" style="display:none;">⚙️ Админ</div>
   </div>
 
   <div class="content">
-    <!-- SCHEDULE -->
     <div class="section active" id="section-schedule">
       <div class="card">
         <h3>📅 График работы</h3>
         <div id="adminScheduleForm" style="display:none;">
           <h4>➕ Добавить в график</h4>
           <div class="form-group">
-            <label> Дата</label>
+            <label>📅 Дата</label>
             <input type="date" id="schedDate">
           </div>
           <div class="form-group">
@@ -220,25 +203,23 @@ tr:hover { background: #f8f9fa; }
               <option value="Смена 3 (10:00 - 21:00)">Смена 3 (10:00 - 21:00)</option>
             </select>
           </div>
-          <button class="btn btn-primary" onclick="addSchedule()">➕ Добавить в график</button>
+          <button class="btn btn-primary" onclick="addSchedule()"> Добавить</button>
           <div id="scheduleMsg"></div>
         </div>
-        <div id="scheduleList" class="loading">Загрузка</div>
+        <div id="scheduleList" class="loading">Загрузка...</div>
       </div>
     </div>
 
-    <!-- PLAN -->
     <div class="section" id="section-plan">
       <div class="card">
         <h3>📈 План на месяц</h3>
-        <div id="planContent" class="loading">Загрузка</div>
+        <div id="planContent" class="loading">Загрузка...</div>
       </div>
     </div>
 
-    <!-- MATERIALS -->
     <div class="section" id="section-materials">
       <div class="card">
-        <h3>📚 Обучающие материалы</h3>
+        <h3> Обучающие материалы</h3>
         <div id="adminMaterialForm" style="display:none;">
           <h4> Новый материал</h4>
           <div class="form-group">
@@ -252,22 +233,21 @@ tr:hover { background: #f8f9fa; }
           <button class="btn btn-primary" onclick="addMaterial()">💾 Сохранить</button>
           <div id="materialMsg"></div>
         </div>
-        <div id="materialsList" class="loading">Загрузка</div>
+        <div id="materialsList" class="loading">Загрузка...</div>
       </div>
     </div>
 
-    <!-- COMPETITIONS -->
     <div class="section" id="section-competitions">
       <div class="card">
         <h3>🏆 Конкурсы персонала</h3>
         <div id="adminCompetitionForm" style="display:none;">
           <h4>➕ Добавить конкурс</h4>
           <div class="form-group">
-            <label>🏆 Название конкурса</label>
+            <label> Название конкурса</label>
             <input type="text" id="compName">
           </div>
           <div class="form-group">
-            <label> Описание</label>
+            <label>📝 Описание</label>
             <textarea id="compDesc"></textarea>
           </div>
           <div class="form-group">
@@ -277,17 +257,16 @@ tr:hover { background: #f8f9fa; }
               <option value="Завершен">Завершен</option>
             </select>
           </div>
-          <button class="btn btn-primary" onclick="addCompetition()">➕ Добавить конкурс</button>
+          <button class="btn btn-primary" onclick="addCompetition()">➕ Добавить</button>
           <div id="competitionMsg"></div>
         </div>
-        <div id="competitionsList" class="loading">Загрузка</div>
+        <div id="competitionsList" class="loading">Загрузка...</div>
       </div>
     </div>
 
-    <!-- NEWS -->
     <div class="section" id="section-news">
       <div class="card">
-        <h3>📢 Информация</h3>
+        <h3> Информация</h3>
         <div id="adminNewsForm" style="display:none;">
           <h4>📢 Добавить информацию</h4>
           <div class="form-group">
@@ -298,40 +277,38 @@ tr:hover { background: #f8f9fa; }
             <label>📝 Текст</label>
             <textarea id="newsText"></textarea>
           </div>
-          <button class="btn btn-primary" onclick="addNews()"> Добавить</button>
+          <button class="btn btn-primary" onclick="addNews()">➕ Добавить</button>
           <div id="newsMsg"></div>
         </div>
-        <div id="newsList" class="loading">Загрузка</div>
+        <div id="newsList" class="loading">Загрузка...</div>
       </div>
     </div>
 
-    <!-- STATS -->
     <div class="section" id="section-stats">
       <div class="card">
-        <h3> Статистика</h3>
-        <div id="statsContent" class="loading">Загрузка</div>
+        <h3>📊 Статистика</h3>
+        <div id="statsContent" class="loading">Загрузка...</div>
       </div>
     </div>
 
-    <!-- ADMIN -->
     <div class="section" id="section-admin">
       <div class="card">
         <h3>⚙️ Админ-панель</h3>
         <div class="nav-tabs" style="margin-bottom: 20px;">
-          <div class="nav-tab active" onclick="showAdminTab('users')">👥 Сотрудники</div>
-          <div class="nav-tab" onclick="showAdminTab('addUser')">➕ Добавить</div>
-          <div class="nav-tab" onclick="showAdminTab('danger')">⚠️ Сброс</div>
+          <div class="nav-tab active" onclick="showAdminTab('users', this)">👥 Сотрудники</div>
+          <div class="nav-tab" onclick="showAdminTab('addUser', this)">➕ Добавить</div>
+          <div class="nav-tab" onclick="showAdminTab('danger', this)">⚠️ Сброс</div>
         </div>
 
         <div id="admin-users">
           <h4>👥 Список сотрудников <span id="usersCount">0</span></h4>
-          <div id="usersList" class="loading">Загрузка</div>
+          <div id="usersList" class="loading">Загрузка...</div>
         </div>
 
         <div id="admin-addUser" style="display:none;">
           <h4>➕ Добавить сотрудника</h4>
           <div class="form-group">
-            <label> ФИО</label>
+            <label>👤 ФИО</label>
             <input type="text" id="newUserName">
           </div>
           <div class="form-group">
@@ -349,7 +326,7 @@ tr:hover { background: #f8f9fa; }
               <option value="admin">👑 Администратор</option>
             </select>
           </div>
-          <button class="btn btn-primary" onclick="addUser()">➕ Добавить сотрудника</button>
+          <button class="btn btn-primary" onclick="addUser()">➕ Добавить</button>
           <div id="addUserMsg"></div>
         </div>
 
@@ -363,15 +340,12 @@ tr:hover { background: #f8f9fa; }
   </div>
 </div>
 
-<!-- FIREBASE SDK -->
 <script type="module">
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
 import { 
-  getFirestore, collection, addDoc, getDocs, deleteDoc, 
-  doc, updateDoc, query, where, orderBy 
+  getFirestore, collection, addDoc, getDocs, deleteDoc, doc, query, where 
 } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
-// ВАША КОНФИГУРАЦИЯ FIREBASE
 const firebaseConfig = {
   apiKey: "AIzaSyCfqwFifdkvc2nsm-Y8WJGE2_1zf6V4jYM",
   authDomain: "domovid-853c1.firebaseapp.com",
@@ -381,15 +355,12 @@ const firebaseConfig = {
   appId: "1:659487311850:web:3bedbc0e6a729bab551493"
 };
 
-// Инициализация
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// Глобальные переменные
 let currentUser = null;
 let allUsers = [];
 
-// ===== АВТОРИЗАЦИЯ =====
 window.doLogin = async function() {
   const phone = document.getElementById('loginPhone').value.trim();
   const password = document.getElementById('loginPassword').value.trim();
@@ -442,7 +413,6 @@ window.doLogout = function() {
   document.getElementById('loginBtn').textContent = 'Войти';
 };
 
-// ===== ЗАГРУЗКА ДАННЫХ =====
 async function loadCollection(name) {
   try {
     const snapshot = await getDocs(collection(db, name));
@@ -465,7 +435,6 @@ async function loadAllData() {
   ]);
 }
 
-// ===== ГРАФИК =====
 async function loadSchedule() {
   const list = document.getElementById('scheduleList');
   const data = await loadCollection('schedule');
@@ -493,7 +462,6 @@ async function loadSchedule() {
   html += '</table>';
   list.innerHTML = html;
   
-  // Заполнить select сотрудников
   const select = document.getElementById('schedEmployee');
   select.innerHTML = '<option value="">-- Выберите сотрудника --</option>';
   allUsers.forEach(u => {
@@ -529,7 +497,6 @@ window.deleteSchedule = async function(id) {
   await loadSchedule();
 };
 
-// ===== ПЛАН =====
 async function loadPlan() {
   const content = document.getElementById('planContent');
   const data = await loadCollection('plan');
@@ -567,7 +534,6 @@ async function loadPlan() {
   `;
 }
 
-// ===== МАТЕРИАЛЫ =====
 async function loadMaterials() {
   const list = document.getElementById('materialsList');
   const data = await loadCollection('materials');
@@ -580,10 +546,10 @@ async function loadMaterials() {
   let html = '';
   data.forEach(item => {
     html += `<div class="item-card">
-      <h4>📚 ${item.title || 'Без названия'}</h4>
+      <h4> ${item.title || 'Без названия'}</h4>
       <p>${item.text || ''}</p>`;
     if (currentUser.role === 'admin') {
-      html += `<button class="delete-btn" onclick="deleteMaterial('${item.id}')">🗑️ Удалить</button>`;
+      html += `<button class="delete-btn" onclick="deleteMaterial('${item.id}')">️ Удалить</button>`;
     }
     html += `</div>`;
   });
@@ -617,7 +583,6 @@ window.deleteMaterial = async function(id) {
   await loadMaterials();
 };
 
-// ===== КОНКУРСЫ =====
 async function loadCompetitions() {
   const list = document.getElementById('competitionsList');
   const data = await loadCollection('competitions');
@@ -670,7 +635,6 @@ window.deleteCompetition = async function(id) {
   await loadCompetitions();
 };
 
-// ===== НОВОСТИ =====
 async function loadNews() {
   const list = document.getElementById('newsList');
   const data = await loadCollection('news');
@@ -720,499 +684,6 @@ window.deleteNews = async function(id) {
   await loadNews();
 };
 
-// ===== ПОЛЬЗОВАТЕЛИ =====
-async function loadUsers() {
-  allUsers = await loadCollection('users');
-  document.getElementById('usersCount').textContent = allUsers.length;
-  
-  const list = document.getElementById('usersList');
-  if (allUsers.length === 0) {
-    list.innerHTML = '<p style="color:#999;">Сотрудников нет</p>';
-    return;
-  }
-  
-  let html = '<table><tr><th>ФИО</th><th>Телефон</th><th>Роль</th><th></th></tr>';
-  allUsers.forEach(u => {
-    const roleText = u.role === 'admin' ? '👑 Админ' : '👤 Сотрудник';
-    html += `<tr>
-      <td>${u.name || '-'}</td>
-      <td>${u.phone || '-'}</td>
-      <td>${roleText}</td>
-      <td>${u.id !== currentUser.id ? `<button class="delete-btn" onclick="deleteUser('${u.id}')">️</button>` : ''}</td>
-    </tr>`;
-  });
-  html += '</table>';
-  list.innerHTML = html;
-}
-
-window.addUser = async function() {
-  const name = document.getElementById('newUserName').value.trim();
-  const phone = document.getElementById('newUserPhone').value.trim();
-  const password = document.getElementById('newUserPassword').value.trim();
-  const role = document.getElementById('newUserRole').value;
-  const msg = document.getElementById('addUserMsg');
-  
-  if (!name || !phone || !password) {
-    msg.innerHTML = '<span class="error-msg">Заполните все поля</span>';
-    return;
-  }
-  
-  try {
-    await addDoc(collection(db, 'users'), { name, phone, password, role });
-    msg.innerHTML = '<span class="success-msg">✅ Сотрудник добавлен</span>';
-    document.getElementById('newUserName').value = '';
-    document.getElementById('newUserPhone').value = '';
-    document.getElementById('newUserPassword').value = '';
-    await loadUsers();
-  } catch (e) {
-    msg.innerHTML = '<span class="error-msg">❌ ' + e.message + '</span>';
-  }
-};
-
-window.deleteUser = async function(id) {
-  if (!confirm('Удалить сотрудника?')) return;
-  await deleteDoc(doc(db, 'users', id));
-  await loadUsers();
-};
-
-// ===== СТАТИСТИКА =====
-async function loadStats() {
-  const content = document.getElementById('statsContent');
-  const [schedule, users, materials, competitions, news] = await Promise.all([
-    loadCollection('schedule'),
-    loadCollection('users'),
-    loadCollection('materials'),
-    loadCollection('competitions'),
-    loadCollection('news')
-  ]);
-  
-  const activeCompetitions = competitions.filter(c => c.status === 'Активный').length;
-  
-  content.innerHTML = `
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="value">${users.length}</div>
-        <div class="label">👥 Сотрудников</div>
-      </div>
-      <div class="stat-card">
-        <div class="value">${schedule.length}</div>
-        <div class="label">📅 Записей в графике</div>
-      </div>
-      <div class="stat-card">
-        <div class="value">${materials.length}</div>
-        <div class="label"> Материалов</div>
-      </div>
-      <div class="stat-card">
-        <div class="value">${activeCompetitions}</div>
-        <div class="label"> Активных конкурсов</div>
-      </div>
-      <div class="stat-card">
-        <div class="value">${news.length}</div>
-        <div class="label">📢 Новостей</div>
-      </div>
-    </div>
-  `;
-}
-
-// ===== СБРОС ДАННЫХ =====
-window.resetAllData = async function() {
-  if (!confirm('️ ВЫ УВЕРЕНЫ? Все данные будут удалены безвозвратно!')) return;
-  if (!confirm('Последнее предупреждение! Продолжить?')) return;
-  
-  const collections = ['users', 'schedule', 'plan', 'materials', 'competitions', 'news'];
-  
-  for (const colName of collections) {
-    const data = await loadCollection(colName);
-    for (const item of data) {
-      await deleteDoc(doc(db, colName, item.id));
-    }
-  }
-  
-  alert('✅ Все данные удалены');
-  doLogout();
-};
-
-// ===== НАВИГАЦИЯ =====
-window.showSection = function(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('section-' + name).classList.add('active');
-  event.target.classList.add('active');
-};
-
-window.showAdminTab = function(name) {
-  ['users', 'addUser', 'danger'].forEach(t => {
-    document.getElementById('admin-' + t).style.display = 'none';
-  });
-  document.getElementById('admin-' + name).style.display = 'block';
-};
-
-// Enter для входа
-document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') doLogin();
-});
-</script>
-
-</body>
-</html>
-<!-- FIREBASE SDK -->
-<script type="module">
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-import { 
-  getFirestore, collection, addDoc, getDocs, deleteDoc, 
-  doc, updateDoc, query, where, orderBy 
-} from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
-
-// ВАША КОНФИГУРАЦИЯ FIREBASE
-const firebaseConfig = {
-  apiKey: "AIzaSyCfqwFifdkvc2nsm-Y8WJGE2_1zf6V4jYM",
-  authDomain: "domovid-853c1.firebaseapp.com",
-  projectId: "domovid-853c1",
-  storageBucket: "domovid-853c1.firebasestorage.app",
-  messagingSenderId: "659487311850",
-  appId: "1:659487311850:web:3bedbc0e6a729bab551493"
-};
-
-// Инициализация
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-// Глобальные переменные
-let currentUser = null;
-let allUsers = [];
-
-// ===== АВТОРИЗАЦИЯ =====
-window.doLogin = async function() {
-  const phone = document.getElementById('loginPhone').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
-  const errorDiv = document.getElementById('loginError');
-  const btn = document.getElementById('loginBtn');
-  
-  errorDiv.textContent = '';
-  btn.disabled = true;
-  btn.textContent = 'Вход...';
-  
-  try {
-    const q = query(collection(db, 'users'), where('phone', '==', phone), where('password', '==', password));
-    const snapshot = await getDocs(q);
-    
-    if (snapshot.empty) {
-      errorDiv.textContent = '❌ Неверный телефон или пароль';
-      btn.disabled = false;
-      btn.textContent = 'Войти';
-      return;
-    }
-    
-    const userData = snapshot.docs[0].data();
-    currentUser = { id: snapshot.docs[0].id, ...userData };
-    
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('mainApp').style.display = 'block';
-    document.getElementById('currentUserName').textContent = '👤 ' + userData.name;
-    
-    if (userData.role === 'admin') {
-      document.getElementById('adminTab').style.display = 'block';
-      document.getElementById('adminScheduleForm').style.display = 'block';
-      document.getElementById('adminMaterialForm').style.display = 'block';
-      document.getElementById('adminCompetitionForm').style.display = 'block';
-      document.getElementById('adminNewsForm').style.display = 'block';
-    }
-    
-    await loadAllData();
-  } catch (e) {
-    errorDiv.textContent = ' Ошибка: ' + e.message;
-    btn.disabled = false;
-    btn.textContent = 'Войти';
-  }
-};
-
-window.doLogout = function() {
-  currentUser = null;
-  document.getElementById('mainApp').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('loginBtn').disabled = false;
-  document.getElementById('loginBtn').textContent = 'Войти';
-};
-
-// ===== ЗАГРУЗКА ДАННЫХ =====
-async function loadCollection(name) {
-  try {
-    const snapshot = await getDocs(collection(db, name));
-    return snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-  } catch (e) {
-    console.error('Ошибка загрузки ' + name + ':', e);
-    return [];
-  }
-}
-
-async function loadAllData() {
-  await Promise.all([
-    loadSchedule(),
-    loadPlan(),
-    loadMaterials(),
-    loadCompetitions(),
-    loadNews(),
-    loadUsers(),
-    loadStats()
-  ]);
-}
-
-// ===== ГРАФИК =====
-async function loadSchedule() {
-  const list = document.getElementById('scheduleList');
-  const data = await loadCollection('schedule');
-  
-  if (data.length === 0) {
-    list.innerHTML = '<p style="color:#999;">Записей пока нет</p>';
-    return;
-  }
-  
-  let html = '<table><tr><th>Дата</th><th>Сотрудник</th><th>Тип</th><th>Смена</th>';
-  if (currentUser.role === 'admin') html += '<th></th>';
-  html += '</tr>';
-  
-  data.forEach(item => {
-    html += `<tr>
-      <td>${item.date || '-'}</td>
-      <td>${item.employee || '-'}</td>
-      <td>${item.type || '-'}</td>
-      <td>${item.shift || '-'}</td>`;
-    if (currentUser.role === 'admin') {
-      html += `<td><button class="delete-btn" onclick="deleteSchedule('${item.id}')">🗑️</button></td>`;
-    }
-    html += '</tr>';
-  });
-  html += '</table>';
-  list.innerHTML = html;
-  
-  // Заполнить select сотрудников
-  const select = document.getElementById('schedEmployee');
-  select.innerHTML = '<option value="">-- Выберите сотрудника --</option>';
-  allUsers.forEach(u => {
-    select.innerHTML += `<option value="${u.name}">${u.name}</option>`;
-  });
-}
-
-window.addSchedule = async function() {
-  const date = document.getElementById('schedDate').value;
-  const employee = document.getElementById('schedEmployee').value;
-  const type = document.getElementById('schedType').value;
-  const shift = document.getElementById('schedShift').value;
-  const msg = document.getElementById('scheduleMsg');
-  
-  if (!date || !employee) {
-    msg.innerHTML = '<span class="error-msg">Заполните дату и сотрудника</span>';
-    return;
-  }
-  
-  try {
-    await addDoc(collection(db, 'schedule'), { date, employee, type, shift });
-    msg.innerHTML = '<span class="success-msg">✅ Добавлено</span>';
-    document.getElementById('schedDate').value = '';
-    await loadSchedule();
-  } catch (e) {
-    msg.innerHTML = '<span class="error-msg"> ' + e.message + '</span>';
-  }
-};
-
-window.deleteSchedule = async function(id) {
-  if (!confirm('Удалить запись?')) return;
-  await deleteDoc(doc(db, 'schedule', id));
-  await loadSchedule();
-};
-
-// ===== ПЛАН =====
-async function loadPlan() {
-  const content = document.getElementById('planContent');
-  const data = await loadCollection('plan');
-  
-  if (data.length === 0) {
-    content.innerHTML = '<p style="color:#999;">План ещё не установлен</p>';
-    return;
-  }
-  
-  const plan = data[0];
-  const percent = plan.target > 0 ? Math.round((plan.current / plan.target) * 100) : 0;
-  
-  content.innerHTML = `
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="value">${plan.month || '-'}</div>
-        <div class="label">Месяц</div>
-      </div>
-      <div class="stat-card">
-        <div class="value">${(plan.target || 0).toLocaleString()} ₽</div>
-        <div class="label">Цель</div>
-      </div>
-      <div class="stat-card">
-        <div class="value">${(plan.current || 0).toLocaleString()} ₽</div>
-        <div class="label">Выполнено</div>
-      </div>
-      <div class="stat-card">
-        <div class="value">${percent}%</div>
-        <div class="label">Прогресс</div>
-      </div>
-    </div>
-    <div class="progress-bar">
-      <div class="progress-fill" style="width: ${percent}%"></div>
-    </div>
-  `;
-}
-
-// ===== МАТЕРИАЛЫ =====
-async function loadMaterials() {
-  const list = document.getElementById('materialsList');
-  const data = await loadCollection('materials');
-  
-  if (data.length === 0) {
-    list.innerHTML = '<p style="color:#999;">Материалов пока нет</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(item => {
-    html += `<div class="item-card">
-      <h4>📚 ${item.title || 'Без названия'}</h4>
-      <p>${item.text || ''}</p>`;
-    if (currentUser.role === 'admin') {
-      html += `<button class="delete-btn" onclick="deleteMaterial('${item.id}')">🗑️ Удалить</button>`;
-    }
-    html += `</div>`;
-  });
-  list.innerHTML = html;
-}
-
-window.addMaterial = async function() {
-  const title = document.getElementById('matTitle').value.trim();
-  const text = document.getElementById('matText').value.trim();
-  const msg = document.getElementById('materialMsg');
-  
-  if (!title || !text) {
-    msg.innerHTML = '<span class="error-msg">Заполните все поля</span>';
-    return;
-  }
-  
-  try {
-    await addDoc(collection(db, 'materials'), { title, text });
-    msg.innerHTML = '<span class="success-msg">✅ Сохранено</span>';
-    document.getElementById('matTitle').value = '';
-    document.getElementById('matText').value = '';
-    await loadMaterials();
-  } catch (e) {
-    msg.innerHTML = '<span class="error-msg">❌ ' + e.message + '</span>';
-  }
-};
-
-window.deleteMaterial = async function(id) {
-  if (!confirm('Удалить материал?')) return;
-  await deleteDoc(doc(db, 'materials', id));
-  await loadMaterials();
-};
-
-// ===== КОНКУРСЫ =====
-async function loadCompetitions() {
-  const list = document.getElementById('competitionsList');
-  const data = await loadCollection('competitions');
-  
-  if (data.length === 0) {
-    list.innerHTML = '<p style="color:#999;">Конкурсов пока нет</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(item => {
-    const statusColor = item.status === 'Активный' ? '#28a745' : '#6c757d';
-    html += `<div class="item-card" style="border-left-color: ${statusColor};">
-      <h4> ${item.name || 'Без названия'}</h4>
-      <p>${item.description || ''}</p>
-      <div class="meta">Статус: <b style="color:${statusColor}">${item.status || '-'}</b></div>`;
-    if (currentUser.role === 'admin') {
-      html += `<button class="delete-btn" onclick="deleteCompetition('${item.id}')">️ Удалить</button>`;
-    }
-    html += `</div>`;
-  });
-  list.innerHTML = html;
-}
-
-window.addCompetition = async function() {
-  const name = document.getElementById('compName').value.trim();
-  const description = document.getElementById('compDesc').value.trim();
-  const status = document.getElementById('compStatus').value;
-  const msg = document.getElementById('competitionMsg');
-  
-  if (!name) {
-    msg.innerHTML = '<span class="error-msg">Введите название</span>';
-    return;
-  }
-  
-  try {
-    await addDoc(collection(db, 'competitions'), { name, description, status });
-    msg.innerHTML = '<span class="success-msg">✅ Добавлено</span>';
-    document.getElementById('compName').value = '';
-    document.getElementById('compDesc').value = '';
-    await loadCompetitions();
-  } catch (e) {
-    msg.innerHTML = '<span class="error-msg">❌ ' + e.message + '</span>';
-  }
-};
-
-window.deleteCompetition = async function(id) {
-  if (!confirm('Удалить конкурс?')) return;
-  await deleteDoc(doc(db, 'competitions', id));
-  await loadCompetitions();
-};
-
-// ===== НОВОСТИ =====
-async function loadNews() {
-  const list = document.getElementById('newsList');
-  const data = await loadCollection('news');
-  
-  if (data.length === 0) {
-    list.innerHTML = '<p style="color:#999;">Новостей пока нет</p>';
-    return;
-  }
-  
-  let html = '';
-  data.forEach(item => {
-    html += `<div class="item-card">
-      <h4>📢 ${item.title || 'Без заголовка'}</h4>
-      <p>${item.text || ''}</p>`;
-    if (currentUser.role === 'admin') {
-      html += `<button class="delete-btn" onclick="deleteNews('${item.id}')">🗑️ Удалить</button>`;
-    }
-    html += `</div>`;
-  });
-  list.innerHTML = html;
-}
-
-window.addNews = async function() {
-  const title = document.getElementById('newsTitle').value.trim();
-  const text = document.getElementById('newsText').value.trim();
-  const msg = document.getElementById('newsMsg');
-  
-  if (!title || !text) {
-    msg.innerHTML = '<span class="error-msg">Заполните все поля</span>';
-    return;
-  }
-  
-  try {
-    await addDoc(collection(db, 'news'), { title, text });
-    msg.innerHTML = '<span class="success-msg">✅ Добавлено</span>';
-    document.getElementById('newsTitle').value = '';
-    document.getElementById('newsText').value = '';
-    await loadNews();
-  } catch (e) {
-    msg.innerHTML = '<span class="error-msg">❌ ' + e.message + '</span>';
-  }
-};
-
-window.deleteNews = async function(id) {
-  if (!confirm('Удалить новость?')) return;
-  await deleteDoc(doc(db, 'news', id));
-  await loadNews();
-};
-
-// ===== ПОЛЬЗОВАТЕЛИ =====
 async function loadUsers() {
   allUsers = await loadCollection('users');
   document.getElementById('usersCount').textContent = allUsers.length;
@@ -1257,7 +728,7 @@ window.addUser = async function() {
     document.getElementById('newUserPassword').value = '';
     await loadUsers();
   } catch (e) {
-    msg.innerHTML = '<span class="error-msg">❌ ' + e.message + '</span>';
+    msg.innerHTML = '<span class="error-msg"> ' + e.message + '</span>';
   }
 };
 
@@ -1267,7 +738,6 @@ window.deleteUser = async function(id) {
   await loadUsers();
 };
 
-// ===== СТАТИСТИКА =====
 async function loadStats() {
   const content = document.getElementById('statsContent');
   const [schedule, users, materials, competitions, news] = await Promise.all([
@@ -1284,7 +754,7 @@ async function loadStats() {
     <div class="stats-grid">
       <div class="stat-card">
         <div class="value">${users.length}</div>
-        <div class="label">👥 Сотрудников</div>
+        <div class="label"> Сотрудников</div>
       </div>
       <div class="stat-card">
         <div class="value">${schedule.length}</div>
@@ -1292,7 +762,7 @@ async function loadStats() {
       </div>
       <div class="stat-card">
         <div class="value">${materials.length}</div>
-        <div class="label"> Материалов</div>
+        <div class="label">📚 Материалов</div>
       </div>
       <div class="stat-card">
         <div class="value">${activeCompetitions}</div>
@@ -1300,13 +770,12 @@ async function loadStats() {
       </div>
       <div class="stat-card">
         <div class="value">${news.length}</div>
-        <div class="label"> Новостей</div>
+        <div class="label">📢 Новостей</div>
       </div>
     </div>
   `;
 }
 
-// ===== СБРОС ДАННЫХ =====
 window.resetAllData = async function() {
   if (!confirm('⚠️ ВЫ УВЕРЕНЫ? Все данные будут удалены безвозвратно!')) return;
   if (!confirm('Последнее предупреждение! Продолжить?')) return;
@@ -1324,22 +793,22 @@ window.resetAllData = async function() {
   doLogout();
 };
 
-// ===== НАВИГАЦИЯ =====
-window.showSection = function(name) {
+window.showSection = function(name, el) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
   document.getElementById('section-' + name).classList.add('active');
-  event.target.classList.add('active');
+  if (el) el.classList.add('active');
 };
 
-window.showAdminTab = function(name) {
+window.showAdminTab = function(name, el) {
   ['users', 'addUser', 'danger'].forEach(t => {
     document.getElementById('admin-' + t).style.display = 'none';
   });
   document.getElementById('admin-' + name).style.display = 'block';
+  document.querySelectorAll('#section-admin .nav-tab').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
 };
 
-// Enter для входа
 document.getElementById('loginPassword').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') doLogin();
 });
