@@ -620,6 +620,7 @@
         const db = getFirestore(app);
 
         const shiftTimes = { 1: '10:00 - 19:00', 2: '12:00 - 21:00', 3: '10:00 - 21:00' };
+        const shiftLabels = { 1: '9/1', 2: '9/2', 3: '11' }; // ДОБАВЛЕНО ДЛЯ ОТОБРАЖЕНИЯ НУЖНЫХ НАЗВАНИЙ СМЕН
         const typeLabels = { kassa: 'Касса', kd: 'КД', other: 'Без указания' };
         const MAX_FILE_SIZE = 5 * 1024 * 1024;
         const RECOMMENDED_FILE_SIZE = 2 * 1024 * 1024;
@@ -969,7 +970,8 @@
                     const shiftDiv = document.createElement('div');
                     shiftDiv.className = `shift ${group.type}`;
                     const badgeClass = group.type === 'kassa' ? 'badge-kassa' : group.type === 'kd' ? 'badge-kd' : 'badge-other';
-                    shiftDiv.innerHTML = `<div class="shift-header"><div><span class="shift-type">Смена ${group.shift}</span><span class="shift-time">(${shiftTimes[group.shift]})</span></div><span class="shift-badge ${badgeClass}">${typeLabels[group.type]}</span></div><div class="shift-employees">${group.employees.map(emp => `<span class="employee-tag ${group.type}">${emp}</span>`).join('')}</div>`;
+                    // ИЗМЕНЕНО: Добавлено использование shiftLabels для корректного отображения названия смены
+                    shiftDiv.innerHTML = `<div class="shift-header"><div><span class="shift-type">Смена ${shiftLabels[group.shift] || group.shift}</span><span class="shift-time">(${shiftTimes[group.shift]})</span></div><span class="shift-badge ${badgeClass}">${typeLabels[group.type]}</span></div><div class="shift-employees">${group.employees.map(emp => `<span class="employee-tag ${group.type}">${emp}</span>`).join('')}</div>`;
                     dateCard.appendChild(shiftDiv);
                 });
                 grid.appendChild(dateCard);
@@ -989,7 +991,8 @@
                     item.className = `schedule-item ${status === 'past' ? 'past' : ''}`;
                     const badgeClass = entry.type === 'kassa' ? 'badge-kassa' : entry.type === 'kd' ? 'badge-kd' : 'badge-other';
                     let statusMark = status === 'past' ? ' ✓' : (status === 'today' ? ' 🔵' : '');
-                    item.innerHTML = `<div class="schedule-item-info"><span>📅 ${date}${statusMark}</span><span>👤 ${entry.employee}</span><span class="shift-badge ${badgeClass}">${typeLabels[entry.type]}</span><span>Смена ${entry.shift}</span></div><button class="btn btn-danger btn-sm" onclick="deleteScheduleEntry('${entry.id}')">✕</button>`;
+                    // ИЗМЕНЕНО: Добавлено использование shiftLabels для корректного отображения названия смены
+                    item.innerHTML = `<div class="schedule-item-info"><span>📅 ${date}${statusMark}</span><span>👤 ${entry.employee}</span><span class="shift-badge ${badgeClass}">${typeLabels[entry.type]}</span><span>Смена ${shiftLabels[entry.shift] || entry.shift}</span></div><button class="btn btn-danger btn-sm" onclick="deleteScheduleEntry('${entry.id}')">✕</button>`;
                     list.appendChild(item);
                 });
             });
