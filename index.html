@@ -619,7 +619,7 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const shiftTimes = { 9/1: '10:00 - 19:00', 9/2: '12:00 - 21:00', 11: '10:00 - 21:00' };
+        const shiftTimes = { 1: '10:00 - 19:00', 2: '12:00 - 21:00', 3: '10:00 - 21:00' };
         const typeLabels = { kassa: 'Касса', kd: 'КД', other: 'Без указания' };
         const MAX_FILE_SIZE = 5 * 1024 * 1024;
         const RECOMMENDED_FILE_SIZE = 2 * 1024 * 1024;
