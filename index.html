@@ -12,6 +12,7 @@
             --success: #28a745; --danger: #dc3545; --warning: #fd7e14;
             --info: #17a2b8; --gold: #ffc107; --dark: #333; --gray: #666;
             --light-gray: #999; --bg: #f8f9fa; --border: #e9ecef;
+            --brand-green: #2d8b4d; --brand-orange: #e87722;
             --shadow-sm: 0 2px 4px rgba(0,0,0,0.05); --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
             --radius-sm: 8px; --radius-md: 12px; --radius-lg: 16px; --radius-xl: 20px;
         }
@@ -37,25 +38,160 @@
         .login-error.show { display: block; }
         .login-hint { background: #e7f3ff; border-left: 3px solid var(--info); padding: 10px 12px; border-radius: 6px; margin-top: 14px; font-size: 0.82em; color: #0c5460; line-height: 1.4; text-align: left; }
         
-        .app-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 16px; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-md); }
-        .header-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-        .header-title h1 { font-size: 1.3em; font-weight: 700; letter-spacing: 0.5px; }
-        .header-subtitle { font-size: 0.75em; opacity: 0.85; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-        .current-user-badge { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 10px; font-size: 0.9em; display: inline-flex; align-items: center; gap: 4px; }
-        .role-badge { background: var(--gold); color: var(--dark); padding: 1px 6px; border-radius: 8px; font-size: 0.85em; font-weight: 700; }
-        .header-clock { background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 6px 12px; border-radius: var(--radius-md); text-align: center; flex-shrink: 0; }
-        .clock-time { font-size: 1.2em; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
-        .clock-date { font-size: 0.7em; opacity: 0.9; margin-top: 1px; }
+        /* ОБНОВЛЁННАЯ ШАПКА С БАННЕРОМ */
+        .app-header { 
+            position: sticky; 
+            top: 0; 
+            z-index: 100; 
+            box-shadow: var(--shadow-md);
+        }
+        
+        .header-banner {
+            position: relative;
+            width: 100%;
+            height: auto;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-orange) 100%);
+        }
+        
+        .header-banner img {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-height: 200px;
+            object-fit: cover;
+            object-position: center;
+        }
+        
+        /* Контейнер для контента поверх баннера */
+        .header-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 8px 16px 12px;
+            z-index: 2;
+        }
+        
+        .header-top { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .header-title {
+            margin-top: -8px;
+        }
+        
+        .header-title h1 { 
+            font-size: 1.5em; 
+            font-weight: 800; 
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-orange) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            margin-bottom: 4px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+        }
+        
+        .header-subtitle { 
+            font-size: 0.85em; 
+            color: var(--brand-green);
+            font-weight: 600;
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            flex-wrap: wrap;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+        }
+        
+        .current-user-badge { 
+            background: rgba(255,255,255,0.95); 
+            backdrop-filter: blur(10px);
+            color: var(--brand-green);
+            padding: 6px 14px; 
+            border-radius: 20px; 
+            font-size: 0.9em; 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 6px;
+            border: 2px solid var(--brand-orange);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            font-weight: 600;
+        }
+        
+        .role-badge { 
+            background: linear-gradient(135deg, var(--brand-orange) 0%, var(--gold) 100%);
+            color: white; 
+            padding: 3px 10px; 
+            border-radius: 12px; 
+            font-size: 0.85em; 
+            font-weight: 700;
+            box-shadow: 0 2px 4px rgba(232, 119, 34, 0.3);
+        }
+        
+        .header-clock { 
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            color: var(--brand-green);
+            padding: 10px 16px; 
+            border-radius: var(--radius-lg); 
+            text-align: center; 
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            border: 2px solid var(--brand-orange);
+            margin-top: auto;
+        }
+        
+        .clock-time { 
+            font-size: 1.4em; 
+            font-weight: 800; 
+            font-variant-numeric: tabular-nums; 
+            letter-spacing: 1px;
+            background: linear-gradient(135deg, var(--brand-orange) 0%, var(--brand-green) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .clock-date { 
+            font-size: 0.8em; 
+            color: var(--brand-orange);
+            font-weight: 600;
+            margin-top: 2px; 
+        }
+        
         .clock-separator { animation: blink 1s infinite; }
         @keyframes blink { 0%, 50% { opacity: 1; } 51%, 100% { opacity: 0.3; } }
+        
+        /* Анимация лапки лисы */
+        .fox-paw {
+            display: inline-block;
+            animation: pawWave 2s ease-in-out infinite;
+            margin-left: 4px;
+        }
+        
+        @keyframes pawWave {
+            0%, 100% { transform: rotate(0deg) scale(1); }
+            25% { transform: rotate(-15deg) scale(1.1); }
+            50% { transform: rotate(0deg) scale(1); }
+            75% { transform: rotate(15deg) scale(1.1); }
+        }
         
         .top-nav { background: white; border-bottom: 1px solid var(--border); box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 99; }
         .top-nav-inner { display: flex; align-items: center; overflow-x: auto; scrollbar-width: none; -ms-overflow-style: none; padding: 0 8px; max-width: 1200px; margin: 0 auto; }
         .top-nav-inner::-webkit-scrollbar { display: none; }
         .top-nav-btn { flex-shrink: 0; background: none; border: none; padding: 10px 12px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--gray); transition: all 0.2s; font-size: 0.72em; font-weight: 600; white-space: nowrap; border-bottom: 3px solid transparent; min-width: 60px; }
         .top-nav-btn .nav-icon { font-size: 1.5em; line-height: 1; }
-        .top-nav-btn:hover { background: var(--bg); color: var(--primary); }
-        .top-nav-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
+        .top-nav-btn:hover { background: var(--bg); color: var(--brand-green); }
+        .top-nav-btn.active { color: var(--brand-green); border-bottom-color: var(--brand-orange); }
         .top-nav-btn.active .nav-icon { transform: scale(1.1); }
         .top-nav-btn:active { transform: scale(0.95); }
         .top-nav-logout { flex-shrink: 0; background: #fff5f5; color: var(--danger); border: none; padding: 8px 12px; margin-left: auto; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; font-size: 0.75em; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
@@ -65,17 +201,16 @@
         .section { display: none; animation: fadeIn 0.3s ease; }
         .section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
-        .section-title { font-size: 1.4em; font-weight: 700; color: var(--dark); margin-bottom: 14px; }
+        .section-title { font-size: 1.4em; font-weight: 700; color: var(--brand-green); margin-bottom: 14px; }
         
         .schedule-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
         .date-card { background: white; padding: 14px; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow-sm); }
-        .date-card h3 { color: var(--primary); margin-bottom: 10px; font-size: 1.05em; text-align: center; padding-bottom: 8px; border-bottom: 2px solid var(--primary); display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .date-card h3 { color: var(--brand-green); margin-bottom: 10px; font-size: 1.05em; text-align: center; padding-bottom: 8px; border-bottom: 2px solid var(--brand-orange); display: flex; justify-content: center; align-items: center; gap: 6px; flex-wrap: wrap; }
         
         .date-card.yesterday { background: #fafafa; border-color: #ddd; opacity: 0.75; }
         .date-card.yesterday h3 { color: #888; border-bottom-color: #bbb; text-decoration: line-through; }
         
         .date-card.today { border-color: var(--success); border-width: 2px; box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15); }
-        /* ИСПРАВЛЕНО: убрано text-decoration: line-through для сегодняшней даты */
         .date-card.today h3 { color: var(--success); border-bottom-color: var(--success); }
         
         .past-badge, .today-badge, .yesterday-badge, .archive-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 0.65em; font-weight: 700; text-transform: uppercase; text-decoration: none !important; }
@@ -85,7 +220,7 @@
         .archive-badge { background: #6c757d; color: white; }
         @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.4); } 50% { box-shadow: 0 0 0 6px rgba(40, 167, 69, 0); } }
         
-        .employee-schedule-card { background: white; border-radius: var(--radius-md); padding: 12px; margin: 8px 0; border-left: 4px solid var(--primary); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 6px; }
+        .employee-schedule-card { background: white; border-radius: var(--radius-md); padding: 12px; margin: 8px 0; border-left: 4px solid var(--brand-orange); box-shadow: var(--shadow-sm); display: flex; flex-direction: column; gap: 6px; }
         .employee-schedule-card.kassa { border-left-color: var(--success); }
         .employee-schedule-card.kd { border-left-color: var(--gold); }
         .employee-schedule-card.zal { border-left-color: var(--info); }
@@ -123,7 +258,7 @@
         .status-finished { background: #6c757d; color: white; }
         .contest-description { color: #555; line-height: 1.5; margin-bottom: 10px; font-size: 0.9em; }
         .results-section { margin-top: 12px; padding-top: 12px; border-top: 2px dashed var(--border); }
-        .results-section h4 { color: var(--primary); margin-bottom: 8px; font-size: 0.95em; }
+        .results-section h4 { color: var(--brand-green); margin-bottom: 8px; font-size: 0.95em; }
         .result-item { background: var(--bg); padding: 8px 10px; border-radius: var(--radius-sm); margin-bottom: 6px; border-left: 3px solid var(--info); }
         .result-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; flex-wrap: wrap; gap: 4px; }
         .result-title { font-weight: 600; color: var(--dark); font-size: 0.9em; }
@@ -160,11 +295,11 @@
         .material-actions .btn { flex: 1; min-width: 90px; }
         
         .info-block { background: white; padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
-        .info-block h3 { color: var(--primary); margin-bottom: 8px; font-size: 1.05em; }
+        .info-block h3 { color: var(--brand-green); margin-bottom: 8px; font-size: 1.05em; }
         .info-block p { color: #555; line-height: 1.5; font-size: 0.9em; }
         
         .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
-        .stat-card { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 16px 10px; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-sm); }
+        .stat-card { background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-orange) 100%); color: white; padding: 16px 10px; border-radius: var(--radius-lg); text-align: center; box-shadow: var(--shadow-sm); }
         .stat-number { font-size: 1.8em; font-weight: 800; margin-bottom: 3px; line-height: 1; }
         .stat-label { font-size: 0.75em; opacity: 0.95; line-height: 1.3; }
         
@@ -186,7 +321,7 @@
         .my-stat-icon { font-size: 1.5em; margin-bottom: 4px; }
         .my-stat-value { font-size: 1.6em; font-weight: 800; color: var(--dark); line-height: 1; margin-bottom: 2px; }
         .my-stat-label { font-size: 0.72em; color: var(--gray); line-height: 1.2; }
-        .my-stat-hours { grid-column: 1 / -1; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border-top-color: var(--gold); }
+        .my-stat-hours { grid-column: 1 / -1; background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-orange) 100%); color: white; border-top-color: var(--gold); }
         .my-stat-hours .my-stat-value { color: white; }
         .my-stat-hours .my-stat-label { color: rgba(255,255,255,0.9); }
         .my-stat-total { grid-column: 1 / -1; background: linear-gradient(135deg, var(--success) 0%, #20c997 100%); color: white; }
@@ -195,14 +330,14 @@
         .my-stats-empty { text-align: center; padding: 30px 16px; color: #856404; font-size: 0.9em; }
         .my-stats-empty-icon { font-size: 2.5em; display: block; margin-bottom: 8px; opacity: 0.6; }
         
-        .dev-block { text-align: center; padding: 40px 16px; background: white; border-radius: var(--radius-xl); border: 2px dashed var(--primary); }
+        .dev-block { text-align: center; padding: 40px 16px; background: white; border-radius: var(--radius-xl); border: 2px dashed var(--brand-green); }
         .dev-icon { font-size: 3em; margin-bottom: 12px; display: block; }
-        .dev-block h3 { color: var(--primary); margin-bottom: 8px; font-size: 1.2em; }
+        .dev-block h3 { color: var(--brand-green); margin-bottom: 8px; font-size: 1.2em; }
         .dev-block p { color: var(--gray); font-size: 0.9em; max-width: 500px; margin: 0 auto; line-height: 1.5; }
         
         .btn { padding: 10px 16px; border: none; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9em; display: inline-flex; align-items: center; justify-content: center; gap: 5px; min-height: 42px; }
         .btn:active { transform: scale(0.97); }
-        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary { background: var(--brand-green); color: white; }
         .btn-success { background: var(--success); color: white; }
         .btn-danger { background: var(--danger); color: white; }
         .btn-warning { background: var(--warning); color: white; }
@@ -217,22 +352,22 @@
         .form-group { margin-bottom: 14px; }
         .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--dark); font-size: 0.85em; }
         .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 0.95em; background: white; font-family: inherit; transition: border-color 0.2s; min-height: 42px; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--brand-green); }
         .form-group textarea { resize: vertical; min-height: 90px; }
         .form-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
         
         .admin-tabs { display: flex; gap: 4px; overflow-x: auto; background: white; padding: 6px; border-radius: var(--radius-lg); margin-bottom: 14px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); scrollbar-width: none; }
         .admin-tabs::-webkit-scrollbar { display: none; }
         .admin-tab { flex-shrink: 0; padding: 8px 12px; border: none; background: transparent; color: var(--gray); border-radius: var(--radius-sm); cursor: pointer; font-weight: 600; font-size: 0.82em; transition: all 0.2s; white-space: nowrap; min-height: 38px; }
-        .admin-tab.active { background: var(--primary); color: white; }
-        .admin-tab:not(.active):hover { background: var(--bg); color: var(--primary); }
+        .admin-tab.active { background: var(--brand-green); color: white; }
+        .admin-tab:not(.active):hover { background: var(--bg); color: var(--brand-green); }
         .admin-section { display: none; animation: fadeIn 0.3s ease; }
         .admin-section.active { display: block; }
         .admin-card { background: white; padding: 16px; border-radius: var(--radius-lg); margin-bottom: 12px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
-        .admin-card-title { font-size: 1em; font-weight: 700; color: var(--primary); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+        .admin-card-title { font-size: 1em; font-weight: 700; color: var(--brand-green); margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid var(--brand-orange); }
         .admin-card.danger-zone { background: #fff5f5; border: 2px dashed var(--danger); }
         .admin-card.danger-zone .admin-card-title { color: var(--danger); border-bottom-color: #ffc9c9; }
-        .employee-admin-item { background: var(--bg); padding: 12px; border-radius: var(--radius-md); margin-bottom: 8px; border-left: 4px solid var(--primary); }
+        .employee-admin-item { background: var(--bg); padding: 12px; border-radius: var(--radius-md); margin-bottom: 8px; border-left: 4px solid var(--brand-orange); }
         .employee-admin-item.role-admin { border-left-color: var(--gold); }
         .employee-admin-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
         .employee-admin-info { flex: 1; min-width: 150px; }
@@ -249,7 +384,7 @@
         .schedule-item.yesterday .schedule-item-info span:first-child { text-decoration: line-through; }
         .type-switcher { display: flex; gap: 4px; margin-bottom: 14px; background: var(--bg); padding: 4px; border-radius: var(--radius-sm); }
         .type-switcher button { flex: 1; padding: 8px; border: none; background: transparent; border-radius: 6px; cursor: pointer; font-weight: 600; color: var(--gray); transition: all 0.2s; font-size: 0.85em; min-height: 38px; }
-        .type-switcher button.active { background: white; color: var(--primary); box-shadow: var(--shadow-sm); }
+        .type-switcher button.active { background: white; color: var(--brand-green); box-shadow: var(--shadow-sm); }
         .file-warning { background: #fff3cd; border-left: 4px solid var(--gold); padding: 8px 10px; border-radius: 6px; margin-top: 8px; font-size: 0.82em; color: #856404; }
         .admin-contest-item { background: var(--bg); padding: 12px; border-radius: var(--radius-md); margin-bottom: 10px; border-left: 4px solid var(--success); }
         .admin-contest-item.status-finished-item { border-left-color: #6c757d; }
@@ -257,7 +392,7 @@
         .admin-contest-title { font-weight: 700; color: var(--dark); font-size: 0.95em; flex: 1; }
         .admin-contest-actions { display: flex; gap: 4px; flex-wrap: wrap; }
         .admin-contest-results { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); }
-        .admin-contest-results h5 { color: var(--primary); font-size: 0.85em; margin-bottom: 5px; margin-top: 8px; }
+        .admin-contest-results h5 { color: var(--brand-green); font-size: 0.85em; margin-bottom: 5px; margin-top: 8px; }
         .admin-contest-results h5:first-child { margin-top: 0; }
         .admin-result-item { background: white; padding: 6px 8px; border-radius: 6px; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; gap: 6px; border-left: 3px solid var(--info); }
         .admin-result-item.final { border-left-color: var(--gold); background: #fff9e6; }
@@ -272,13 +407,42 @@
         .modal.open { display: flex; }
         .modal-content { background: white; border-radius: var(--radius-xl); max-width: 700px; width: 100%; max-height: 90vh; display: flex; flex-direction: column; overflow: hidden; }
         .modal-header { padding: 16px 18px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; gap: 10px; }
-        .modal-header h3 { color: var(--primary); font-size: 1.1em; word-break: break-word; }
+        .modal-header h3 { color: var(--brand-green); font-size: 1.1em; word-break: break-word; }
         .modal-close { background: none; border: none; font-size: 1.6em; cursor: pointer; color: var(--light-gray); line-height: 1; padding: 0 4px; min-width: 38px; min-height: 38px; }
         .modal-body { padding: 18px; overflow-y: auto; flex: 1; white-space: pre-wrap; word-break: break-word; line-height: 1.6; color: var(--dark); font-size: 0.92em; }
         
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+        
+        /* Адаптивность для баннера */
+        @media (max-width: 768px) {
+            .header-banner img {
+                max-height: 140px;
+            }
+            .header-content {
+                padding: 6px 12px 10px;
+            }
+            .header-title {
+                margin-top: -4px;
+            }
+            .header-title h1 {
+                font-size: 1.2em;
+            }
+            .header-subtitle {
+                font-size: 0.8em;
+            }
+            .clock-time {
+                font-size: 1.2em;
+            }
+            .header-clock {
+                padding: 8px 12px;
+            }
+            .current-user-badge {
+                font-size: 0.85em;
+                padding: 5px 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -287,7 +451,7 @@
             <div class="login-logo-icon">🚧</div>
             <h2 style="color: var(--warning); margin-bottom: 12px;">Технические работы</h2>
             <p style="color: var(--gray); margin-bottom: 24px; line-height: 1.5;">Сайт временно недоступен для сотрудников и администраторов. Пожалуйста, зайдите позже.</p>
-            <button class="btn btn-secondary btn-block" onclick="doLogout()">🚪 Выйти из аккаунта</button>
+            <button class="btn btn-secondary btn-block" onclick="doLogout()"> Выйти из аккаунта</button>
         </div>
     </div>
 
@@ -320,22 +484,32 @@
     </div>
 
     <header class="app-header">
-        <div class="header-top">
-            <div class="header-title">
-                <div>
-                    <h1> ДОМОВИД</h1>
-                    <div class="header-subtitle">
-                        <span>Рабочая группа</span>
-                        <span class="current-user-badge" id="currentUserBadge" style="display:none;">
-                            👤 <span id="currentUserName"></span>
-                            <span class="role-badge" id="currentUserRole"></span>
-                        </span>
+        <div class="header-banner">
+            <!-- Картинка баннера -->
+            <img src="domovid-banner.jpg" alt="ДОМОВИД - магазины домашнего уюта">
+            
+            <!-- Контент поверх картинки -->
+            <div class="header-content">
+                <div class="header-top">
+                    <div class="header-title">
+                        <h1>Рабочая группа</h1>
+                        <div class="header-subtitle">
+                            <span>График и управление персоналом</span>
+                        </div>
+                    </div>
+                    <div class="header-clock">
+                        <div class="clock-time" id="clockTime">--:--:--</div>
+                        <div class="clock-date" id="clockDate">...</div>
                     </div>
                 </div>
-            </div>
-            <div class="header-clock">
-                <div class="clock-time" id="clockTime">--:--:--</div>
-                <div class="clock-date" id="clockDate">...</div>
+                <div class="header-bottom" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                    <div class="current-user-badge" id="currentUserBadge" style="display:none;">
+                        <span>👤</span>
+                        <span id="currentUserName"></span>
+                        <span class="role-badge" id="currentUserRole"></span>
+                        <span class="fox-paw"></span>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
@@ -347,7 +521,7 @@
                 <span>График</span>
             </button>
             <button class="top-nav-btn" onclick="showSection('archive', this)">
-                <span class="nav-icon">📦</span>
+                <span class="nav-icon"></span>
                 <span>Архив</span>
             </button>
             <button class="top-nav-btn" onclick="showSection('plan', this)">
@@ -363,7 +537,7 @@
                 <span>Конкурсы</span>
             </button>
             <button class="top-nav-btn" onclick="showSection('info', this)">
-                <span class="nav-icon">📢</span>
+                <span class="nav-icon"></span>
                 <span>Инфо</span>
             </button>
             <button class="top-nav-btn" onclick="showSection('stats', this)">
@@ -387,7 +561,7 @@
 
     <main class="app-content">
         <div id="schedule" class="section active">
-            <h2 class="section-title">📅 График работы</h2>
+            <h2 class="section-title"> График работы</h2>
             <div id="scheduleGrid" class="schedule-grid"></div>
         </div>
 
@@ -413,11 +587,11 @@
             <div id="contestsList" class="contests-list"></div>
         </div>
         <div id="info" class="section">
-            <h2 class="section-title">📢 Информация</h2>
+            <h2 class="section-title"> Информация</h2>
             <div id="infoContent"></div>
         </div>
         <div id="stats" class="section">
-            <h2 class="section-title">📊 Статистика</h2>
+            <h2 class="section-title"> Статистика</h2>
             <div id="statsContent"></div>
         </div>
         <div id="admin" class="section">
@@ -473,12 +647,12 @@
                 <div class="admin-card">
                     <div class="admin-card-title" id="employeeFormTitle">➕ Добавить сотрудника</div>
                     <div class="form-group">
-                        <label>👤 ФИО</label>
+                        <label> ФИО</label>
                         <input type="text" id="newEmployeeName" placeholder="Иванов Иван Иванович">
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>📱 Телефон (логин)</label>
+                            <label> Телефон (логин)</label>
                             <input type="tel" id="newEmployeePhone" placeholder="89001234567">
                         </div>
                         <div class="form-group">
@@ -487,7 +661,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label>🛡️ Роль</label>
+                        <label>️ Роль</label>
                         <select id="newEmployeeRole">
                             <option value="user">👤 Сотрудник</option>
                             <option value="admin">👑 Администратор</option>
@@ -496,7 +670,7 @@
                     <button class="btn btn-success btn-block" id="employeeSubmitBtn" onclick="addEmployee()">➕ Добавить сотрудника</button>
                 </div>
                 <div class="admin-card">
-                    <div class="admin-card-title">👥 Список сотрудников <span id="employeeCounter" style="background:var(--primary);color:white;padding:2px 10px;border-radius:10px;font-size:0.8em;margin-left:8px;">0</span></div>
+                    <div class="admin-card-title">👥 Список сотрудников <span id="employeeCounter" style="background:var(--brand-green);color:white;padding:2px 10px;border-radius:10px;font-size:0.8em;margin-left:8px;">0</span></div>
                     <div id="employeesList"></div>
                 </div>
             </div>
@@ -512,7 +686,7 @@
                         <textarea id="contestDescription" rows="3" placeholder="Описание конкурса"></textarea>
                     </div>
                     <div class="form-group">
-                        <label>📊 Статус</label>
+                        <label> Статус</label>
                         <select id="contestStatus">
                             <option value="active">Активный</option>
                             <option value="finished">Завершен</option>
@@ -530,7 +704,7 @@
                     <div class="admin-card-title" style="color: var(--info); border-bottom-color: var(--info);">📝 Новый материал</div>
                     <div class="type-switcher">
                         <button type="button" id="typeTextBtn" class="active" onclick="switchMaterialType('text')">📝 Текст</button>
-                        <button type="button" id="typeFileBtn" onclick="switchMaterialType('file')">📎 Файл</button>
+                        <button type="button" id="typeFileBtn" onclick="switchMaterialType('file')"> Файл</button>
                     </div>
                     <div class="form-group">
                         <label>📌 Название</label>
@@ -546,7 +720,7 @@
                         <div class="form-group">
                             <label>📎 Загрузить файл</label>
                             <input type="file" id="materialFile" onchange="handleFileSelect(event)">
-                            <div id="fileWarning" class="file-warning" style="display: none;">⚠️ Рекомендуется до 2 МБ.</div>
+                            <div id="fileWarning" class="file-warning" style="display: none;">️ Рекомендуется до 2 МБ.</div>
                             <div id="fileInfo" style="margin-top: 8px; color: var(--gray); font-size: 0.82em;"></div>
                         </div>
                     </div>
@@ -569,7 +743,7 @@
                         <input type="text" id="infoTitle" placeholder="Заголовок">
                     </div>
                     <div class="form-group">
-                        <label>📝 Текст</label>
+                        <label> Текст</label>
                         <textarea id="infoText" rows="4" placeholder="Текст информации"></textarea>
                     </div>
                     <button class="btn btn-primary btn-block" onclick="addInfo()">➕ Добавить</button>
@@ -577,7 +751,7 @@
             </div>
             <div id="admin-settings" class="admin-section">
                 <div class="admin-card danger-zone">
-                    <div class="admin-card-title">⚠️ Опасная зона</div>
+                    <div class="admin-card-title">️ Опасная зона</div>
                     <p style="color: var(--gray); font-size: 0.85em; margin-bottom: 12px; line-height: 1.4;">
                         Полный сброс всех данных сайта. Это действие нельзя отменить.
                     </p>
@@ -590,7 +764,7 @@
             <h2 class="section-title">👑 Панель Владельца</h2>
             
             <div class="admin-card danger-zone">
-                <div class="admin-card-title">🚧 Режим технических работ</div>
+                <div class="admin-card-title"> Режим технических работ</div>
                 <p style="color: var(--gray); font-size: 0.9em; margin-bottom: 12px; line-height: 1.4;">
                     При включении этого режима обычные сотрудники и администраторы увидят экран "Технические работы" и не смогут пользоваться приложением. Вы (как Владелец) будете иметь полный доступ.
                 </p>
@@ -810,7 +984,7 @@
             document.getElementById('currentUserName').textContent = currentUser.name;
             
             let roleText = '👤 Сотрудник';
-            if (currentUser.role === 'admin') roleText = '👑 Админ';
+            if (currentUser.role === 'admin') roleText = '💎 Владелец';
             if (currentUser.role === 'superadmin') roleText = '💎 Владелец';
             document.getElementById('currentUserRole').textContent = roleText;
             
@@ -987,10 +1161,10 @@
             visibleEmployees.forEach(emp => {
                 const item = document.createElement('div');
                 item.className = `employee-admin-item ${emp.role === 'admin' ? 'role-admin' : ''}`;
-                const roleBadge = emp.role === 'admin' ? '<span class="employee-admin-role role-admin-badge">👑 Админ</span>' : '<span class="employee-admin-role role-user-badge">👤 Сотрудник</span>';
+                const roleBadge = emp.role === 'admin' ? '<span class="employee-admin-role role-admin-badge">💎 Админ</span>' : '<span class="employee-admin-role role-user-badge">👤 Сотрудник</span>';
                 const phoneText = emp.phone ? `📱 ${escapeHtml(emp.phone)}` : '<em style="color:#999;">телефон не указан</em>';
                 const isSelf = currentUser && currentUser.id === emp.id;
-                const editBtn = `<button class="btn btn-warning btn-sm" onclick="editEmployee('${emp.id}')" style="margin-right:4px;">✏️</button>`;
+                const editBtn = `<button class="btn btn-warning btn-sm" onclick="editEmployee('${emp.id}')" style="margin-right:4px;">️</button>`;
                 const deleteBtn = isSelf ? '<button class="btn btn-sm" style="background:#e9ecef;color:#999;" disabled>Вы</button>' : `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.id}')">🗑️</button>`;
                 item.innerHTML = `<div class="employee-admin-header"><div class="employee-admin-info"><div class="employee-admin-name"> ${escapeHtml(emp.name)} ${roleBadge}</div><div class="employee-admin-phone">${phoneText}</div></div><div style="display:flex;gap:4px;">${editBtn}${deleteBtn}</div></div>`;
                 list.appendChild(item);
@@ -1107,7 +1281,7 @@
                 if (status === 'today') statusBadge = '<span class="today-badge">Сегодня</span>';
                 else if (status === 'yesterday') statusBadge = '<span class="yesterday-badge">Вчера</span>';
                 
-                dateCard.innerHTML = `<h3>📅 ${date} ${statusBadge}</h3>`;
+                dateCard.innerHTML = `<h3> ${date} ${statusBadge}</h3>`;
                 
                 const sortedEntries = [...entries].sort((a, b) => {
                     if (a.shift !== b.shift) return a.shift - b.shift;
@@ -1133,7 +1307,7 @@
                             </span>
                         </div>
                         <div class="employee-card-shift">
-                            <span class="employee-card-shift-icon">🕒</span>
+                            <span class="employee-card-shift-icon"></span>
                             <span>Смена ${shiftLabel}</span>
                             <span style="color: var(--light-gray);">•</span>
                             <span class="employee-card-time">${shiftTime}</span>
@@ -1184,7 +1358,7 @@
                 empty.style.textAlign = 'center';
                 empty.style.padding = '40px 20px';
                 empty.style.color = 'var(--light-gray)';
-                empty.innerHTML = '📦<br><br>Архив пока пуст.<br><span style="font-size: 0.9em;">Прошедшие даты автоматически попадают сюда на следующий день.</span>';
+                empty.innerHTML = '<br><br>Архив пока пуст.<br><span style="font-size: 0.9em;">Прошедшие даты автоматически попадают сюда на следующий день.</span>';
                 content.appendChild(empty);
                 return;
             }
@@ -1290,7 +1464,6 @@
                 return; 
             }
 
-            // --- НОВАЯ КНОПКА ОЧИСТКИ ТЕКУЩЕГО ГРАФИКА ---
             if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin')) {
                 const clearBtn = document.createElement('button');
                 clearBtn.className = 'btn btn-danger btn-block';
@@ -1299,7 +1472,6 @@
                 clearBtn.onclick = clearCurrentSchedule;
                 list.appendChild(clearBtn);
             }
-            // -----------------------------------------------
             
             activeDates.forEach(date => {
                 const status = getDateStatus(date);
@@ -1314,7 +1486,6 @@
             });
         };
 
-        // --- НОВАЯ ФУНКЦИЯ ОЧИСТКИ ТЕКУЩЕГО ГРАФИКА ---
         window.clearCurrentSchedule = async function() {
             if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'superadmin')) {
                 alert('🔒 Недостаточно прав для этого действия');
@@ -1327,7 +1498,7 @@
                 const dates = Object.keys(data.schedule);
                 let deletedCount = 0;
                 for (const date of dates) {
-                    if (getDateStatus(date) !== 'past') { // Удаляем только не-архивные записи
+                    if (getDateStatus(date) !== 'past') {
                         for (const entry of data.schedule[date]) {
                             await deleteDoc(doc(db, "schedule", entry.id));
                             deletedCount++;
@@ -1342,7 +1513,6 @@
                 alert('Ошибка: ' + e.message);
             }
         };
-        // -----------------------------------------------
 
         window.addScheduleEntry = async function() {
             const dateInput = document.getElementById('adminDate').value;
@@ -1478,14 +1648,14 @@
                 const card = document.createElement('div');
                 card.className = `contest-card ${contest.status === 'finished' ? 'status-finished-card' : ''}`;
                 const statusClass = contest.status === 'active' ? 'status-active' : 'status-finished';
-                const statusText = contest.status === 'active' ? '🟢 Активный' : '⚫ Завершен';
+                const statusText = contest.status === 'active' ? '🟢 Активный' : ' Завершен';
                 let intermediateHtml = '';
                 if (contest.intermediateResults && contest.intermediateResults.length > 0) {
                     intermediateHtml = `<div class="results-section"><h4>📊 Промежуточные результаты</h4>${[...contest.intermediateResults].sort((a, b) => a.date - b.date).map(r => `<div class="result-item"><div class="result-item-header"><span class="result-title">${escapeHtml(r.title)}</span><span class="result-date">${formatDateTime(r.date)}</span></div>${r.description ? `<div class="result-description">${escapeHtml(r.description)}</div>` : ''}</div>`).join('')}</div>`;
                 }
                 let finalHtml = '';
                 if (contest.finalResult) {
-                    finalHtml = `<div class="results-section"><h4>🏆 Финальный результат</h4><div class="final-result"><div class="final-result-header"><div class="final-result-icon">🥇</div><div class="final-result-title">ПОБЕДИТЕЛЬ</div></div><div class="final-result-winner">${escapeHtml(contest.finalResult.winner)}</div>${contest.finalResult.description ? `<div class="final-result-description">${escapeHtml(contest.finalResult.description)}</div>` : ''}<div class="final-result-date">📅 ${formatDateTime(contest.finalResult.date)}</div></div></div>`;
+                    finalHtml = `<div class="results-section"><h4> Финальный результат</h4><div class="final-result"><div class="final-result-header"><div class="final-result-icon">🥇</div><div class="final-result-title">ПОБЕДИТЕЛЬ</div></div><div class="final-result-winner">${escapeHtml(contest.finalResult.winner)}</div>${contest.finalResult.description ? `<div class="final-result-description">${escapeHtml(contest.finalResult.description)}</div>` : ''}<div class="final-result-date">📅 ${formatDateTime(contest.finalResult.date)}</div></div></div>`;
                 }
                 card.innerHTML = `<span class="contest-status ${statusClass}">${statusText}</span><h3>${escapeHtml(contest.name)}</h3><div class="contest-description">${escapeHtml(contest.description)}</div>${intermediateHtml}${finalHtml}`;
                 list.appendChild(card);
@@ -1500,7 +1670,7 @@
             data.contests.forEach(contest => {
                 const item = document.createElement('div');
                 item.className = `admin-contest-item ${contest.status === 'finished' ? 'status-finished-item' : ''}`;
-                const statusText = contest.status === 'active' ? '🟢 Активный' : '⚫ Завершен';
+                const statusText = contest.status === 'active' ? '🟢 Активный' : ' Завершен';
                 const toggleBtnText = contest.status === 'active' ? '⏸️ Завершить' : '▶️ Возобновить';
                 let intResultsHtml = (contest.intermediateResults && contest.intermediateResults.length > 0)
                     ? [...contest.intermediateResults].sort((a, b) => a.date - b.date).map(r => `<div class="admin-result-item"><div class="admin-result-info"><strong>${escapeHtml(r.title)}</strong><small>${formatDateTime(r.date)}</small>${r.description ? `<div style="color:#555;font-size:0.82em;margin-top:2px;">${escapeHtml(r.description)}</div>` : ''}</div><button class="btn btn-danger btn-sm" onclick="deleteIntermediateResult('${contest.id}', '${r.id}')">✕</button></div>`).join('')
@@ -1523,7 +1693,7 @@
             const content = document.getElementById('infoContent');
             if (!content) return;
             content.innerHTML = '';
-            if (data.info.length === 0) { content.innerHTML = '<div class="empty-message">📢 Информация пока не добавлена</div>'; return; }
+            if (data.info.length === 0) { content.innerHTML = '<div class="empty-message"> Информация пока не добавлена</div>'; return; }
             data.info.forEach(item => {
                 const block = document.createElement('div');
                 block.className = 'info-block';
@@ -1627,12 +1797,12 @@
                         <div class="my-stats-header-subtitle">Ваша личная статистика</div>
                     </div>
                     <div class="my-stats-month-info">
-                        📅 Статистика за ${myStats.currentMonthName}
+                         Статистика за ${myStats.currentMonthName}
                     </div>`;
                 
                 if (!hasAnyShifts) {
                     html += `<div class="my-stats-empty">
-                        <span class="my-stats-empty-icon">📭</span>
+                        <span class="my-stats-empty-icon"></span>
                         У вас пока нет смен в графике.<br>
                         <span style="font-size: 0.9em; opacity: 0.8;">Как только вас добавят в график — здесь появится ваша статистика.</span>
                     </div>`;
@@ -1649,7 +1819,7 @@
                             <div class="my-stat-label">дней на КД</div>
                         </div>
                         <div class="my-stat-card">
-                            <div class="my-stat-icon">🏬</div>
+                            <div class="my-stat-icon"></div>
                             <div class="my-stat-value">${myStats.zal}</div>
                             <div class="my-stat-label">дней в Зале</div>
                         </div>
@@ -1843,7 +2013,7 @@
             data.materials.forEach(material => {
                 const card = document.createElement('div');
                 card.className = `material-card type-${material.type}`;
-                const icon = material.type === 'text' ? '📝' : (material.file ? getFileIcon(material.file.mimeType) : '📄');
+                const icon = material.type === 'text' ? '' : (material.file ? getFileIcon(material.file.mimeType) : '📄');
                 const tagClass = material.type === 'text' ? 'tag-text' : 'tag-file';
                 const tagText = material.type === 'text' ? 'Текст' : 'Файл';
                 let previewHtml = '';
@@ -1878,7 +2048,7 @@
         }
 
         window.resetAllData = async function() {
-            if (!confirm('⚠️ ВСЕ данные в облаке будут удалены! Продолжить?') || !confirm('Точно-точно? Последнее предупреждение!')) return;
+            if (!confirm('️ ВСЕ данные в облаке будут удалены! Продолжить?') || !confirm('Точно-точно? Последнее предупреждение!')) return;
             try {
                 const collections = ["users", "schedule", "materials", "contests", "info", "settings"];
                 for (const colName of collections) {
