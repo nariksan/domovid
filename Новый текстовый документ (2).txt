@@ -36,7 +36,6 @@
         .login-btn:active { transform: scale(0.98); }
         .login-error { background: #fff5f5; border-left: 3px solid var(--danger); padding: 10px 12px; border-radius: 6px; margin-top: 14px; font-size: 0.85em; color: var(--danger); display: none; text-align: left; }
         .login-error.show { display: block; }
-        .login-hint { background: #e7f3ff; border-left: 3px solid var(--info); padding: 10px 12px; border-radius: 6px; margin-top: 14px; font-size: 0.82em; color: #0c5460; line-height: 1.4; text-align: left; }
         
         .app-header { position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-md); }
         .header-banner { position: relative; width: 100%; height: auto; overflow: visible; background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-orange) 100%); }
@@ -267,7 +266,6 @@
         .modal-header h3 { color: var(--brand-green); font-size: 1.1em; word-break: break-word; }
         .modal-close { background: none; border: none; font-size: 1.6em; cursor: pointer; color: var(--light-gray); line-height: 1; padding: 0 4px; min-width: 38px; min-height: 38px; }
         .modal-body { padding: 18px; overflow-y: auto; flex: 1; line-height: 1.6; color: var(--dark); font-size: 0.92em; }
-        /* Стили для просмотра файлов в модальном окне */
         .modal-body img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: var(--shadow-md); }
         .modal-body iframe { width: 100%; height: 60vh; border: 1px solid var(--border); border-radius: 8px; }
         .modal-body pre { white-space: pre-wrap; word-break: break-word; background: var(--bg); padding: 12px; border-radius: 8px; font-size: 0.9em; font-family: monospace; }
@@ -316,12 +314,6 @@
                 </div>
                 <button class="login-btn" onclick="doLogin()">Войти</button>
                 <div class="login-error" id="loginError"></div>
-                <div class="login-hint">
-                    💡 Тестовый вход (Владелец):<br>
-                    Телефон: <strong>89146443734</strong><br>
-                    Пароль: <strong>6000</strong><br>
-                    <em style="font-size: 0.9em; margin-top: 4px; display: block;">(Убедитесь, что в базе Firebase для этого номера установлена роль "superadmin")</em>
-                </div>
             </div>
         </div>
     </div>
@@ -337,7 +329,7 @@
                 </div>
                 <div class="header-bottom" style="display: flex; justify-content: space-between; align-items: flex-end;">
                     <div class="current-user-badge" id="currentUserBadge" style="display:none;">
-                        <span>👤</span>
+                        <span></span>
                         <span id="currentUserName"></span>
                         <span class="role-badge" id="currentUserRole"></span>
                         <span class="fox-paw"></span>
@@ -419,7 +411,7 @@
             
             <div id="admin-schedule" class="admin-section active">
                 <div class="admin-card">
-                    <div class="admin-card-title">➕ Добавить сотрудника в график</div>
+                    <div class="admin-card-title" id="scheduleFormTitle">➕ Добавить сотрудника в график</div>
                     <div class="form-row">
                         <div class="form-group"><label>📅 Дата</label><input type="date" id="adminDate"></div>
                         <div class="form-group"><label>👤 Сотрудник</label><select id="adminEmployee"><option value="">-- Выберите сотрудника --</option></select></div>
@@ -430,13 +422,13 @@
                                 <option value="kassa">Касса</option><option value="kd">КД</option><option value="zal">Зал</option><option value="sklad">Склад</option>
                             </select>
                         </div>
-                        <div class="form-group"><label>🕒 Смена</label>
+                        <div class="form-group"><label> Смена</label>
                             <select id="adminShift">
                                 <option value="1">Смена 9/1 (10:00 - 19:00)</option><option value="2">Смена 9/2 (12:00 - 21:00)</option><option value="3">Смена 11 (10:00 - 21:00)</option>
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-primary btn-block" onclick="addScheduleEntry()">➕ Добавить в график</button>
+                    <button class="btn btn-primary btn-block" id="scheduleSubmitBtn" onclick="addScheduleEntry()">➕ Добавить в график</button>
                 </div>
                 <div class="admin-card">
                     <div class="admin-card-title">📋 Текущие записи графика</div>
@@ -450,9 +442,9 @@
                     <div class="form-group"><label>👤 ФИО</label><input type="text" id="newEmployeeName" placeholder="Иванов Иван Иванович"></div>
                     <div class="form-row">
                         <div class="form-group"><label>📱 Телефон (логин)</label><input type="tel" id="newEmployeePhone" placeholder="89001234567"></div>
-                        <div class="form-group"><label>🔒 Пароль</label><input type="text" id="newEmployeePassword" placeholder="Пароль для входа"></div>
+                        <div class="form-group"><label> Пароль</label><input type="text" id="newEmployeePassword" placeholder="Пароль для входа"></div>
                     </div>
-                    <div class="form-group"><label>🛡️ Роль</label>
+                    <div class="form-group"><label>️ Роль</label>
                         <select id="newEmployeeRole"><option value="user">👤 Сотрудник</option><option value="admin">💎 Администратор</option></select>
                     </div>
                     <button class="btn btn-success btn-block" id="employeeSubmitBtn" onclick="addEmployee()">➕ Добавить сотрудника</button>
@@ -467,7 +459,7 @@
                 <div class="admin-card">
                     <div class="admin-card-title">🏆 Добавить конкурс</div>
                     <div class="form-group"><label>🏆 Название конкурса</label><input type="text" id="contestName" placeholder="Введите название конкурса"></div>
-                    <div class="form-group"><label>📝 Описание</label><textarea id="contestDescription" rows="3" placeholder="Описание конкурса"></textarea></div>
+                    <div class="form-group"><label> Описание</label><textarea id="contestDescription" rows="3" placeholder="Описание конкурса"></textarea></div>
                     <div class="form-group"><label>📊 Статус</label>
                         <select id="contestStatus"><option value="active">Активный</option><option value="finished">Завершен</option></select>
                     </div>
@@ -481,7 +473,7 @@
             
             <div id="admin-materials" class="admin-section">
                 <div class="admin-card" id="addMaterialSection" style="display: none; border: 2px solid var(--info);">
-                    <div class="admin-card-title" style="color: var(--info); border-bottom-color: var(--info);">📝 Новый материал</div>
+                    <div class="admin-card-title" style="color: var(--info); border-bottom-color: var(--info);"> Новый материал</div>
                     <div class="type-switcher">
                         <button type="button" id="typeTextBtn" class="active" onclick="switchMaterialType('text')">📝 Текст</button>
                         <button type="button" id="typeFileBtn" onclick="switchMaterialType('file')">📎 Файл</button>
@@ -494,7 +486,7 @@
                         <div class="form-group">
                             <label>📎 Загрузить файл</label>
                             <input type="file" id="materialFile" onchange="handleFileSelect(event)">
-                            <div id="fileWarning" class="file-warning" style="display: none;">⚠️ Рекомендуется до 2 МБ.</div>
+                            <div id="fileWarning" class="file-warning" style="display: none;">️ Рекомендуется до 2 МБ.</div>
                             <div id="fileInfo" style="margin-top: 8px; color: var(--gray); font-size: 0.82em;"></div>
                         </div>
                     </div>
@@ -512,20 +504,20 @@
             
             <div id="admin-info" class="admin-section">
                 <div class="admin-card" id="addInfoSection" style="display: none; border: 2px solid var(--warning);">
-                    <div class="admin-card-title" style="color: var(--warning); border-bottom-color: var(--warning);">📝 Новая информация</div>
+                    <div class="admin-card-title" style="color: var(--warning); border-bottom-color: var(--warning);"> Новая информация</div>
                     <div class="type-switcher">
                         <button type="button" id="infoTypeTextBtn" class="active" onclick="switchInfoType('text')">📝 Текст</button>
                         <button type="button" id="infoTypeFileBtn" onclick="switchInfoType('file')">📎 Файл</button>
                     </div>
                     <div class="form-group"><label>📌 Заголовок</label><input type="text" id="infoTitle" placeholder="Заголовок"></div>
                     <div id="infoTextForm">
-                        <div class="form-group"><label>📝 Текст</label><textarea id="infoText" rows="4" placeholder="Текст информации"></textarea></div>
+                        <div class="form-group"><label> Текст</label><textarea id="infoText" rows="4" placeholder="Текст информации"></textarea></div>
                     </div>
                     <div id="infoFileForm" style="display: none;">
                         <div class="form-group">
                             <label>📎 Загрузить файл</label>
                             <input type="file" id="infoFile" onchange="handleInfoFileSelect(event)">
-                            <div id="infoFileWarning" class="file-warning" style="display: none;">⚠️ Рекомендуется до 2 МБ.</div>
+                            <div id="infoFileWarning" class="file-warning" style="display: none;">️ Рекомендуется до 2 МБ.</div>
                             <div id="infoFileInfo" style="margin-top: 8px; color: var(--gray); font-size: 0.82em;"></div>
                         </div>
                     </div>
@@ -558,7 +550,7 @@
                 <button class="btn btn-warning btn-block" id="maintenanceToggleBtn" onclick="toggleMaintenanceMode()">Загрузка статуса...</button>
             </div>
             <div class="admin-card">
-                <div class="admin-card-title">👑 Передача полномочий Владельца</div>
+                <div class="admin-card-title"> Передача полномочий Владельца</div>
                 <p style="color: var(--gray); font-size: 0.9em; margin-bottom: 12px; line-height: 1.4;">Вы можете передать роль Владельца любому из текущих Администраторов. Ваша роль при этом автоматически изменится на "Администратор".</p>
                 <div id="superAdminList"></div>
             </div>
@@ -608,6 +600,7 @@
         let selectedInfoFileData = null;
         let openResultForms = {};
         let editingEmployeeId = null;
+        let editingScheduleId = null;
         let data = { 
             employees: [], schedule: {}, materials: [], contests: [], info: [], 
             settings: { maintenanceMode: false },
@@ -789,6 +782,7 @@
             localStorage.removeItem('domovidSession');
             currentUser = null;
             editingEmployeeId = null;
+            editingScheduleId = null;
             showLoginScreen();
             document.getElementById('loginPhone').value = '';
             document.getElementById('loginPassword').value = '';
@@ -824,11 +818,10 @@
             if (btn) btn.classList.add('active');
         };
 
-        // --- УНИВЕРСАЛЬНЫЙ ПРОСМОТРЩИК ФАЙЛОВ ---
         window.openFileViewer = function(title, fileData, isText = false, textContent = '') {
             document.getElementById('modalTitle').textContent = title;
             const body = document.getElementById('modalBody');
-            body.innerHTML = ''; // Очистка предыдущего контента
+            body.innerHTML = '';
 
             if (isText) {
                 body.innerHTML = `<pre>${escapeHtml(textContent)}</pre>`;
@@ -986,9 +979,9 @@
                 const item = document.createElement('div');
                 item.className = `employee-admin-item ${emp.role === 'admin' ? 'role-admin' : ''}`;
                 const roleBadge = emp.role === 'admin' ? '<span class="employee-admin-role role-admin-badge">💎 Админ</span>' : '<span class="employee-admin-role role-user-badge">👤 Сотрудник</span>';
-                const phoneText = emp.phone ? `📱 ${escapeHtml(emp.phone)}` : '<em style="color:#999;">телефон не указан</em>';
+                const phoneText = emp.phone ? ` ${escapeHtml(emp.phone)}` : '<em style="color:#999;">телефон не указан</em>';
                 const isSelf = currentUser && currentUser.id === emp.id;
-                const editBtn = `<button class="btn btn-warning btn-sm" onclick="editEmployee('${emp.id}')" style="margin-right:4px;">✏️</button>`;
+                const editBtn = `<button class="btn btn-warning btn-sm" onclick="editEmployee('${emp.id}')" style="margin-right:4px;">️</button>`;
                 const deleteBtn = isSelf ? '<button class="btn btn-sm" style="background:#e9ecef;color:#999;" disabled>Вы</button>' : `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.id}')">🗑️</button>`;
                 item.innerHTML = `<div class="employee-admin-header"><div class="employee-admin-info"><div class="employee-admin-name">👤 ${escapeHtml(emp.name)} ${roleBadge}</div><div class="employee-admin-phone">${phoneText}</div></div><div style="display:flex;gap:4px;">${editBtn}${deleteBtn}</div></div>`;
                 list.appendChild(item);
@@ -1045,7 +1038,7 @@
         window.toggleMaintenanceMode = async function() {
             const newMode = !data.settings.maintenanceMode;
             const confirmMsg = newMode 
-                ? '⚠️ Вы собираетесь включить режим технических работ. Обычные сотрудники и админы потеряют доступ к приложению. Продолжить?'
+                ? '️ Вы собираетесь включить режим технических работ. Обычные сотрудники и админы потеряют доступ к приложению. Продолжить?'
                 : 'Выключить режим технических работ и открыть доступ для всех?';
             if (!confirm(confirmMsg)) return;
             try {
@@ -1109,7 +1102,7 @@
                             <span class="employee-card-position ${positionClass}">${positionLabel}</span>
                         </div>
                         <div class="employee-card-shift">
-                            <span class="employee-card-shift-icon">🕒</span>
+                            <span class="employee-card-shift-icon"></span>
                             <span>Смена ${shiftLabel}</span>
                             <span style="color: var(--light-gray);">•</span>
                             <span class="employee-card-time">${shiftTime}</span>
@@ -1169,7 +1162,7 @@
                     let deleteBtn = currentUser && currentUser.role === 'superadmin' ? `<button class="btn btn-danger btn-sm" onclick="deleteArchiveEntry('${entry.id}')" title="Удалить запись">🗑️</button>` : '';
                     card.innerHTML = `
                         <div class="archive-employee-info">
-                            <div style="font-weight: 700; color: var(--dark); margin-bottom: 4px;">👤 ${escapeHtml(entry.employee)}</div>
+                            <div style="font-weight: 700; color: var(--dark); margin-bottom: 4px;"> ${escapeHtml(entry.employee)}</div>
                             <div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 0.85em;">
                                 <span class="employee-card-position ${positionClass}" style="font-size: 0.8em;">${positionLabel}</span>
                                 <span style="color: var(--gray);"> Смена ${shiftLabel} • ${shiftTime}</span>
@@ -1195,7 +1188,7 @@
         };
 
         window.clearArchive = async function() {
-            if (!currentUser || currentUser.role !== 'superadmin') { alert('🔒 Только владелец может очищать архив'); return; }
+            if (!currentUser || currentUser.role !== 'superadmin') { alert(' Только владелец может очищать архив'); return; }
             if (!confirm('⚠️ Вы собираетесь удалить ВСЕ записи из архива?\n\nЭто действие нельзя отменить!')) return;
             if (!confirm('Точно удалить все прошедшие смены? Последнее предупреждение!')) return;
             try {
@@ -1239,7 +1232,11 @@
                     item.className = `schedule-item ${status === 'yesterday' ? 'yesterday' : ''}`;
                     const badgeClass = `badge-${entry.type}`;
                     let statusMark = status === 'today' ? ' 🔵' : (status === 'yesterday' ? ' ✓' : '');
-                    item.innerHTML = `<div class="schedule-item-info"><span>📅 ${date}${statusMark}</span><span>👤 ${entry.employee}</span><span class="shift-badge ${badgeClass}">${typeLabels[entry.type] || entry.type}</span><span>Смена ${shiftLabels[entry.shift] || entry.shift}</span></div><button class="btn btn-danger btn-sm" onclick="deleteScheduleEntry('${entry.id}')">✕</button>`;
+                    
+                    const editBtn = `<button class="btn btn-warning btn-sm" onclick="editScheduleEntry('${entry.id}')" style="margin-right:4px;">️</button>`;
+                    const deleteBtn = `<button class="btn btn-danger btn-sm" onclick="deleteScheduleEntry('${entry.id}')">✕</button>`;
+                    
+                    item.innerHTML = `<div class="schedule-item-info"><span>📅 ${date}${statusMark}</span><span> ${entry.employee}</span><span class="shift-badge ${badgeClass}">${typeLabels[entry.type] || entry.type}</span><span>Смена ${shiftLabels[entry.shift] || entry.shift}</span></div><div style="display:flex;gap:4px;">${editBtn}${deleteBtn}</div>`;
                     list.appendChild(item);
                 });
             });
@@ -1268,6 +1265,7 @@
         };
 
         window.addScheduleEntry = async function() {
+            if (editingScheduleId) { alert('Сначала отмените редактирование или сохраните изменения.'); return; }
             const dateInput = document.getElementById('adminDate').value;
             const employee = document.getElementById('adminEmployee').value;
             const type = document.getElementById('adminType').value;
@@ -1276,11 +1274,92 @@
             const date = formatDate(dateInput);
             try {
                 await addDoc(collection(db, "schedule"), { date, employee, type, shift });
+                document.getElementById('adminDate').value = '';
+                document.getElementById('adminEmployee').value = '';
                 await loadAllDataFromFirebase();
                 renderScheduleList();
                 renderSchedule();
-                alert(`✅ Добавлен!\n📅 ${date}\n👤 ${employee}`);
+                alert(`✅ Добавлен!\n ${date}\n👤 ${employee}`);
             } catch (e) { alert('Ошибка: ' + e.message); }
+        };
+
+        window.editScheduleEntry = function(id) {
+            let targetEntry = null;
+            let targetDate = null;
+            for (const date in data.schedule) {
+                const found = data.schedule[date].find(e => e.id === id);
+                if (found) {
+                    targetEntry = found;
+                    targetDate = date;
+                    break;
+                }
+            }
+            if (!targetEntry) return;
+
+            editingScheduleId = id;
+            
+            const [day, month, year] = targetDate.split('.');
+            const isoDate = `${year}-${month}-${day}`;
+            
+            document.getElementById('adminDate').value = isoDate;
+            document.getElementById('adminEmployee').value = targetEntry.employee;
+            document.getElementById('adminType').value = targetEntry.type;
+            document.getElementById('adminShift').value = targetEntry.shift;
+            
+            const btn = document.getElementById('scheduleSubmitBtn');
+            btn.textContent = '💾 Сохранить изменения';
+            btn.className = 'btn btn-warning btn-block';
+            btn.onclick = updateScheduleEntry;
+            document.getElementById('scheduleFormTitle').textContent = '✏️ Редактирование записи графика';
+            
+            if (!document.getElementById('cancelEditScheduleBtn')) {
+                const cancelBtn = document.createElement('button');
+                cancelBtn.id = 'cancelEditScheduleBtn';
+                cancelBtn.className = 'btn btn-secondary btn-block';
+                cancelBtn.style.marginTop = '8px';
+                cancelBtn.textContent = '✕ Отмена';
+                cancelBtn.onclick = cancelEditSchedule;
+                btn.parentNode.appendChild(cancelBtn);
+            }
+            document.getElementById('admin-schedule').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.updateScheduleEntry = async function() {
+            if (!editingScheduleId) return;
+            const dateInput = document.getElementById('adminDate').value;
+            const employee = document.getElementById('adminEmployee').value;
+            const type = document.getElementById('adminType').value;
+            const shift = document.getElementById('adminShift').value;
+            
+            if (!dateInput || !employee) { alert('Выберите дату и сотрудника'); return; }
+            const date = formatDate(dateInput);
+            
+            try {
+                await updateDoc(doc(db, "schedule", editingScheduleId), { date, employee, type, shift });
+                cancelEditSchedule();
+                await loadAllDataFromFirebase();
+                renderScheduleList();
+                renderSchedule();
+                alert('✅ Запись в графике успешно обновлена!');
+            } catch (e) { alert('Ошибка: ' + e.message); }
+        };
+
+        window.cancelEditSchedule = function() {
+            editingScheduleId = null;
+            document.getElementById('adminDate').value = '';
+            document.getElementById('adminEmployee').value = '';
+            document.getElementById('adminType').value = 'kassa';
+            document.getElementById('adminShift').value = '1';
+            
+            const btn = document.getElementById('scheduleSubmitBtn');
+            btn.textContent = '➕ Добавить в график';
+            btn.className = 'btn btn-primary btn-block';
+            btn.onclick = addScheduleEntry;
+            
+            document.getElementById('scheduleFormTitle').textContent = '➕ Добавить сотрудника в график';
+            
+            const cancelBtn = document.getElementById('cancelEditScheduleBtn');
+            if (cancelBtn) cancelBtn.remove();
         };
 
         window.deleteScheduleEntry = async function(id) {
@@ -1399,7 +1478,7 @@
                 const card = document.createElement('div');
                 card.className = `contest-card ${contest.status === 'finished' ? 'status-finished-card' : ''}`;
                 const statusClass = contest.status === 'active' ? 'status-active' : 'status-finished';
-                const statusText = contest.status === 'active' ? '🟢 Активный' : '⚫ Завершен';
+                const statusText = contest.status === 'active' ? '🟢 Активный' : ' Завершен';
                 let intermediateHtml = '';
                 if (contest.intermediateResults && contest.intermediateResults.length > 0) {
                     intermediateHtml = `<div class="results-section"><h4>📊 Промежуточные результаты</h4>${[...contest.intermediateResults].sort((a, b) => a.date - b.date).map(r => `<div class="result-item"><div class="result-item-header"><span class="result-title">${escapeHtml(r.title)}</span><span class="result-date">${formatDateTime(r.date)}</span></div>${r.description ? `<div class="result-description">${escapeHtml(r.description)}</div>` : ''}</div>`).join('')}</div>`;
@@ -1537,7 +1616,7 @@
             data.materials.forEach(material => {
                 const card = document.createElement('div');
                 card.className = `material-card type-${material.type}`;
-                const icon = material.type === 'text' ? '📝' : (material.file ? getFileIcon(material.file.mimeType) : '📄');
+                const icon = material.type === 'text' ? '📝' : (material.file ? getFileIcon(material.file.mimeType) : '');
                 const tagClass = material.type === 'text' ? 'tag-text' : 'tag-file';
                 const tagText = material.type === 'text' ? 'Текст' : 'Файл';
                 let previewHtml = '';
@@ -1556,7 +1635,7 @@
             });
         };
 
-        // --- ИНФОРМАЦИЯ (ОБНОВЛЕНО С ПОДДЕРЖКОЙ ФАЙЛОВ) ---
+        // --- ИНФОРМАЦИЯ ---
         window.openInfoForm = function() {
             document.getElementById('addInfoSection').style.display = 'block';
             document.getElementById('addInfoSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1745,7 +1824,7 @@
                         <div class="my-stats-header-title">${escapeHtml(currentUser.name)}</div>
                         <div class="my-stats-header-subtitle">Ваша личная статистика</div>
                     </div>
-                    <div class="my-stats-month-info">📅 Статистика за ${myStats.currentMonthName}</div>`;
+                    <div class="my-stats-month-info"> Статистика за ${myStats.currentMonthName}</div>`;
                 if (!hasAnyShifts) {
                     html += `<div class="my-stats-empty"><span class="my-stats-empty-icon">📭</span>У вас пока нет смен в графике.<br><span style="font-size: 0.9em; opacity: 0.8;">Как только вас добавят в график — здесь появится ваша статистика.</span></div>`;
                 } else {
@@ -1810,7 +1889,7 @@
             if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return '📗';
             if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) return '📙';
             if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('archive')) return '🗜️';
-            return '📄';
+            return '';
         }
 
         function getSortedDates() {
