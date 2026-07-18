@@ -650,8 +650,7 @@ async function initializeFirebaseMessaging() {
     
     messaging = firebase.messaging(messagingApp);
     
-    // ✅ ГОВОРИМ FIREBASE ИСПОЛЬЗОВАТЬ НАШ Service Worker
-    messaging.useServiceWorker(registration);
+    // ✅ В COMPAT ВЕРСИИ НЕ НУЖЕН useServiceWorker - он автоматически использует зарегистрированный SW
     
     const permission = Notification.permission;
     if (permission === 'default') { showNotificationPermissionButton(); }
