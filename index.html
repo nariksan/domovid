@@ -12,8 +12,11 @@
 <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png">
 <link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <title>ДОМОВИД</title>
+
+<!-- Firebase Messaging -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+
 <style>
 :root {
 --primary: #667eea; --primary-dark: #5568d3; --secondary: #764ba2;
@@ -290,14 +293,16 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 </style>
 </head>
 <body>
+<body>
 <div class="maintenance-screen hidden" id="maintenanceScreen">
 <div class="maintenance-container">
-<div class="login-logo-icon"></div>
+<div class="login-logo-icon">🚧</div>
 <h2 style="color: var(--warning); margin-bottom: 12px;">Технические работы</h2>
 <p style="color: var(--gray); margin-bottom: 24px; line-height: 1.5;">Сайт временно недоступен для сотрудников и администраторов. Пожалуйста, зайдите позже.</p>
-<button class="btn btn-secondary btn-block" onclick="doLogout()">🚪 Выйти из аккаунта</button>
+<button class="btn btn-secondary btn-block" onclick="doLogout()"> Выйти из аккаунта</button>
 </div>
 </div>
+
 <div class="login-screen hidden" id="loginScreen">
 <div class="login-container">
 <div class="login-logo">
@@ -307,13 +312,13 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 </div>
 <div class="login-form">
 <div class="form-group">
-<label> Выберите отделение</label>
+<label>🏪 Выберите отделение</label>
 <select id="loginBranch">
 <option value="">Загрузка списка магазинов...</option>
 </select>
 </div>
 <div class="form-group">
-<label> Телефон</label>
+<label>📱 Телефон</label>
 <input type="tel" id="loginPhone" placeholder="89146443734" autocomplete="tel">
 </div>
 <div class="form-group">
@@ -325,6 +330,7 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 </div>
 </div>
 </div>
+
 <header class="app-header">
 <div class="header-banner">
 <img src="domovid-banner.jpg" alt="ДОМОВИД - магазины домашнего уюта">
@@ -355,6 +361,7 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 </div>
 </div>
 </header>
+
 <nav class="top-nav" id="topNav" style="display:none;">
 <div class="top-nav-inner">
 <button class="top-nav-btn active" onclick="showSection('schedule', this)"><span class="nav-icon">📅</span><span>График</span></button>
@@ -363,21 +370,24 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <button class="top-nav-btn" onclick="showSection('materials', this)"><span class="nav-icon">📚</span><span>Обучение</span></button>
 <button class="top-nav-btn" onclick="showSection('contests', this)"><span class="nav-icon">🏆</span><span>Конкурсы</span></button>
 <button class="top-nav-btn" onclick="showSection('info', this)"><span class="nav-icon">📢</span><span>Инфо</span></button>
-<button class="top-nav-btn" onclick="showSection('stats', this)"><span class="nav-icon"></span><span>Статистика</span></button>
+<button class="top-nav-btn" onclick="showSection('stats', this)"><span class="nav-icon">📊</span><span>Статистика</span></button>
 <button class="top-nav-btn" onclick="showSection('admin', this)" id="topNavAdminBtn" style="display:none;"><span class="nav-icon">⚙️</span><span>Админ</span></button>
 <button class="top-nav-btn" onclick="showSection('superadmin', this)" id="topNavSuperAdminBtn" style="display:none; color: var(--danger);"><span class="nav-icon">👑</span><span>Владелец</span></button>
 <button class="top-nav-logout" onclick="doLogout()"><span>🚪</span><span>Выйти</span></button>
 </div>
 </nav>
+
 <main class="app-content">
 <div id="schedule" class="section active">
 <h2 class="section-title">📅 График работы</h2>
 <div id="scheduleGrid" class="schedule-grid"></div>
 </div>
+
 <div id="archive" class="section">
 <h2 class="section-title">📦 Архив графика</h2>
 <div id="archiveContent"></div>
 </div>
+
 <div id="plan" class="section">
 <h2 class="section-title"> План на месяц</h2>
 <div class="dev-block">
@@ -386,35 +396,41 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <p>Здесь скоро появится блок с финансовым планом на месяц: целевая сумма выручки, прогресс выполнения и аналитика.</p>
 </div>
 </div>
+
 <div id="materials" class="section">
 <h2 class="section-title">📚 Обучающие материалы</h2>
 <div id="materialsList" class="materials-list"></div>
 </div>
+
 <div id="contests" class="section">
 <h2 class="section-title">🏆 Конкурсы персонала</h2>
 <div id="contestsList" class="contests-list"></div>
 </div>
+
 <div id="info" class="section">
-<h2 class="section-title"> Информация</h2>
+<h2 class="section-title">📢 Информация</h2>
 <div id="infoContent" class="info-list"></div>
 </div>
+
 <div id="stats" class="section">
-<h2 class="section-title"> Статистика</h2>
+<h2 class="section-title">📊 Статистика</h2>
 <div id="statsContent"></div>
 </div>
+
 <div id="admin" class="section">
-<h2 class="section-title">⚙️ Админ-панель</h2>
+<h2 class="section-title">️ Админ-панель</h2>
 <div class="admin-tabs">
 <button class="admin-tab active" onclick="showAdminTab('schedule', this)">📅 График</button>
 <button class="admin-tab" onclick="showAdminTab('employees', this)">👥 Сотрудники</button>
 <button class="admin-tab" onclick="showAdminTab('contests', this)">🏆 Конкурсы</button>
 <button class="admin-tab" onclick="showAdminTab('materials', this)">📚 Обучение</button>
 <button class="admin-tab" onclick="showAdminTab('info', this)">📢 Инфо</button>
-<button class="admin-tab" onclick="showAdminTab('settings', this)">️ Настройки</button>
+<button class="admin-tab" onclick="showAdminTab('settings', this)">⚙️ Настройки</button>
 </div>
+
 <div id="admin-schedule" class="admin-section active">
 <div class="admin-card">
-<div class="admin-card-title" id="scheduleFormTitle"> Добавить сотрудника в график</div>
+<div class="admin-card-title" id="scheduleFormTitle">➕ Добавить сотрудника в график</div>
 <div class="form-row">
 <div class="form-group"><label>📅 Дата</label><input type="date" id="adminDate"></div>
 <div class="form-group"><label>👤 Сотрудник</label><select id="adminEmployee"><option value="">-- Выберите сотрудника --</option></select></div>
@@ -425,7 +441,7 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <option value="kassa">Касса</option><option value="kd">КД</option><option value="zal">Зал</option><option value="sklad">Склад</option>
 </select>
 </div>
-<div class="form-group"><label>🕐 Смена</label>
+<div class="form-group"><label> Смена</label>
 <select id="adminShift">
 <option value="1">Смена 9/1 (10:00 - 19:00)</option><option value="2">Смена 9/2 (12:00 - 21:00)</option><option value="3">Смена 11 (10:00 - 21:00)</option>
 </select>
@@ -438,10 +454,11 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <div id="scheduleList"></div>
 </div>
 </div>
+
 <div id="admin-employees" class="admin-section">
 <div class="admin-card">
 <div class="admin-card-title" id="employeeFormTitle">➕ Добавить сотрудника</div>
-<div class="form-group"><label>👤 ФИО</label><input type="text" id="newEmployeeName" placeholder="Иванов Иван Иванович"></div>
+<div class="form-group"><label> ФИО</label><input type="text" id="newEmployeeName" placeholder="Иванов Иван Иванович"></div>
 <div class="form-row">
 <div class="form-group"><label>📱 Телефон (логин)</label><input type="tel" id="newEmployeePhone" placeholder="89001234567"></div>
 <div class="form-group"><label>🔒 Пароль</label><input type="text" id="newEmployeePassword" placeholder="Пароль для входа"></div>
@@ -460,8 +477,8 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <option value="cleaner">Уборщица</option>
 </select>
 </div>
-<div class="form-group"><label>🔑 Роль в системе</label>
-<select id="newEmployeeRole"><option value="user">👤 Сотрудник</option><option value="admin">💎 Администратор</option></select>
+<div class="form-group"><label> Роль в системе</label>
+<select id="newEmployeeRole"><option value="user"> Сотрудник</option><option value="admin"> Администратор</option></select>
 </div>
 <button class="btn btn-success btn-block" id="employeeSubmitBtn" onclick="addEmployee()">➕ Добавить сотрудника</button>
 </div>
@@ -470,6 +487,7 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <div id="employeesList"></div>
 </div>
 </div>
+
 <div id="admin-contests" class="admin-section">
 <div class="admin-card">
 <div class="admin-card-title">🏆 Добавить конкурс</div>
@@ -485,11 +503,12 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <div id="adminContestList"></div>
 </div>
 </div>
+
 <div id="admin-materials" class="admin-section">
 <div class="admin-card" id="addMaterialSection" style="display: none; border: 2px solid var(--info);">
 <div class="admin-card-title" style="color: var(--info); border-bottom-color: var(--info);">📝 Новый материал</div>
 <div class="type-switcher">
-<button type="button" id="typeTextBtn" class="active" onclick="switchMaterialType('text')"> Текст</button>
+<button type="button" id="typeTextBtn" class="active" onclick="switchMaterialType('text')">📝 Текст</button>
 <button type="button" id="typeFileBtn" onclick="switchMaterialType('file')">📎 Файл</button>
 </div>
 <div class="form-group"><label>📌 Название</label><input type="text" id="materialTitle" placeholder="Например: Инструкция по работе с кассой"></div>
@@ -515,9 +534,10 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <button class="btn btn-primary btn-block" onclick="openMaterialForm()">➕ Добавить материал</button>
 </div>
 </div>
+
 <div id="admin-info" class="admin-section">
 <div class="admin-card" id="addInfoSection" style="display: none; border: 2px solid var(--warning);">
-<div class="admin-card-title" style="color: var(--warning); border-bottom-color: var(--warning);">📝 Новая информация</div>
+<div class="admin-card-title" style="color: var(--warning); border-bottom-color: var(--warning);"> Новая информация</div>
 <div class="type-switcher">
 <button type="button" id="infoTypeTextBtn" class="active" onclick="switchInfoType('text')">📝 Текст</button>
 <button type="button" id="infoTypeFileBtn" onclick="switchInfoType('file')">📎 Файл</button>
@@ -530,12 +550,12 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <div class="form-group">
 <label>📎 Загрузить файл</label>
 <input type="file" id="infoFile" onchange="handleInfoFileSelect(event)">
-<div id="infoFileWarning" class="file-warning" style="display: none;">️ Рекомендуется до 2 МБ.</div>
+<div id="infoFileWarning" class="file-warning" style="display: none;">⚠️ Рекомендуется до 2 МБ.</div>
 <div id="infoFileInfo" style="margin-top: 8px; color: var(--gray); font-size: 0.82em;"></div>
 </div>
 </div>
 <div style="display: flex; gap: 6px; flex-wrap: wrap;">
-<button class="btn btn-success" style="flex:1;" onclick="saveInfo()"> Сохранить</button>
+<button class="btn btn-success" style="flex:1;" onclick="saveInfo()">💾 Сохранить</button>
 <button class="btn btn-danger" style="flex:1;" onclick="cancelInfoForm()">✕ Отмена</button>
 </div>
 </div>
@@ -545,14 +565,16 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <button class="btn btn-primary btn-block" onclick="openInfoForm()">➕ Добавить информацию</button>
 </div>
 </div>
+
 <div id="admin-settings" class="admin-section">
 <div class="admin-card danger-zone">
-<div class="admin-card-title">️ Опасная зона</div>
+<div class="admin-card-title">⚠️ Опасная зона</div>
 <p style="color: var(--gray); font-size: 0.85em; margin-bottom: 12px; line-height: 1.4;">Полный сброс всех данных сайта. Это действие нельзя отменить.</p>
-<button class="btn btn-danger btn-block" onclick="resetAllData()">🗑️ Сбросить все данные</button>
+<button class="btn btn-danger btn-block" onclick="resetAllData()">️ Сбросить все данные</button>
 </div>
 </div>
 </div>
+
 <div id="superadmin" class="section">
 <h2 class="section-title"> Панель Владельца</h2>
 <div class="admin-card">
@@ -584,6 +606,7 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 </div>
 </div>
 </main>
+
 <div class="modal" id="materialModal">
 <div class="modal-content">
 <div class="modal-header">
@@ -593,10 +616,11 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <div class="modal-body" id="modalBody"></div>
 </div>
 </div>
+
 <div class="modal" id="notificationModal">
 <div class="modal-content">
 <div class="modal-header">
-<h3>🔔 Уведомления</h3>
+<h3> Уведомления</h3>
 <button class="modal-close" onclick="closeNotificationModal()">×</button>
 </div>
 <div class="modal-body" id="notificationBody">
@@ -622,13 +646,13 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-// === PUSH УВЕДОМЛЕНИЯ ===
+// === PUSH УВЕДОМЛЕНИЯ (ИСПРАВЛЕНО) ===
 let messaging = null;
 const VAPID_KEY = 'BKOYzXc-UaYE4T5u2AUij9LttVtKcfyqgV11yRI7lkoO6R4jBheUFem3RK9WJxzsfSaIWWH5JwxdTue85Cgsct4';
 
 async function initializeFirebaseMessaging() {
-  console.log('🔔 Инициализация push-уведомлений...');
-  if (!('serviceWorker' in navigator)) { console.log('❌ Service Worker не поддерживается'); return; }
+  console.log('🔔 Инициализация push...');
+  if (!('serviceWorker' in navigator)) return;
   try {
     const messagingApp = firebase.initializeApp({
       apiKey: "AIzaSyDTHWwfpt059YCSt5YI9Aou1n1GjHxgQ6s",
@@ -665,7 +689,7 @@ window.requestNotificationPermission = async function() {
   try {
     const permission = await Notification.requestPermission();
     if (permission === 'granted') { await registerForPushNotifications(); window.closeNotificationHint(); alert('✅ Уведомления включены!'); }
-    else { alert('⚠️ Разрешение не получено'); window.closeNotificationHint(); }
+    else { alert('️ Разрешение не получено'); window.closeNotificationHint(); }
   } catch (error) { alert('❌ Ошибка'); }
 };
 
@@ -685,7 +709,7 @@ async function registerForPushNotifications() {
       }
       createNotification(currentUser.id, title, body, payload.data?.type || 'push');
     });
-  } catch (error) { console.error(' Ошибка:', error); }
+  } catch (error) { console.error('Ошибка:', error); }
 }
 
 const shiftTimes = { 1: '10:00 - 19:00', 2: '12:00 - 21:00', 3: '10:00 - 21:00' };
@@ -732,7 +756,7 @@ function showLoginError(msg) { const el = document.getElementById('loginError');
 
 async function autoLogin() { const sessionStr = localStorage.getItem('domovidSession'); if (sessionStr) { try { const session = JSON.parse(sessionStr); const userRef = doc(db, "users", session.id); const userSnap = await getDoc(userRef); if (userSnap.exists()) { const userData = userSnap.data(); currentUser = { id: session.id, name: userData.name, phone: userData.phone, role: userData.role, branchId: session.branchId || userData.branchId }; await loadAllDataFromFirebase(); await loadNotifications(); setTimeout(() => initializeFirebaseMessaging(), 2000); enterApp(); return; } } catch (e) { console.error("Авто-вход не удался:", e); localStorage.removeItem('domovidSession'); } } showLoginScreen(); }
 
-window.doLogin = async function() { const branchId = document.getElementById('loginBranch').value; const phoneInput = document.getElementById('loginPhone').value.trim(); const password = document.getElementById('loginPassword').value; const errorEl = document.getElementById('loginError'); if (!branchId) { showLoginError('⚠️ Пожалуйста, выберите отделение'); return; } if (!phoneInput || !password) { showLoginError('Введите телефон и пароль'); return; } const phone = normalizePhone(phoneInput); errorEl.textContent = 'Проверка...'; errorEl.classList.add('show'); try { const q = query(collection(db, "users"), where("phone", "==", phone), where("password", "==", password)); const querySnapshot = await getDocs(q); if (querySnapshot.empty) { showLoginError('❌ Неверный телефон или пароль'); return; } const userData = querySnapshot.docs[0].data(); const userId = querySnapshot.docs[0].id; if (userData.role !== 'superadmin' && userData.branchId !== branchId) { showLoginError('❌ Этот сотрудник не числится в выбранном отделении'); return; } if (!userData.branchId) { await updateDoc(doc(db, "users", userId), { branchId: branchId }); } currentUser = { id: userId, name: userData.name, phone: userData.phone, role: userData.role, branchId: branchId }; localStorage.setItem('domovidSession', JSON.stringify({ id: userId, branchId: branchId })); await loadAllDataFromFirebase(); await loadNotifications(); setTimeout(() => initializeFirebaseMessaging(), 2000); errorEl.classList.remove('show'); enterApp(); } catch (error) { console.error("Ошибка входа:", error); showLoginError('❌ Ошибка подключения: ' + error.message); } };
+window.doLogin = async function() { const branchId = document.getElementById('loginBranch').value; const phoneInput = document.getElementById('loginPhone').value.trim(); const password = document.getElementById('loginPassword').value; const errorEl = document.getElementById('loginError'); if (!branchId) { showLoginError('⚠️ Пожалуйста, выберите отделение'); return; } if (!phoneInput || !password) { showLoginError('Введите телефон и пароль'); return; } const phone = normalizePhone(phoneInput); errorEl.textContent = 'Проверка...'; errorEl.classList.add('show'); try { const q = query(collection(db, "users"), where("phone", "==", phone), where("password", "==", password)); const querySnapshot = await getDocs(q); if (querySnapshot.empty) { showLoginError(' Неверный телефон или пароль'); return; } const userData = querySnapshot.docs[0].data(); const userId = querySnapshot.docs[0].id; if (userData.role !== 'superadmin' && userData.branchId !== branchId) { showLoginError('❌ Этот сотрудник не числится в выбранном отделении'); return; } if (!userData.branchId) { await updateDoc(doc(db, "users", userId), { branchId: branchId }); } currentUser = { id: userId, name: userData.name, phone: userData.phone, role: userData.role, branchId: branchId }; localStorage.setItem('domovidSession', JSON.stringify({ id: userId, branchId: branchId })); await loadAllDataFromFirebase(); await loadNotifications(); setTimeout(() => initializeFirebaseMessaging(), 2000); errorEl.classList.remove('show'); enterApp(); } catch (error) { console.error("Ошибка входа:", error); showLoginError('❌ Ошибка подключения: ' + error.message); } };
 
 function enterApp() { if (data.settings.maintenanceMode && currentUser.role !== 'superadmin') { document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('maintenanceScreen').classList.remove('hidden'); document.getElementById('topNav').style.display = 'none'; return; } document.getElementById('loginScreen').classList.add('hidden'); document.getElementById('maintenanceScreen').classList.add('hidden'); document.getElementById('topNav').style.display = 'block'; document.getElementById('currentUserBadge').style.display = 'inline-flex'; document.getElementById('currentUserName').textContent = currentUser.name; document.getElementById('notificationBell').style.display = 'block'; let roleText = '👤 Сотрудник'; if (currentUser.role === 'admin') roleText = '💎 Админ'; if (currentUser.role === 'superadmin') roleText = '👑 Владелец'; document.getElementById('currentUserRole').textContent = roleText; const isAdmin = currentUser.role === 'admin' || currentUser.role === 'superadmin'; document.getElementById('topNavAdminBtn').style.display = isAdmin ? '' : 'none'; document.getElementById('topNavSuperAdminBtn').style.display = (currentUser.role === 'superadmin') ? '' : 'none'; if (!isAdmin && document.getElementById('admin').classList.contains('active')) { showSection('schedule', document.querySelector('.top-nav-btn')); } renderAll(); }
 
@@ -746,9 +770,9 @@ window.openFileViewer = function(title, fileData, isText = false, textContent = 
 
 window.downloadFileFromModal = function(filename, dataUrl) { const link = document.createElement('a'); link.href = dataUrl; link.download = filename; document.body.appendChild(link); link.click(); document.body.removeChild(link); };
 
-// --- УВЕДОМЛЕНИЯ (ИСПРАВЛЕНО) ---
+// --- УВЕДОМЛЕНИЯ (ИСПРАВЛЕНО: createNotification экспортирована) ---
 window.openNotifications = async function() {
-  console.log('🔔 Открытие уведомлений');
+  console.log(' Открытие уведомлений');
   await loadNotifications();
   renderNotifications();
   document.getElementById('notificationModal').classList.add('open');
@@ -782,7 +806,7 @@ window.markAllNotificationsRead = async function() {
 
 window.createNotification = async function(userId, title, message, type = 'general') {
   try {
-    console.log(' Создание уведомления для:', userId, title);
+    console.log('🔔 Создание уведомления для:', userId, title);
     await addDoc(collection(db, "notifications"), {
       branchId: currentUser.branchId,
       userId: userId,
@@ -829,10 +853,10 @@ window.editEmployee = function(id) {
   document.getElementById('newEmployeePosition').value = emp.position || '';
   document.getElementById('newEmployeeRole').value = emp.role;
   const btn = document.getElementById('employeeSubmitBtn');
-  btn.textContent = '💾 Сохранить изменения';
+  btn.textContent = ' Сохранить изменения';
   btn.className = 'btn btn-warning btn-block';
   btn.onclick = updateEmployee;
-  document.getElementById('employeeFormTitle').textContent = '️ Редактирование сотрудника';
+  document.getElementById('employeeFormTitle').textContent = '✏️ Редактирование сотрудника';
   if (!document.getElementById('cancelEditBtn')) {
     const cancelBtn = document.createElement('button');
     cancelBtn.id = 'cancelEditBtn';
@@ -930,7 +954,7 @@ window.transferEmployee = function(id) {
   const modal = document.createElement('div');
   modal.className = 'modal open';
   modal.id = 'transferModal';
-  modal.innerHTML = `<div class="modal-content"><div class="modal-header"><h3> Перевод сотрудника</h3><button class="modal-close" onclick="closeTransferModal()">×</button></div><div class="modal-body"><p style="margin-bottom: 12px;">Перевод: <strong>${escapeHtml(emp.name)}</strong></p><div class="form-group"><label>Выберите отделение:</label><select id="transferBranchSelect"><option value="">-- Выберите --</option>${branchOptions}</select></div><button class="btn btn-primary btn-block" onclick="confirmTransferEmployee('${emp.id}')">🔄 Перевести</button></div></div>`;
+  modal.innerHTML = `<div class="modal-content"><div class="modal-header"><h3>🔄 Перевод сотрудника</h3><button class="modal-close" onclick="closeTransferModal()">×</button></div><div class="modal-body"><p style="margin-bottom: 12px;">Перевод: <strong>${escapeHtml(emp.name)}</strong></p><div class="form-group"><label>Выберите отделение:</label><select id="transferBranchSelect"><option value="">-- Выберите --</option>${branchOptions}</select></div><button class="btn btn-primary btn-block" onclick="confirmTransferEmployee('${emp.id}')">🔄 Перевести</button></div></div>`;
   document.body.appendChild(modal);
 };
 
@@ -947,7 +971,7 @@ window.confirmTransferEmployee = async function(empId) {
   if (!confirm(`Перевести ${emp.name} в "${targetBranch.name}"?`)) return;
   try {
     await updateDoc(doc(db, "users", empId), { branchId: targetBranchId });
-    await createNotification(empId, '🔄 Перевод в другое отделение', `Вы переведены в "${targetBranch.name}"`, 'transfer');
+    await window.createNotification(empId, '🔄 Перевод в другое отделение', `Вы переведены в "${targetBranch.name}"`, 'transfer');
     alert('✅ Переведен!');
     closeTransferModal();
     await loadAllDataFromFirebase();
@@ -964,12 +988,12 @@ window.renderEmployeesList = function() {
   visibleEmployees.forEach(emp => {
     const item = document.createElement('div');
     item.className = `employee-admin-item ${emp.role === 'admin' ? 'role-admin' : ''}`;
-    const roleBadge = emp.role === 'admin' ? '<span class="employee-admin-role role-admin-badge">💎 Админ</span>' : '<span class="employee-admin-role role-user-badge">👤 Сотрудник</span>';
+    const roleBadge = emp.role === 'admin' ? '<span class="employee-admin-role role-admin-badge"> Админ</span>' : '<span class="employee-admin-role role-user-badge">👤 Сотрудник</span>';
     const positionText = emp.position ? `<div style="color: var(--brand-green); font-size: 0.82em; margin-top: 2px;">💼 ${positionLabels[emp.position] || emp.position}</div>` : '';
     const phoneText = emp.phone ? `📱 ${escapeHtml(emp.phone)}` : '<em style="color:#999;">телефон не указан</em>';
     const isSelf = currentUser && currentUser.id === emp.id;
     const editBtn = `<button class="btn btn-warning btn-sm" onclick="editEmployee('${emp.id}')" style="margin-right:4px;">✏️</button>`;
-    const transferBtn = `<button class="btn btn-info btn-sm" onclick="transferEmployee('${emp.id}')" style="margin-right:4px;" title="Перевести">🔄</button>`;
+    const transferBtn = `<button class="btn btn-info btn-sm" onclick="transferEmployee('${emp.id}')" style="margin-right:4px;" title="Перевести"></button>`;
     const deleteBtn = isSelf ? '<button class="btn btn-sm" style="background:#e9ecef;color:#999;" disabled>Вы</button>' : `<button class="btn btn-danger btn-sm" onclick="deleteEmployee('${emp.id}')">🗑️</button>`;
     item.innerHTML = `<div class="employee-admin-header"><div class="employee-admin-info"><div class="employee-admin-name">👤 ${escapeHtml(emp.name)} ${roleBadge}</div>${positionText}<div class="employee-admin-phone">${phoneText}</div></div><div style="display:flex;gap:4px;">${editBtn}${transferBtn}${deleteBtn}</div></div>`;
     list.appendChild(item);
@@ -989,7 +1013,7 @@ window.renderEmployeeSelect = function() {
   });
 };
 
-// --- ВЛАДЕЛЕЦ ---
+// --- ВЛАДЕЛЕЦ И ОТДЕЛЕНИЯ ---
 window.renderSuperAdminPanel = function() {
   renderBranchesList();
   const maintBtn = document.getElementById('maintenanceToggleBtn');
@@ -1091,7 +1115,7 @@ window.renderSchedule = function() {
   grid.innerHTML = '';
   const dates = getSortedDates();
   const activeDates = dates.filter(d => getDateStatus(d) !== 'past');
-  if (activeDates.length === 0) { grid.innerHTML = '<div class="empty-message">📅 График пустой.</div>'; return; }
+  if (activeDates.length === 0) { grid.innerHTML = '<div class="empty-message"> График пустой.</div>'; return; }
   activeDates.forEach(date => {
     const entries = data.schedule[date];
     if (!entries || entries.length === 0) return;
@@ -1101,7 +1125,7 @@ window.renderSchedule = function() {
     let statusBadge = '';
     if (status === 'today') statusBadge = '<span class="today-badge">Сегодня</span>';
     else if (status === 'yesterday') statusBadge = '<span class="yesterday-badge">Вчера</span>';
-    dateCard.innerHTML = `<h3>📅 ${date} ${statusBadge}</h3>`;
+    dateCard.innerHTML = `<h3> ${date} ${statusBadge}</h3>`;
     const sortedEntries = [...entries].sort((a, b) => { if (a.shift !== b.shift) return a.shift - b.shift; return a.type.localeCompare(b.type); });
     sortedEntries.forEach(entry => {
       const card = document.createElement('div');
@@ -1133,7 +1157,7 @@ window.renderArchive = function() {
     const clearBtn = document.createElement('button');
     clearBtn.className = 'btn btn-danger btn-block';
     clearBtn.style.marginBottom = '16px';
-    clearBtn.innerHTML = '🗑️ Очистить архив';
+    clearBtn.innerHTML = '️ Очистить архив';
     clearBtn.onclick = clearArchive;
     content.appendChild(clearBtn);
   }
@@ -1151,8 +1175,8 @@ window.renderArchive = function() {
       const positionClass = entry.type;
       const shiftLabel = shiftLabels[entry.shift] || entry.shift;
       const shiftTime = shiftTimes[entry.shift];
-      let deleteBtn = currentUser && currentUser.role === 'superadmin' ? `<button class="btn btn-danger btn-sm" onclick="deleteArchiveEntry('${entry.id}')">🗑️</button>` : '';
-      card.innerHTML = `<div class="archive-employee-info"><div style="font-weight: 700; color: var(--dark); margin-bottom: 4px;">👤 ${escapeHtml(entry.employee)}</div><div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 0.85em;"><span class="employee-card-position ${positionClass}" style="font-size: 0.8em;">${positionLabel}</span><span style="color: var(--gray);">🕐 Смена ${shiftLabel} • ${shiftTime}</span></div></div>${deleteBtn}`;
+      let deleteBtn = currentUser && currentUser.role === 'superadmin' ? `<button class="btn btn-danger btn-sm" onclick="deleteArchiveEntry('${entry.id}')">️</button>` : '';
+      card.innerHTML = `<div class="archive-employee-info"><div style="font-weight: 700; color: var(--dark); margin-bottom: 4px;">👤 ${escapeHtml(entry.employee)}</div><div style="display: flex; gap: 6px; flex-wrap: wrap; align-items: center; font-size: 0.85em;"><span class="employee-card-position ${positionClass}" style="font-size: 0.8em;">${positionLabel}</span><span style="color: var(--gray);"> Смена ${shiftLabel} • ${shiftTime}</span></div></div>${deleteBtn}`;
       dateCard.appendChild(card);
     });
     content.appendChild(dateCard);
@@ -1160,7 +1184,7 @@ window.renderArchive = function() {
 };
 
 window.deleteArchiveEntry = async function(id) {
-  if (!currentUser || currentUser.role !== 'superadmin') { alert(' Только владелец'); return; }
+  if (!currentUser || currentUser.role !== 'superadmin') { alert('🔒 Только владелец'); return; }
   if (!confirm('Удалить?')) return;
   try { await deleteDoc(doc(db, "schedule", id)); await loadAllDataFromFirebase(); renderArchive(); alert('✅ Удалено'); } catch (e) { alert('Ошибка: ' + e.message); }
 };
@@ -1208,7 +1232,7 @@ window.renderScheduleList = function() {
 
 window.clearCurrentSchedule = async function() {
   if (!currentUser || (currentUser.role !== 'admin' && currentUser.role !== 'superadmin')) { alert('🔒 Недостаточно прав'); return; }
-  if (!confirm('️ Удалить ВСЕ записи?')) return;
+  if (!confirm('⚠️ Удалить ВСЕ записи?')) return;
   if (!confirm('Точно?')) return;
   try {
     const dates = Object.keys(data.schedule); let deletedCount = 0;
@@ -1228,7 +1252,7 @@ window.addScheduleEntry = async function() {
   try {
     await addDoc(collection(db, "schedule"), { date, employee, type, shift, branchId: currentUser.branchId });
     const emp = data.employees.find(e => e.name === employee);
-    if (emp) { await createNotification(emp.id, '📅 Новая смена', `Вам назначена смена на ${date} (${typeLabels[type]}, смена ${shiftLabels[shift]})`, 'schedule'); }
+    if (emp) { await window.createNotification(emp.id, '📅 Новая смена', `Вам назначена смена на ${date} (${typeLabels[type]}, смена ${shiftLabels[shift]})`, 'schedule'); }
     document.getElementById('adminDate').value = '';
     document.getElementById('adminEmployee').value = '';
     await loadAllDataFromFirebase();
@@ -1277,7 +1301,7 @@ window.updateScheduleEntry = async function() {
   try {
     await updateDoc(doc(db, "schedule", editingScheduleId), { date, employee, type, shift, branchId: currentUser.branchId });
     const emp = data.employees.find(e => e.name === employee);
-    if (emp) { await createNotification(emp.id, '🔄 Изменение в графике', `Ваша смена изменена на ${date} (${typeLabels[type]}, смена ${shiftLabels[shift]})`, 'schedule'); }
+    if (emp) { await window.createNotification(emp.id, '🔄 Изменение в графике', `Ваша смена изменена на ${date} (${typeLabels[type]}, смена ${shiftLabels[shift]})`, 'schedule'); }
     cancelEditSchedule();
     await loadAllDataFromFirebase();
     renderScheduleList();
@@ -1309,7 +1333,7 @@ window.deleteScheduleEntry = async function(id) {
     await deleteDoc(doc(db, "schedule", id));
     if (targetEntry) {
       const emp = data.employees.find(e => e.name === targetEntry.employee);
-      if (emp) { await createNotification(emp.id, ' Удаление смены', `Ваша смена на ${targetEntry.date} удалена`, 'schedule'); }
+      if (emp) { await window.createNotification(emp.id, ' Удаление смены', `Ваша смена на ${targetEntry.date} удалена`, 'schedule'); }
     }
     await loadAllDataFromFirebase();
     renderScheduleList();
@@ -1419,11 +1443,11 @@ window.renderAdminContestList = function() {
     let finalResultHtml = contest.finalResult ? `<div class="admin-result-item final"><div class="admin-result-info"><strong>🏆 ${escapeHtml(contest.finalResult.winner)}</strong><small>${formatDateTime(contest.finalResult.date)}</small>${contest.finalResult.description ? `<div style="color:#555;font-size:0.82em;margin-top:2px;">${escapeHtml(contest.finalResult.description)}</div>` : ''}</div><button class="btn btn-danger btn-sm" onclick="deleteFinalResult('${contest.id}')">✕</button></div>` : '<div class="no-employees">Финальный результат не определён</div>';
     let formHtml = '';
     if (openResultForms[contest.id] === 'intermediate') {
-      formHtml = `<div class="inline-form"><h5> Новый результат</h5><div class="form-group" style="margin-bottom:8px;"><input type="text" id="intTitle_${contest.id}" placeholder="Название"></div><div class="form-group" style="margin-bottom:0;"><textarea id="intDesc_${contest.id}" rows="2" placeholder="Описание"></textarea></div><div class="inline-form-actions"><button class="btn btn-info btn-sm" onclick="saveIntermediateResult('${contest.id}')">💾 Сохранить</button><button class="btn btn-danger btn-sm" onclick="toggleResultForm('${contest.id}', 'intermediate')">✕ Отмена</button></div></div>`;
+      formHtml = `<div class="inline-form"><h5>📊 Новый результат</h5><div class="form-group" style="margin-bottom:8px;"><input type="text" id="intTitle_${contest.id}" placeholder="Название"></div><div class="form-group" style="margin-bottom:0;"><textarea id="intDesc_${contest.id}" rows="2" placeholder="Описание"></textarea></div><div class="inline-form-actions"><button class="btn btn-info btn-sm" onclick="saveIntermediateResult('${contest.id}')">💾 Сохранить</button><button class="btn btn-danger btn-sm" onclick="toggleResultForm('${contest.id}', 'intermediate')">✕ Отмена</button></div></div>`;
     } else if (openResultForms[contest.id] === 'final') {
       formHtml = `<div class="inline-form" style="background:#fff9e6;border-color:#ffc107;"><h5 style="color:#856404;">🏆 Финальный результат</h5><div class="form-group" style="margin-bottom:8px;"><input type="text" id="finalWinner_${contest.id}" placeholder="Имя победителя"></div><div class="form-group" style="margin-bottom:0;"><textarea id="finalDesc_${contest.id}" rows="2" placeholder="Комментарий"></textarea></div><div class="inline-form-actions"><button class="btn btn-gold btn-sm" onclick="saveFinalResult('${contest.id}')">💾 Сохранить</button><button class="btn btn-danger btn-sm" onclick="toggleResultForm('${contest.id}', 'final')">✕ Отмена</button></div></div>`;
     }
-    item.innerHTML = `<div class="admin-contest-header"><div><div class="admin-contest-title">${escapeHtml(contest.name)}</div><div style="font-size:0.78em;color:var(--gray);margin-top:2px;">${statusText}</div></div><div class="admin-contest-actions"><button class="btn btn-info btn-sm" onclick="toggleResultForm('${contest.id}', 'intermediate')"></button><button class="btn btn-gold btn-sm" onclick="toggleResultForm('${contest.id}', 'final')">🏆</button><button class="btn btn-warning btn-sm" onclick="toggleContestStatus('${contest.id}')">${toggleBtnText}</button><button class="btn btn-danger btn-sm" onclick="deleteContest('${contest.id}')">🗑️</button></div></div><div class="admin-contest-results"><h5>📊 Промежуточные</h5>${intResultsHtml}<h5>🏆 Финальный</h5>${finalResultHtml}</div>${formHtml}`;
+    item.innerHTML = `<div class="admin-contest-header"><div><div class="admin-contest-title">${escapeHtml(contest.name)}</div><div style="font-size:0.78em;color:var(--gray);margin-top:2px;">${statusText}</div></div><div class="admin-contest-actions"><button class="btn btn-info btn-sm" onclick="toggleResultForm('${contest.id}', 'intermediate')">📊</button><button class="btn btn-gold btn-sm" onclick="toggleResultForm('${contest.id}', 'final')"></button><button class="btn btn-warning btn-sm" onclick="toggleContestStatus('${contest.id}')">${toggleBtnText}</button><button class="btn btn-danger btn-sm" onclick="deleteContest('${contest.id}')">🗑️</button></div></div><div class="admin-contest-results"><h5>📊 Промежуточные</h5>${intResultsHtml}<h5>🏆 Финальный</h5>${finalResultHtml}</div>${formHtml}`;
     list.appendChild(item);
   });
 };
@@ -1459,7 +1483,7 @@ window.handleFileSelect = function(event) {
   const warningEl = document.getElementById('fileWarning');
   if (!file) { selectedFileData = null; infoEl.textContent = ''; warningEl.style.display = 'none'; return; }
   if (file.size > MAX_FILE_SIZE) {
-    alert(`️ Файл слишком большой! Максимум: ${formatFileSize(MAX_FILE_SIZE)}`);
+    alert(`⚠️ Файл слишком большой! Максимум: ${formatFileSize(MAX_FILE_SIZE)}`);
     event.target.value = ''; selectedFileData = null; infoEl.textContent = ''; warningEl.style.display = 'none'; return;
   }
   warningEl.style.display = file.size > RECOMMENDED_FILE_SIZE ? 'block' : 'none';
@@ -1530,7 +1554,7 @@ window.renderMaterials = function() {
     }
     const actionBtn = material.type === 'text'
       ? `<button class="btn btn-view btn-sm" onclick="viewMaterial('${material.id}')">👁️ Читать</button>`
-      : `<button class="btn btn-view btn-sm" onclick="viewMaterial('${material.id}')">👁️ Открыть</button><button class="btn btn-download btn-sm" onclick="downloadMaterial('${material.id}')">⬇️ Скачать</button>`;
+      : `<button class="btn btn-view btn-sm" onclick="viewMaterial('${material.id}')">👁️ Открыть</button><button class="btn btn-download btn-sm" onclick="downloadMaterial('${material.id}')">️ Скачать</button>`;
     card.innerHTML = `<div class="material-header"><div class="material-icon">${icon}</div><div class="material-title">${escapeHtml(material.title)}</div></div><div class="material-meta"><span class="material-tag ${tagClass}">${tagText}</span><span class="material-date">${formatDateTime(material.createdAt)}</span></div>${previewHtml}<div class="material-actions">${actionBtn}${currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin') ? `<button class="btn btn-danger btn-sm" onclick="deleteMaterial('${material.id}')">🗑️</button>` : ''}</div>`;
     list.appendChild(card);
   });
@@ -1638,7 +1662,7 @@ window.renderInfo = function() {
     }
     const actionBtn = item.type === 'text'
       ? `<button class="btn btn-view btn-sm" onclick="viewInfo('${item.id}')">👁️ Читать</button>`
-      : `<button class="btn btn-view btn-sm" onclick="viewInfo('${item.id}')">👁️ Открыть</button><button class="btn btn-download btn-sm" onclick="downloadInfo('${item.id}')">⬇️ Скачать</button>`;
+      : `<button class="btn btn-view btn-sm" onclick="viewInfo('${item.id}')">️ Открыть</button><button class="btn btn-download btn-sm" onclick="downloadInfo('${item.id}')">⬇️ Скачать</button>`;
     card.innerHTML = `<div class="info-header"><div class="info-icon">${icon}</div><div class="info-title">${escapeHtml(item.title)}</div></div><div class="info-meta"><span class="info-tag ${tagClass}">${tagText}</span><span class="info-date">${formatDateTime(item.createdAt)}</span></div>${previewHtml}<div class="info-actions">${actionBtn}${currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin') ? `<button class="btn btn-danger btn-sm" onclick="deleteInfo('${item.id}')">🗑️</button>` : ''}</div>`;
     content.appendChild(card);
   });
@@ -1707,9 +1731,9 @@ window.renderStats = function() {
     } else {
       html += `<div class="my-stats-grid">
         <div class="my-stat-card"><div class="my-stat-icon">💵</div><div class="my-stat-value">${myStats.kassa}</div><div class="my-stat-label">дней на Кассе</div></div>
-        <div class="my-stat-card"><div class="my-stat-icon"></div><div class="my-stat-value">${myStats.kd}</div><div class="my-stat-label">дней на КД</div></div>
+        <div class="my-stat-card"><div class="my-stat-icon">📋</div><div class="my-stat-value">${myStats.kd}</div><div class="my-stat-label">дней на КД</div></div>
         <div class="my-stat-card"><div class="my-stat-icon">🏬</div><div class="my-stat-value">${myStats.zal}</div><div class="my-stat-label">дней в Зале</div></div>
-        <div class="my-stat-card"><div class="my-stat-icon"></div><div class="my-stat-value">${myStats.sklad}</div><div class="my-stat-label">дней на Складе</div></div>
+        <div class="my-stat-card"><div class="my-stat-icon">📦</div><div class="my-stat-value">${myStats.sklad}</div><div class="my-stat-label">дней на Складе</div></div>
         <div class="my-stat-total"><div class="my-stat-icon">📊</div><div class="my-stat-value">${myStats.totalShifts}</div><div class="my-stat-label">Всего смен за всё время</div></div>
         <div class="my-stat-hours"><div class="my-stat-icon">⏱️</div><div class="my-stat-value">${myStats.hoursThisMonth}</div><div class="my-stat-label">часов отработано в этом месяце (${myStats.shiftsThisMonth} смен)</div></div>
       </div>`;
@@ -1757,16 +1781,16 @@ function formatFileSize(bytes) {
 }
 
 function getFileIcon(mimeType) {
-  if (!mimeType) return '📄';
+  if (!mimeType) return '';
   if (mimeType.startsWith('image/')) return '🖼️';
-  if (mimeType.startsWith('video/')) return '🎬';
+  if (mimeType.startsWith('video/')) return '';
   if (mimeType.startsWith('audio/')) return '🎵';
-  if (mimeType.includes('pdf')) return '';
+  if (mimeType.includes('pdf')) return '📕';
   if (mimeType.includes('word') || mimeType.includes('document')) return '📘';
   if (mimeType.includes('excel') || mimeType.includes('spreadsheet')) return '📗';
   if (mimeType.includes('powerpoint') || mimeType.includes('presentation')) return '📙';
-  if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('archive')) return '️';
-  return '';
+  if (mimeType.includes('zip') || mimeType.includes('rar') || mimeType.includes('archive')) return '🗜️';
+  return '📄';
 }
 
 function getSortedDates() {
@@ -1804,7 +1828,7 @@ document.getElementById('materialModal').addEventListener('click', function(e) {
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeModal(); closeNotificationModal(); closeTransferModal(); } });
 
 window.resetAllData = async function() {
-  if (!confirm('⚠️ ВСЕ данные будут удалены! Продолжить?') || !confirm('Точно-точно?')) return;
+  if (!confirm('️ ВСЕ данные будут удалены! Продолжить?') || !confirm('Точно-точно?')) return;
   try {
     const collections = ["users", "schedule", "materials", "contests", "info", "settings", "branches", "notifications"];
     for (const colName of collections) {
