@@ -29,8 +29,8 @@
         .login-logo p { color: var(--gray); font-size: 0.9em; }
         .login-form .form-group { margin-bottom: 14px; text-align: left; }
         .login-form label { display: block; margin-bottom: 6px; font-weight: 600; color: var(--dark); font-size: 0.85em; }
-        .login-form input { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 1em; background: white; min-height: 46px; transition: border-color 0.2s; }
-        .login-form input:focus { outline: none; border-color: var(--primary); }
+        .login-form input, .login-form select { width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: var(--radius-sm); font-size: 1em; background: white; min-height: 46px; transition: border-color 0.2s; }
+        .login-form input:focus, .login-form select:focus { outline: none; border-color: var(--primary); }
         .login-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: var(--radius-sm); font-weight: 700; font-size: 1em; cursor: pointer; margin-top: 8px; transition: all 0.2s; min-height: 48px; }
         .login-btn:hover { background: var(--primary-dark); }
         .login-btn:active { transform: scale(0.98); }
@@ -305,6 +305,12 @@
             </div>
             <div class="login-form">
                 <div class="form-group">
+                    <label>🏪 Выберите отделение</label>
+                    <select id="loginBranch">
+                        <option value="">Загрузка списка магазинов...</option>
+                    </select>
+                </div>
+                <div class="form-group">
                     <label>📱 Телефон</label>
                     <input type="tel" id="loginPhone" placeholder="89146443734" autocomplete="tel">
                 </div>
@@ -544,6 +550,27 @@
 
         <div id="superadmin" class="section">
             <h2 class="section-title">👑 Панель Владельца</h2>
+            
+            <div class="admin-card">
+                <div class="admin-card-title">🏪 Управление отделениями сети</div>
+                <div class="form-row" style="margin-bottom: 12px;">
+                    <div class="form-group">
+                        <label>Название магазина</label>
+                        <input type="text" id="newBranchName" placeholder="Например: Магазин на Ленина">
+                    </div>
+                    <div class="form-group">
+                        <label>Город / Регион</label>
+                        <input type="text" id="newBranchCity" placeholder="Например: Москва">
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" onclick="addNewBranch()" style="margin-bottom: 16px;">➕ Добавить новое отделение</button>
+                
+                <button class="btn btn-info btn-block" onclick="migrateOldData()" style="margin-bottom: 16px;">🔄 Мигрировать старые данные в текущее отделение</button>
+                <p style="font-size: 0.8em; color: var(--gray); text-align: center; margin-bottom: 12px;">Нажмите это один раз, чтобы привязать старых сотрудников и график к выбранному магазину.</p>
+                
+                <div id="branchesList" style="margin-top: 16px;"></div>
+            </div>
+
             <div class="admin-card danger-zone">
                 <div class="admin-card-title">🚧 Режим технических работ</div>
                 <p style="color: var(--gray); font-size: 0.9em; margin-bottom: 12px; line-height: 1.4;">При включении этого режима обычные сотрудники и администраторы увидят экран "Технические работы" и не смогут пользоваться приложением. Вы (как Владелец) будете иметь полный доступ.</p>
@@ -640,27 +667,56 @@
             return `${parts[1]}.${parts[2]}`;
         }
 
+        async function loadBranchesToLogin() {
+            const select = document.getElementById('loginBranch');
+            if (!select) return;
+            try {
+                const branchesSnap = await getDocs(collection(db, "branches"));
+                select.innerHTML = '<option value="">-- Выберите отделение --</option>';
+                if (branchesSnap.empty) {
+                    select.innerHTML = '<option value="">Нет созданных отделений</option>';
+                    return;
+                }
+                branchesSnap.docs.forEach(doc => {
+                    const branch = doc.data();
+                    const option = document.createElement('option');
+                    option.value = doc.id;
+                    option.textContent = branch.name + (branch.city ? ` (${branch.city})` : '');
+                    select.appendChild(option);
+                });
+            } catch (e) {
+                console.error("Ошибка загрузки отделений:", e);
+                select.innerHTML = '<option value="">Ошибка загрузки</option>';
+            }
+        }
+
         async function loadAllDataFromFirebase() {
             try {
-                const usersSnap = await getDocs(collection(db, "users"));
+                const isSuperadmin = currentUser && currentUser.role === 'superadmin';
+                // Фильтруем данные по отделению. Владелец видит данные своего основного отделения.
+                const branchFilter = [where("branchId", "==", currentUser.branchId)];
+
+                const usersQuery = query(collection(db, "users"), ...branchFilter);
+                const usersSnap = await getDocs(usersQuery);
                 data.employees = usersSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
                 data.schedule = {};
-                const scheduleSnap = await getDocs(collection(db, "schedule"));
+                const scheduleQuery = query(collection(db, "schedule"), ...branchFilter);
+                const scheduleSnap = await getDocs(scheduleQuery);
                 scheduleSnap.docs.forEach(d => {
                     const entry = d.data();
                     if (!data.schedule[entry.date]) data.schedule[entry.date] = [];
                     data.schedule[entry.date].push({ id: d.id, ...entry });
                 });
 
-                const matSnap = await getDocs(collection(db, "materials"));
-                data.materials = matSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const matQuery = query(collection(db, "materials"), ...branchFilter);
+                data.materials = (await getDocs(matQuery)).docs.map(d => ({ id: d.id, ...d.data() }));
 
-                const contSnap = await getDocs(collection(db, "contests"));
-                data.contests = contSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const contQuery = query(collection(db, "contests"), ...branchFilter);
+                data.contests = (await getDocs(contQuery)).docs.map(d => ({ id: d.id, ...d.data() }));
 
-                const infoSnap = await getDocs(collection(db, "info"));
-                data.info = infoSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+                const infoQuery = query(collection(db, "info"), ...branchFilter);
+                data.info = (await getDocs(infoQuery)).docs.map(d => ({ id: d.id, ...d.data() }));
 
                 const settingsDoc = await getDoc(doc(db, "settings", "global"));
                 data.settings = settingsDoc.exists() ? settingsDoc.data() : { maintenanceMode: false };
@@ -696,7 +752,13 @@
                     const userSnap = await getDoc(userRef);
                     if (userSnap.exists()) {
                         const userData = userSnap.data();
-                        currentUser = { id: session.id, name: userData.name, phone: userData.phone, role: userData.role };
+                        currentUser = { 
+                            id: session.id, 
+                            name: userData.name, 
+                            phone: userData.phone, 
+                            role: userData.role,
+                            branchId: session.branchId || userData.branchId 
+                        };
                         await loadAllDataFromFirebase();
                         enterApp();
                         return;
@@ -710,10 +772,15 @@
         }
 
         window.doLogin = async function() {
+            const branchId = document.getElementById('loginBranch').value;
             const phoneInput = document.getElementById('loginPhone').value.trim();
             const password = document.getElementById('loginPassword').value;
             const errorEl = document.getElementById('loginError');
 
+            if (!branchId) {
+                showLoginError('⚠️ Пожалуйста, выберите отделение');
+                return;
+            }
             if (!phoneInput || !password) {
                 showLoginError('Введите телефон и пароль');
                 return;
@@ -735,8 +802,25 @@
                 const userData = querySnapshot.docs[0].data();
                 const userId = querySnapshot.docs[0].id;
 
-                currentUser = { id: userId, name: userData.name, phone: userData.phone, role: userData.role };
-                localStorage.setItem('domovidSession', JSON.stringify({ id: userId }));
+                // Проверка принадлежности к отделению (Владельцу разрешен вход в любое выбранное отделение для управления)
+                if (userData.role !== 'superadmin' && userData.branchId !== branchId) {
+                    showLoginError('❌ Этот сотрудник не числится в выбранном отделении');
+                    return;
+                }
+
+                // Если у старого пользователя нет branchId, обновляем его
+                if (!userData.branchId) {
+                    await updateDoc(doc(db, "users", userId), { branchId: branchId });
+                }
+
+                currentUser = { 
+                    id: userId, 
+                    name: userData.name, 
+                    phone: userData.phone, 
+                    role: userData.role,
+                    branchId: branchId 
+                };
+                localStorage.setItem('domovidSession', JSON.stringify({ id: userId, branchId: branchId }));
 
                 await loadAllDataFromFirebase();
                 
@@ -863,6 +947,75 @@
             document.body.removeChild(link);
         };
 
+        // --- ВЛАДЕЛЕЦ: УПРАВЛЕНИЕ ОТДЕЛЕНИЯМИ ---
+        window.addNewBranch = async function() {
+            const name = document.getElementById('newBranchName').value.trim();
+            const city = document.getElementById('newBranchCity').value.trim();
+            if (!name) { alert('Введите название отделения'); return; }
+            try {
+                await addDoc(collection(db, "branches"), { name, city, createdAt: Date.now() });
+                document.getElementById('newBranchName').value = '';
+                document.getElementById('newBranchCity').value = '';
+                alert('✅ Отделение успешно создано!');
+                loadBranchesToLogin();
+                renderBranchesList();
+            } catch (e) { alert('Ошибка: ' + e.message); }
+        };
+
+        window.renderBranchesList = async function() {
+            const list = document.getElementById('branchesList');
+            if (!list) return;
+            const branchesSnap = await getDocs(collection(db, "branches"));
+            list.innerHTML = '';
+            branchesSnap.docs.forEach(doc => {
+                const b = doc.data();
+                const div = document.createElement('div');
+                div.className = 'employee-admin-item';
+                div.innerHTML = `
+                    <div class="employee-admin-header">
+                        <div class="employee-admin-info">
+                            <div class="employee-admin-name">🏪 ${escapeHtml(b.name)}</div>
+                            <div class="employee-admin-phone">📍 ${escapeHtml(b.city || 'Город не указан')}</div>
+                        </div>
+                        <button class="btn btn-danger btn-sm" onclick="deleteBranch('${doc.id}')">🗑️</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        };
+
+        window.deleteBranch = async function(id) {
+            if (!confirm('Удалить это отделение? (Сотрудники и график этого отделения останутся в базе, но будут привязаны к несуществующему ID)')) return;
+            try {
+                await deleteDoc(doc(db, "branches", id));
+                renderBranchesList();
+                loadBranchesToLogin();
+            } catch (e) { alert('Ошибка: ' + e.message); }
+        };
+
+        window.migrateOldData = async function() {
+            if (!confirm('⚠️ Это действие привяжет ВСЕХ существующих сотрудников и записи графика, у которых нет отделения, к текущему выбранному отделению (' + currentUser.branchId + ').\n\nПродолжить?')) return;
+            try {
+                // Миграция сотрудников
+                const usersSnap = await getDocs(collection(db, "users"));
+                for (const d of usersSnap.docs) {
+                    if (!d.data().branchId) {
+                        await updateDoc(doc(db, "users", d.id), { branchId: currentUser.branchId });
+                    }
+                }
+                // Миграция графика
+                const scheduleSnap = await getDocs(collection(db, "schedule"));
+                for (const d of scheduleSnap.docs) {
+                    if (!d.data().branchId) {
+                        await updateDoc(doc(db, "schedule", d.id), { branchId: currentUser.branchId });
+                    }
+                }
+                alert('✅ Данные успешно мигрированы в текущее отделение!');
+                await loadAllDataFromFirebase();
+                renderAll();
+            } catch (e) { alert('Ошибка миграции: ' + e.message); }
+        };
+
         // --- СОТРУДНИКИ ---
         window.editEmployee = function(id) {
             const emp = data.employees.find(e => e.id === id);
@@ -906,7 +1059,7 @@
             if (phoneExists) { alert('❌ Сотрудник с таким телефоном уже есть!'); return; }
             
             try {
-                await updateDoc(doc(db, "users", editingEmployeeId), { name, phone, password, role });
+                await updateDoc(doc(db, "users", editingEmployeeId), { name, phone, password, role, branchId: currentUser.branchId });
                 cancelEditEmployee();
                 await loadAllDataFromFirebase();
                 renderEmployeesList();
@@ -943,7 +1096,7 @@
             const normalizedPhone = normalizePhone(phone);
             if (data.employees.some(e => normalizePhone(e.phone) === normalizedPhone)) { alert('❌ Сотрудник с таким телефоном уже есть!'); return; }
             try {
-                await addDoc(collection(db, "users"), { name, phone, password, role });
+                await addDoc(collection(db, "users"), { name, phone, password, role, branchId: currentUser.branchId });
                 document.getElementById('newEmployeeName').value = '';
                 document.getElementById('newEmployeePhone').value = '';
                 document.getElementById('newEmployeePassword').value = '';
@@ -1001,8 +1154,9 @@
             });
         };
 
-        // --- ВЛАДЕЛЕЦ ---
+        // --- ВЛАДЕЛЕЦ: ПАНЕЛЬ ---
         window.renderSuperAdminPanel = function() {
+            renderBranchesList();
             const maintBtn = document.getElementById('maintenanceToggleBtn');
             if (data.settings.maintenanceMode) {
                 maintBtn.textContent = '🔴 Выключить режим технических работ';
@@ -1273,7 +1427,7 @@
             if (!dateInput || !employee) { alert('Выберите дату и сотрудника'); return; }
             const date = formatDate(dateInput);
             try {
-                await addDoc(collection(db, "schedule"), { date, employee, type, shift });
+                await addDoc(collection(db, "schedule"), { date, employee, type, shift, branchId: currentUser.branchId });
                 document.getElementById('adminDate').value = '';
                 document.getElementById('adminEmployee').value = '';
                 await loadAllDataFromFirebase();
@@ -1335,7 +1489,7 @@
             const date = formatDate(dateInput);
             
             try {
-                await updateDoc(doc(db, "schedule", editingScheduleId), { date, employee, type, shift });
+                await updateDoc(doc(db, "schedule", editingScheduleId), { date, employee, type, shift, branchId: currentUser.branchId });
                 cancelEditSchedule();
                 await loadAllDataFromFirebase();
                 renderScheduleList();
@@ -1379,7 +1533,7 @@
             const status = document.getElementById('contestStatus').value;
             if (!name || !description) { alert('Заполните все поля'); return; }
             try {
-                await addDoc(collection(db, "contests"), { name, description, status, intermediateResults: [], finalResult: null });
+                await addDoc(collection(db, "contests"), { name, description, status, intermediateResults: [], finalResult: null, branchId: currentUser.branchId });
                 document.getElementById('contestName').value = '';
                 document.getElementById('contestDescription').value = '';
                 await loadAllDataFromFirebase();
@@ -1565,7 +1719,7 @@
         window.saveMaterial = async function() {
             const title = document.getElementById('materialTitle').value.trim();
             if (!title) { alert('Введите название'); return; }
-            let material = { title, type: currentMaterialType, createdAt: Date.now() };
+            let material = { title, type: currentMaterialType, createdAt: Date.now(), branchId: currentUser.branchId };
             if (currentMaterialType === 'text') {
                 const text = document.getElementById('materialText').value.trim();
                 if (!text) { alert('Введите текст'); return; }
@@ -1681,7 +1835,7 @@
         window.saveInfo = async function() {
             const title = document.getElementById('infoTitle').value.trim();
             if (!title) { alert('Введите заголовок'); return; }
-            let infoItem = { title, type: currentInfoType, createdAt: Date.now() };
+            let infoItem = { title, type: currentInfoType, createdAt: Date.now(), branchId: currentUser.branchId };
             if (currentInfoType === 'text') {
                 const text = document.getElementById('infoText').value.trim();
                 if (!text) { alert('Введите текст'); return; }
@@ -1929,7 +2083,7 @@
         window.resetAllData = async function() {
             if (!confirm('⚠️ ВСЕ данные в облаке будут удалены! Продолжить?') || !confirm('Точно-точно? Последнее предупреждение!')) return;
             try {
-                const collections = ["users", "schedule", "materials", "contests", "info", "settings"];
+                const collections = ["users", "schedule", "materials", "contests", "info", "settings", "branches"];
                 for (const colName of collections) {
                     const snap = await getDocs(collection(db, colName));
                     for (const d of snap.docs) {
@@ -1943,6 +2097,7 @@
             }
         };
 
+        loadBranchesToLogin();
         autoLogin();
     </script>
 </body>
