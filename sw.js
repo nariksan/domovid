@@ -20,8 +20,8 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification?.title || 'ДОМОВИД';
   const notificationOptions = {
     body: payload.notification?.body || 'Новое уведомление',
-    icon: '/apple-touch-icon.png',
-    badge: '/apple-touch-icon.png',
+    icon: './apple-touch-icon.png',
+    badge: './apple-touch-icon.png',
     data: payload.data,
     tag: payload.data?.tag || 'default',
     requireInteraction: true,
@@ -41,7 +41,7 @@ self.addEventListener('notificationclick', (event) => {
   
   if (event.action === 'open' || !event.action) {
     event.waitUntil(
-      clients.openWindow('/')
+      clients.openWindow('./')
     );
   }
 });
