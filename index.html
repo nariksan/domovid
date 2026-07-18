@@ -633,7 +633,12 @@ const VAPID_KEY = 'BKOYzXc-UaYE4T5u2AUij9LttVtKcfyqgV11yRI7lkoO6R4jBheUFem3RK9WJ
 async function initializeFirebaseMessaging() {
   console.log('🔔 Инициализация push...');
   if (!('serviceWorker' in navigator)) return;
+  
   try {
+    // ✅ РЕГИСТРИРУЕМ SERVICE WORKER ВРУЧНУЮ с правильным путём
+    const registration = await navigator.serviceWorker.register('./firebase-messaging-sw.js');
+    console.log('✅ Service Worker зарегистрирован:', registration);
+    
     const messagingApp = firebase.initializeApp({
       apiKey: "AIzaSyDTHWwfpt059YCSt5YI9Aou1n1GjHxgQ6s",
       authDomain: "domovidi.firebaseapp.com",
@@ -642,7 +647,12 @@ async function initializeFirebaseMessaging() {
       messagingSenderId: "261930585857",
       appId: "1:261930585857:web:856cf36981d8e0c2d51500"
     }, 'messaging-app');
+    
     messaging = firebase.messaging(messagingApp);
+    
+    // ✅ ГОВОРИМ FIREBASE ИСПОЛЬЗОВАТЬ НАШ Service Worker
+    messaging.useServiceWorker(registration);
+    
     const permission = Notification.permission;
     if (permission === 'default') { showNotificationPermissionButton(); }
     else if (permission === 'granted') { await registerForPushNotifications(); }
