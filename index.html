@@ -6,6 +6,7 @@
     <title>ДОМОВИД - Рабочая группа</title>
     <meta name="theme-color" content="#2d8b4d">
     <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" href="./apple-touch-icon.png">
     
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -18,24 +19,37 @@
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; }
         .header { background: #2d8b4d; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
         .logo { font-size: 24px; font-weight: bold; }
+        .push-status-header { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .push-dot { width: 8px; height: 8px; border-radius: 50%; background: #dc3545; }
+        .push-dot.connected { background: #28a745; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .nav { display: flex; gap: 20px; padding: 10px 20px; background: white; border-bottom: 1px solid #e0e0e0; flex-wrap: wrap; }
-        .nav a { text-decoration: none; color: #333; padding: 8px 12px; border-radius: 4px; }
+        .nav a { text-decoration: none; color: #333; padding: 8px 12px; border-radius: 4px; transition: background 0.2s; }
         .nav a:hover { background: #f0f0f0; }
         .content { padding: 20px; max-width: 1200px; margin: 0 auto; }
         .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .card h2 { margin-bottom: 15px; color: #2d8b4d; }
-        .push-status { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white; z-index: 10000; animation: slideIn 0.3s ease; }
+        .card h2 { margin-bottom: 15px; color: #2d8b4d; display: flex; align-items: center; gap: 10px; }
+        .btn { background: #2d8b4d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background 0.2s; }
+        .btn:hover { background: #236b3a; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .status-badge.error { background: #ffebee; color: #dc3545; }
+        .status-badge.success { background: #e8f5e9; color: #28a745; }
+        .status-badge.warning { background: #fff3e0; color: #ff9800; }
+        .push-status { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white; z-index: 10000; animation: slideIn 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .push-status.success { background: #2d8b4d; }
         .push-status.error { background: #dc3545; }
+        .push-status.warning { background: #ff9800; color: #333; }
         @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        .token-display { background: #f8f9fa; padding: 10px; border-radius: 4px; font-family: monospace; font-size: 11px; word-break: break-all; margin-top: 10px; border: 1px solid #e0e0e0; }
     </style>
 </head>
 <body>
     <div class="header">
-        <div class="logo"> ДОМОВИД</div>
-        <div>
-            <span id="pushIndicator" style="display:inline-block;width:8px;height:8px;border-radius:50%;background:#dc3545;margin-right:5px;"></span>
-            <span id="pushStatus">Push не подключен</span>
+        <div class="logo">🏪 ДОМОВИД</div>
+        <div class="push-status-header">
+            <div class="push-dot" id="pushDot"></div>
+            <span id="pushHeaderText">Push не подключен</span>
         </div>
     </div>
     
@@ -44,11 +58,11 @@
         <a href="#archive">📦 Архив</a>
         <a href="#plan">📈 План</a>
         <a href="#training">📚 Обучение</a>
-        <a href="#contests">🏆 Конкурсы</a>
+        <a href="#contests"> Конкурсы</a>
         <a href="#info">📢 Инфо</a>
         <a href="#stats">📊 Статистика</a>
         <a href="#admin">⚙️ Админ</a>
-        <a href="#owner">👑 Владелец</a>
+        <a href="#owner"> Владелец</a>
         <a href="#logout">🚪 Выйти</a>
     </nav>
     
@@ -60,162 +74,257 @@
         
         <div class="card">
             <h2>🔔 Push-уведомления</h2>
-            <p>Статус: <span id="pushConnectionStatus">Проверка...</span></p>
-            <button id="enablePushBtn" onclick="enablePushNotifications()" style="background:#2d8b4d;color:white;border:none;padding:10px 20px;border-radius:4px;cursor:pointer;">
+            <p>Статус: <span id="pushStatus" class="status-badge error">Не подключено</span></p>
+            <button id="enablePushBtn" class="btn" onclick="enablePushNotifications()">
                 Включить push-уведомления
             </button>
-            <div id="tokenContainer" style="display:none;margin-top:15px;">
-                <p><strong>FCM Token:</strong></p>
-                <div id="fcmToken" style="background:#f8f9fa;padding:10px;border-radius:4px;font-family:monospace;font-size:12px;word-break:break-all;"></div>
+            <div id="tokenContainer" style="display: none; margin-top: 15px;">
+                <p><strong>✅ FCM Token (скопируй для тестирования):</strong></p>
+                <div class="token-display" id="fcmToken"></div>
+                <button class="btn" onclick="copyToken()" style="margin-top: 10px;">
+                    📋 Копировать токен
+                </button>
             </div>
+        </div>
+        
+        <div class="card">
+            <h2>📦 Архив графика</h2>
+            <p>Архив записей графика работы.</p>
+        </div>
+        
+        <div class="card">
+            <h2>📈 План на месяц</h2>
+            <p>Раздел в разработке. Здесь скоро появится блок с финансовым планом на месяц.</p>
         </div>
     </div>
 
     <script>
-    (function() {
-        'use strict';
+    // ===== FIREBASE CONFIGURATION =====
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTHWwfpt059YCSt5YI9Aou1n1GjHxgQ6s",
+        authDomain: "domovidi.firebaseapp.com",
+        projectId: "domovidi",
+        storageBucket: "domovidi.firebasestorage.app",
+        messagingSenderId: "261930585857",
+        appId: "1:261930585857:web:856cf36981d8e0c2d51500"
+    };
+    
+    // ===== VAPID KEY =====
+    const VAPID_KEY = 'BKOYzXc-UaYE4T5u2AUj9LttVtkCfyqgV11yRI7lko06R4jBNeUFem3RK9WJxzsFSaIWMH5JwxdTue85Cgsc4';
+    
+    // ===== INITIALIZE FIREBASE =====
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const messaging = firebase.messaging();
+    const db = firebase.firestore();
+    let currentToken = null;
+    let swRegistration = null;
+    
+    // ===== ENABLE PUSH NOTIFICATIONS =====
+    async function enablePushNotifications() {
+        const btn = document.getElementById('enablePushBtn');
+        btn.disabled = true;
+        btn.textContent = 'Подключение...';
         
-        // ===== FIREBASE CONFIG =====
-        const firebaseConfig = {
-            apiKey: "AIzaSyDTHWwfpt059YCSt5YI9Aou1n1GjHxgQ6s",
-            authDomain: "domovidi.firebaseapp.com",
-            projectId: "domovidi",
-            storageBucket: "domovidi.firebasestorage.app",
-            messagingSenderId: "261930585857",
-            appId: "1:261930585857:web:856cf36981d8e0c2d51500"
-        };
-        
-        // ===== VAPID KEY (ИЗ FIREBASE CONSOLE) =====
-        const VAPID_KEY = 'BKOYzXc-UaYE4T5u2AUj9LttVtkCfyqgV11yRI7lko06R4jBNeUFem3RK9WJxzsFSaIWMH5JwxdTue85Cgsc4';
-        
-        // ===== INITIALIZE FIREBASE =====
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
+        try {
+            console.log('🔄 Начинаем регистрацию push-уведомлений...');
+            showStatus('🔄 Подключение push-уведомлений...', 'warning');
+            
+            // 1. Check Service Worker support
+            if (!('serviceWorker' in navigator)) {
+                throw new Error('Service Worker не поддерживается в этом браузере');
+            }
+            
+            // 2. Register Service Worker
+            console.log(' Регистрируем Service Worker...');
+            swRegistration = await navigator.serviceWorker.register(
+                './firebase-messaging-sw.js',
+                { scope: './', updateViaCache: 'none' }
+            );
+            console.log('✅ Service Worker зарегистрирован:', swRegistration.scope);
+            
+            // 3. Wait for Service Worker to be ready
+            await navigator.serviceWorker.ready;
+            console.log('✅ Service Worker готов к работе');
+            
+            // 4. Request notification permission
+            console.log(' Запрашиваем разрешение на уведомления...');
+            const permission = await Notification.requestPermission();
+            console.log('Разрешение:', permission);
+            
+            if (permission !== 'granted') {
+                throw new Error('Пользователь не дал разрешение на уведомления');
+            }
+            
+            // 5. Get FCM Token (KEY FIX: pass serviceWorkerRegistration)
+            console.log(' Получаем FCM токен...');
+            currentToken = await messaging.getToken({
+                vapidKey: VAPID_KEY,
+                serviceWorkerRegistration: swRegistration
+            });
+            
+            console.log('✅ FCM Token получен:', currentToken);
+            
+            // 6. Save token
+            localStorage.setItem('fcmToken', currentToken);
+            localStorage.setItem('fcmTokenDate', new Date().toISOString());
+            
+            // 7. Update UI
+            updatePushUI(true);
+            showStatus('✅ Push-уведомления успешно подключены!', 'success');
+            btn.textContent = 'Push подключен';
+            
+        } catch (error) {
+            console.error('❌ Ошибка регистрации push:', error);
+            showStatus(' Ошибка: ' + error.message, 'error');
+            updatePushUI(false);
+            btn.disabled = false;
+            btn.textContent = 'Включить push-уведомления';
         }
-        const messaging = firebase.messaging();
-        const db = firebase.firestore();
+    }
+    
+    // ===== HANDLE FOREGROUND MESSAGES =====
+    messaging.onMessage((payload) => {
+        console.log('📨 Получено сообщение в foreground:', payload);
         
-        // ===== PUSH NOTIFICATIONS =====
-        async function enablePushNotifications() {
-            const btn = document.getElementById('enablePushBtn');
+        const notificationTitle = payload.notification?.title || 'ДОМОВИД';
+        const notificationBody = payload.notification?.body || 'Новое уведомление';
+        
+        // Show notification
+        if (Notification.permission === 'granted') {
+            const notification = new Notification(notificationTitle, {
+                body: notificationBody,
+                icon: './apple-touch-icon.png',
+                badge: './apple-touch-icon.png',
+                data: payload.data,
+                tag: payload.data?.tag || 'default',
+                requireInteraction: true
+            });
+            
+            notification.onclick = () => {
+                window.focus();
+                notification.close();
+            };
+        }
+        
+        // Show status
+        showStatus(`📨 ${notificationTitle}: ${notificationBody}`, 'success');
+    });
+    
+    // ===== HANDLE TOKEN REFRESH =====
+    messaging.onTokenRefresh(() => {
+        console.log(' Токен обновлен, получаем новый...');
+        messaging.getToken({
+            vapidKey: VAPID_KEY,
+            serviceWorkerRegistration: swRegistration
+        }).then((newToken) => {
+            console.log('✅ Новый токен:', newToken);
+            currentToken = newToken;
+            localStorage.setItem('fcmToken', newToken);
+            localStorage.setItem('fcmTokenDate', new Date().toISOString());
+            updatePushUI(true);
+        }).catch((error) => {
+            console.error(' Ошибка обновления токена:', error);
+        });
+    });
+    
+    // ===== UI FUNCTIONS =====
+    function showStatus(message, type) {
+        const oldStatus = document.querySelector('.push-status');
+        if (oldStatus) oldStatus.remove();
+        
+        const statusDiv = document.createElement('div');
+        statusDiv.className = `push-status ${type}`;
+        statusDiv.textContent = message;
+        document.body.appendChild(statusDiv);
+        
+        setTimeout(() => {
+            statusDiv.remove();
+        }, 5000);
+    }
+    
+    function updatePushUI(connected) {
+        const dot = document.getElementById('pushDot');
+        const headerText = document.getElementById('pushHeaderText');
+        const status = document.getElementById('pushStatus');
+        const tokenContainer = document.getElementById('tokenContainer');
+        const tokenDisplay = document.getElementById('fcmToken');
+        const btn = document.getElementById('enablePushBtn');
+        
+        if (connected && currentToken) {
+            dot.classList.add('connected');
+            headerText.textContent = 'Push подключен';
+            status.textContent = 'Подключено';
+            status.className = 'status-badge success';
+            tokenContainer.style.display = 'block';
+            tokenDisplay.textContent = currentToken;
+            btn.textContent = 'Push подключен';
             btn.disabled = true;
-            btn.textContent = 'Подключение...';
+        } else {
+            dot.classList.remove('connected');
+            headerText.textContent = 'Push не подключен';
+            status.textContent = 'Не подключено';
+            status.className = 'status-badge error';
+            tokenContainer.style.display = 'none';
+            btn.textContent = 'Включить push-уведомления';
+            btn.disabled = false;
+        }
+    }
+    
+    function copyToken() {
+        if (currentToken) {
+            navigator.clipboard.writeText(currentToken).then(() => {
+                showStatus(' Токен скопирован!', 'success');
+            }).catch(() => {
+                const textArea = document.createElement('textarea');
+                textArea.value = currentToken;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showStatus('📋 Токен скопирован!', 'success');
+            });
+        }
+    }
+    
+    // ===== AUTO-INIT ON PAGE LOAD =====
+    window.addEventListener('load', async () => {
+        console.log('🚀 Страница загружена, инициализация push...');
+        
+        const savedToken = localStorage.getItem('fcmToken');
+        const savedTokenDate = localStorage.getItem('fcmTokenDate');
+        
+        if (savedToken) {
+            console.log('Найден сохраненный токен:', savedToken);
+            currentToken = savedToken;
+            updatePushUI(true);
             
-            try {
-                console.log('🔄 Регистрация push...');
-                showStatus('🔄 Подключение...', 'warning');
-                
-                if (!('serviceWorker' in navigator)) {
-                    throw new Error('Service Worker не поддерживается');
-                }
-                
-                // Регистрируем Service Worker
-                const registration = await navigator.serviceWorker.register(
-                    './firebase-messaging-sw.js',
-                    { scope: './' }
-                );
-                console.log('✅ SW зарегистрирован:', registration.scope);
-                
-                await navigator.serviceWorker.ready;
-                
-                const permission = await Notification.requestPermission();
-                console.log('Разрешение:', permission);
-                
-                if (permission !== 'granted') {
-                    throw new Error('Разрешение не получено');
-                }
-                
-                // Получаем токен с ПРАВИЛЬНОЙ registration
-                const token = await messaging.getToken({
-                    vapidKey: VAPID_KEY,
-                    serviceWorkerRegistration: registration
-                });
-                
-                console.log('✅ FCM Token:', token);
-                localStorage.setItem('fcmToken', token);
-                
-                // Обновляем UI
-                updatePushUI(true, token);
-                showStatus('✅ Push подключен!', 'success');
-                btn.textContent = 'Push подключен';
-                
-            } catch (err) {
-                console.error('❌ Ошибка:', err);
-                showStatus(' Ошибка: ' + err.message, 'error');
-                btn.disabled = false;
-                btn.textContent = 'Включить push';
+            // Check if token is older than 7 days
+            const tokenAge = Date.now() - new Date(savedTokenDate).getTime();
+            const sevenDays = 7 * 24 * 60 * 60 * 1000;
+            
+            if (tokenAge > sevenDays) {
+                console.log('Токен устарел, нужна перерегистрация');
+                updatePushUI(false);
             }
+        } else {
+            updatePushUI(false);
         }
         
-        // ===== FOREGROUND MESSAGES =====
-        messaging.onMessage((payload) => {
-            console.log('📨 Сообщение:', payload);
-            if (Notification.permission === 'granted') {
-                new Notification(
-                    payload.notification?.title || 'ДОМОВИД',
-                    {
-                        body: payload.notification?.body || '',
-                        icon: './apple-touch-icon.png',
-                        badge: './apple-touch-icon.png'
-                    }
-                );
-            }
-            showStatus(`📨 ${payload.notification?.title || 'ДОМОВИД'}`, 'success');
-        });
-        
-        // ===== UI FUNCTIONS =====
-        function showStatus(message, type) {
-            const old = document.querySelector('.push-status');
-            if (old) old.remove();
-            
-            const div = document.createElement('div');
-            div.className = `push-status ${type}`;
-            div.textContent = message;
-            document.body.appendChild(div);
-            
-            setTimeout(() => div.remove(), 5000);
-        }
-        
-        function updatePushUI(connected, token) {
-            const indicator = document.getElementById('pushIndicator');
-            const status = document.getElementById('pushStatus');
-            const connStatus = document.getElementById('pushConnectionStatus');
-            const tokenContainer = document.getElementById('tokenContainer');
-            const tokenDisplay = document.getElementById('fcmToken');
-            
-            if (connected && token) {
-                indicator.style.background = '#2d8b4d';
-                status.textContent = 'Push подключен';
-                connStatus.textContent = '✅ Подключено';
-                connStatus.style.color = '#2d8b4d';
-                tokenContainer.style.display = 'block';
-                tokenDisplay.textContent = token;
-            } else {
-                indicator.style.background = '#dc3545';
-                status.textContent = 'Push не подключен';
-                connStatus.textContent = '❌ Не подключено';
-                connStatus.style.color = '#dc3545';
-                tokenContainer.style.display = 'none';
+        // Check existing Service Worker
+        if ('serviceWorker' in navigator) {
+            const registration = await navigator.serviceWorker.getRegistration('./firebase-messaging-sw.js');
+            if (registration) {
+                console.log('Service Worker уже зарегистрирован:', registration.scope);
+                swRegistration = registration;
             }
         }
-        
-        // ===== AUTO INIT ON LOAD =====
-        window.addEventListener('load', async () => {
-            console.log('🚀 Страница загружена');
-            
-            // Проверяем сохраненный токен
-            const savedToken = localStorage.getItem('fcmToken');
-            if (savedToken) {
-                console.log('Найден токен:', savedToken);
-                updatePushUI(true, savedToken);
-            } else {
-                updatePushUI(false, null);
-            }
-        });
-        
-        // Делаем функцию доступной глобально
-        window.enablePushNotifications = enablePushNotifications;
-    })();
+    });
+    
+    // Make functions globally accessible
+    window.enablePushNotifications = enablePushNotifications;
+    window.copyToken = copyToken;
     </script>
 </body>
 </html>
