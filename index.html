@@ -1846,4 +1846,74 @@ loadBranchesToLogin();
 autoLogin();
 </script>
 </body>
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js"></script>
+
+<script>
+(function() {
+  'use strict';
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyDTHWwfpt059YCSt5YI9Aou1n1GjHxgQ6s",
+    authDomain: "domovidi.firebaseapp.com",
+    projectId: "domovidi",
+    storageBucket: "domovidi.firebasestorage.app",
+    messagingSenderId: "261930585857",
+    appId: "1:261930585857:web:856cf36981d8e0c2d51500"
+  };
+  
+  const VAPID_KEY = 'BKOYzXc-UaYE4T5u2AUj9lttVtkCfyqgVllyRI7lko06R4jBNeUFem3RK9WJxzsFSaIWMH5JwxdTue85Cgsc4';
+  
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const messaging = firebase.messaging();
+  
+  async function initPush() {
+    if (!('serviceWorker' in navigator)) return;
+    
+    try {
+      const registration = await navigator.serviceWorker.register(
+        './firebase-messaging-sw.js',
+        { scope: './' }
+      );
+      console.log('✅ SW зарегистрирован:', registration.scope);
+      
+      await navigator.serviceWorker.ready;
+      
+      const permission = await Notification.requestPermission();
+      console.log('Разрешение:', permission);
+      
+      if (permission !== 'granted') return;
+      
+      const token = await messaging.getToken({
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: registration
+      });
+      
+      console.log('✅ FCM Token:', token);
+      localStorage.setItem('fcmToken', token);
+      
+    } catch (err) {
+      console.error('❌ Ошибка push:', err);
+    }
+  }
+  
+  messaging.onMessage((payload) => {
+    console.log('📨 Сообщение:', payload);
+    if (Notification.permission === 'granted') {
+      new Notification(
+        payload.notification?.title || 'ДОМОВИД',
+        {
+          body: payload.notification?.body || '',
+          icon: './apple-touch-icon.png'
+        }
+      );
+    }
+  });
+  
+  window.addEventListener('load', initPush);
+})();
+</script>
 </html>
