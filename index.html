@@ -694,22 +694,49 @@ window.requestNotificationPermission = async function() {
 };
 
 async function registerForPushNotifications() {
-  if (!currentUser || !messaging) return;
-  try {
-    const token = await messaging.getToken({ vapidKey: VAPID_KEY });
-    if (token) {
-      console.log('✅ Токен:', token);
-      await updateDoc(doc(db, "users", currentUser.id), { messagingToken: token, messagingTokenUpdatedAt: Date.now() });
+    if (!currentUser || !messaging) {
+        console.warn('Пользователь не авторизован или messaging не инициализирован');
+        return;
     }
-    messaging.onMessage((payload) => {
-      const title = payload.notification?.title || 'ДОМОВИД';
-      const body = payload.notification?.body || 'Новое уведомление';
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification(title, { body: body, icon: './apple-touch-icon.png' });
-      }
-      createNotification(currentUser.id, title, body, payload.data?.type || 'push');
-    });
-  } catch (error) { console.error('Ошибка:', error); }
+    try {
+        console.log('🔄 Регистрация push-уведомлений...');
+        
+        // 1. Вручную регистрируем Service Worker с правильным путём
+        if (!window.swRegistration) {
+            window.swRegistration = await navigator.serviceWorker.register(
+                './firebase-messaging-sw.js', 
+                { scope: './', updateViaCache: 'none' }
+            );
+            console.log('✅ SW зарегистрирован:', window.swRegistration.scope);
+        }
+        
+        // 2. Ждём готовности Service Worker
+        await navigator.serviceWorker.ready;
+
+        // 3. ⚠️ ГЛАВНОЕ: передаём serviceWorkerRegistration в getToken
+        const token = await messaging.getToken({ 
+            vapidKey: VAPID_KEY,
+            serviceWorkerRegistration: window.swRegistration 
+        });
+        
+        if (token) {
+            console.log('✅ FCM Токен получен:', token);
+            localStorage.setItem('fcmToken', token);
+            
+            // Обновляем токен в Firestore
+            try {
+                await updateDoc(doc(db, "users", currentUser.id), { 
+                    messagingToken: token, 
+                    messagingTokenUpdatedAt: Date.now() 
+                });
+            } catch (e) {
+                console.warn('Не удалось обновить токен в Firestore:', e);
+            }
+        }
+    } catch (error) { 
+        console.error('❌ Ошибка регистрации push:', error); 
+        alert('Ошибка push-уведомлений: ' + error.message);
+    }
 }
 
 const shiftTimes = { 1: '10:00 - 19:00', 2: '12:00 - 21:00', 3: '10:00 - 21:00' };
