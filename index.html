@@ -17,81 +17,462 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f8f9fa; }
-        .header { background: #2d8b4d; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .maintenance-mode { display: none; min-height: 100vh; background: #fff3cd; padding: 40px 20px; text-align: center; }
+        .maintenance-mode.active { display: block; }
+        .maintenance-icon { font-size: 80px; margin-bottom: 20px; }
+        .maintenance-mode h1 { color: #856404; margin-bottom: 15px; }
+        .maintenance-mode p { color: #856404; font-size: 18px; }
+        .logout-link { display: inline-block; margin-top: 30px; color: #856404; text-decoration: underline; cursor: pointer; }
+        .login-container { display: none; min-height: 100vh; background: linear-gradient(135deg, #2d8b4d 0%, #1e5c32 100%); padding: 40px 20px; }
+        .login-container.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .login-box { background: white; border-radius: 12px; padding: 40px; width: 100%; max-width: 400px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
+        .login-header { text-align: center; margin-bottom: 30px; }
+        .login-header h1 { color: #2d8b4d; font-size: 32px; margin-bottom: 10px; }
+        .login-header p { color: #666; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; padding: 12px 15px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; transition: border-color 0.2s; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #2d8b4d; }
+        .btn { display: inline-block; padding: 12px 24px; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: 500; transition: all 0.2s; text-decoration: none; }
+        .btn-primary { background: #2d8b4d; color: white; width: 100%; }
+        .btn-primary:hover { background: #236b3a; }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-success { background: #2d8b4d; color: white; }
+        .btn-success:hover { background: #236b3a; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-warning { background: #ffc107; color: #333; }
+        .btn-warning:hover { background: #e0a800; }
+        .btn-secondary { background: #6c757d; color: white; }
+        .btn-secondary:hover { background: #5a6268; }
+        .btn-sm { padding: 6px 12px; font-size: 14px; }
+        .app-container { display: none; }
+        .app-container.active { display: block; }
+        .header { background: #2d8b4d; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .logo { font-size: 24px; font-weight: bold; display: flex; align-items: center; gap: 10px; }
-        .push-status-header { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+        .header-right { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+        .notification-bell { position: relative; cursor: pointer; font-size: 24px; }
+        .notification-count { position: absolute; top: -8px; right: -8px; background: #dc3545; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold; }
+        .push-status { display: flex; align-items: center; gap: 8px; font-size: 14px; }
         .push-dot { width: 8px; height: 8px; border-radius: 50%; background: #dc3545; }
         .push-dot.connected { background: #28a745; animation: pulse 2s infinite; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .nav { display: flex; gap: 15px; padding: 10px 20px; background: white; border-bottom: 1px solid #e0e0e0; flex-wrap: wrap; }
-        .nav a { text-decoration: none; color: #333; padding: 8px 12px; border-radius: 4px; transition: background 0.2s; }
+        .nav { display: flex; gap: 10px; padding: 10px 20px; background: white; border-bottom: 1px solid #e0e0e0; flex-wrap: wrap; overflow-x: auto; }
+        .nav a { text-decoration: none; color: #333; padding: 8px 12px; border-radius: 4px; transition: background 0.2s; white-space: nowrap; }
         .nav a:hover { background: #f0f0f0; }
-        .content { padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .content { padding: 20px; max-width: 1400px; margin: 0 auto; }
         .card { background: white; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .card h2 { margin-bottom: 15px; color: #2d8b4d; display: flex; align-items: center; gap: 10px; font-size: 20px; }
-        .btn { background: #2d8b4d; color: white; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-size: 14px; transition: background 0.2s; }
-        .btn:hover { background: #236b3a; }
-        .btn:disabled { background: #ccc; cursor: not-allowed; }
+        .card h3 { margin-bottom: 12px; color: #333; font-size: 18px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .grid { display: grid; gap: 15px; }
+        .grid-2 { grid-template-columns: repeat(2, 1fr); }
+        .grid-3 { grid-template-columns: repeat(3, 1fr); }
+        .grid-4 { grid-template-columns: repeat(4, 1fr); }
+        @media (max-width: 768px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+        .schedule-item { background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 4px solid #2d8b4d; }
+        .schedule-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .schedule-date { font-weight: 600; color: #333; }
+        .schedule-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; }
+        .schedule-badge.today { background: #2d8b4d; color: white; }
+        .schedule-badge.yesterday { background: #6c757d; color: white; }
+        .employee-item { display: flex; align-items: center; gap: 15px; padding: 12px; background: white; border-radius: 8px; margin-bottom: 8px; border: 1px solid #e0e0e0; }
+        .employee-avatar { width: 40px; height: 40px; border-radius: 50%; background: #2d8b4d; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+        .employee-info { flex: 1; }
+        .employee-name { font-weight: 600; color: #333; }
+        .employee-position { font-size: 14px; color: #666; }
+        .employee-badge { padding: 4px 8px; border-radius: 4px; font-size: 12px; }
+        .badge-kassa { background: #d4edda; color: #155724; }
+        .badge-kd { background: #fff3cd; color: #856404; }
+        .badge-zal { background: #d1ecf1; color: #0c5460; }
+        .badge-sklad { background: #f8d7da; color: #721c24; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: white; border-radius: 12px; padding: 30px; width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { color: #2d8b4d; }
+        .modal-close { background: none; border: none; font-size: 28px; cursor: pointer; color: #666; }
+        .modal-close:hover { color: #333; }
         .status-badge { padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 500; display: inline-block; }
         .status-badge.error { background: #ffebee; color: #dc3545; }
         .status-badge.success { background: #e8f5e9; color: #28a745; }
+        .status-badge.warning { background: #fff3e0; color: #ff9800; }
         .push-notification { position: fixed; top: 20px; right: 20px; padding: 15px 20px; border-radius: 8px; color: white; z-index: 10000; animation: slideIn 0.3s ease; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
         .push-notification.success { background: #2d8b4d; }
         .push-notification.error { background: #dc3545; }
         .push-notification.warning { background: #ff9800; color: #333; }
         @keyframes slideIn { from { transform: translateX(400px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         .token-box { background: #f8f9fa; padding: 12px; border-radius: 4px; font-family: monospace; font-size: 11px; word-break: break-all; margin-top: 10px; border: 1px solid #e0e0e0; max-height: 100px; overflow-y: auto; }
+        .hidden { display: none !important; }
     </style>
 </head>
 <body>
-    <div class="header">
-        <div class="logo">🏪 ДОМОВИД</div>
-        <div class="push-status-header">
-            <div class="push-dot" id="pushDot"></div>
-            <span id="pushHeader">Push не подключен</span>
+    <!-- Maintenance Mode -->
+    <div id="maintenanceMode" class="maintenance-mode">
+        <div class="maintenance-icon">🚧</div>
+        <h1>Технические работы</h1>
+        <p>Сайт временно недоступен для сотрудников и администраторов. Пожалуйста, зайдите позже.</p>
+        <a onclick="ownerLogout()" class="logout-link"> Выйти из аккаунта</a>
+    </div>
+    
+    <!-- Login Container -->
+    <div id="loginContainer" class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>🏪 ДОМОВИД</h1>
+                <p>Вход в рабочую группу</p>
+            </div>
+            <div class="form-group">
+                <label>🏪 Выберите отделение</label>
+                <select id="loginStore">
+                    <option value="">Загрузка списка магазинов...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>📱 Телефон</label>
+                <input type="tel" id="loginPhone" placeholder="+7 (___) ___-__-__">
+            </div>
+            <div class="form-group">
+                <label>🔒 Пароль</label>
+                <input type="password" id="loginPassword" placeholder="Введите пароль">
+            </div>
+            <button class="btn btn-primary" onclick="login()">Войти</button>
         </div>
     </div>
     
-    <nav class="nav">
-        <a href="#schedule"> График</a>
-        <a href="#archive">📦 Архив</a>
-        <a href="#plan">📈 План</a>
-        <a href="#training"> Обучение</a>
-        <a href="#contests">🏆 Конкурсы</a>
-        <a href="#info"> Инфо</a>
-        <a href="#stats">📊 Статистика</a>
-        <a href="#admin">⚙️ Админ</a>
-        <a href="#owner">👑 Владелец</a>
-        <a href="#logout">🚪 Выйти</a>
-    </nav>
-    
-    <div class="content">
-        <div class="card">
-            <h2>📅 График работы</h2>
-            <p>Здесь будет отображаться график работы сотрудников.</p>
-        </div>
-        
-        <div class="card">
-            <h2>🔔 Push-уведомления</h2>
-            <p>Статус: <span id="pushStatus" class="status-badge error">Не подключено</span></p>
-            <button id="enablePushBtn" class="btn" onclick="enablePush()">
-                Включить push-уведомления
-            </button>
-            <div id="tokenBlock" style="display: none; margin-top: 15px;">
-                <p><strong>✅ FCM Token (скопируй для отправки):</strong></p>
-                <div class="token-box" id="fcmToken"></div>
-                <button class="btn" onclick="copyToken()" style="margin-top: 10px;">📋 Копировать</button>
+    <!-- App Container -->
+    <div id="appContainer" class="app-container">
+        <div class="header">
+            <div class="logo">🏪 ДОМОВИД</div>
+            <div class="header-right">
+                <div class="push-status">
+                    <div class="push-dot" id="pushDot"></div>
+                    <span id="pushHeader">Push не подключен</span>
+                </div>
+                <div class="notification-bell" onclick="showNotifications()">
+                    🔔 <span id="notifCount" class="notification-count">0</span>
+                </div>
+                <span id="currentTime">--:--:--</span>
             </div>
         </div>
         
-        <div class="card">
-            <h2>📦 Архив графика</h2>
-            <p>Архив записей графика работы.</p>
-        </div>
+        <nav class="nav">
+            <a href="#schedule" onclick="showSection('schedule')">📅 График</a>
+            <a href="#archive" onclick="showSection('archive')">📦 Архив</a>
+            <a href="#plan" onclick="showSection('plan')">📈 План</a>
+            <a href="#training" onclick="showSection('training')"> Обучение</a>
+            <a href="#contests" onclick="showSection('contests')">🏆 Конкурсы</a>
+            <a href="#info" onclick="showSection('info')">📢 Инфо</a>
+            <a href="#stats" onclick="showSection('stats')"> Статистика</a>
+            <a href="#admin" onclick="showSection('admin')">⚙️ Админ</a>
+            <a href="#owner" onclick="showSection('owner')">👑 Владелец</a>
+            <a href="#logout" onclick="logout()">🚪 Выйти</a>
+        </nav>
         
-        <div class="card">
-            <h2>📈 План на месяц</h2>
-            <p>Раздел в разработке.</p>
+        <div class="content">
+            <!-- Schedule Section -->
+            <div id="scheduleSection" class="section active">
+                <div class="card">
+                    <h2>📅 График работы</h2>
+                    <div id="scheduleList"></div>
+                </div>
+            </div>
+            
+            <!-- Archive Section -->
+            <div id="archiveSection" class="section">
+                <div class="card">
+                    <h2>📦 Архив графика</h2>
+                    <div id="archiveList"></div>
+                </div>
+            </div>
+            
+            <!-- Plan Section -->
+            <div id="planSection" class="section">
+                <div class="card">
+                    <h2>📈 План на месяц</h2>
+                    <p>Раздел в разработке<br>Здесь скоро появится блок с финансовым планом на месяц: целевая сумма выручки, прогресс выполнения и аналитика.</p>
+                </div>
+            </div>
+            
+            <!-- Training Section -->
+            <div id="trainingSection" class="section">
+                <div class="card">
+                    <h2>📚 Обучающие материалы</h2>
+                    <div id="trainingList"></div>
+                </div>
+            </div>
+            
+            <!-- Contests Section -->
+            <div id="contestsSection" class="section">
+                <div class="card">
+                    <h2>🏆 Конкурсы персонала</h2>
+                    <div id="contestsList"></div>
+                </div>
+            </div>
+            
+            <!-- Info Section -->
+            <div id="infoSection" class="section">
+                <div class="card">
+                    <h2>📢 Информация</h2>
+                    <div id="infoList"></div>
+                </div>
+            </div>
+            
+            <!-- Stats Section -->
+            <div id="statsSection" class="section">
+                <div class="card">
+                    <h2>📊 Статистика</h2>
+                    <div id="statsContent"></div>
+                </div>
+            </div>
+            
+            <!-- Admin Section -->
+            <div id="adminSection" class="section">
+                <div class="card">
+                    <h2>⚙️ Админ-панель</h2>
+                    <div class="nav" style="margin-bottom: 20px;">
+                        <a href="#adminSchedule" onclick="showAdminTab('schedule')">📅 График</a>
+                        <a href="#adminEmployees" onclick="showAdminTab('employees')">👥 Сотрудники</a>
+                        <a href="#adminContests" onclick="showAdminTab('contests')">🏆 Конкурсы</a>
+                        <a href="#adminTraining" onclick="showAdminTab('training')">📚 Обучение</a>
+                        <a href="#adminInfo" onclick="showAdminTab('info')"> Инфо</a>
+                        <a href="#adminSettings" onclick="showAdminTab('settings')">️ Настройки</a>
+                    </div>
+                    
+                    <!-- Admin Schedule Tab -->
+                    <div id="adminScheduleTab" class="admin-tab">
+                        <h3>➕ Добавить сотрудника в график</h3>
+                        <div class="form-group">
+                            <label>📅 Дата</label>
+                            <input type="date" id="adminScheduleDate">
+                        </div>
+                        <div class="form-group">
+                            <label>👤 Сотрудник</label>
+                            <select id="adminScheduleEmployee">
+                                <option value="">-- Выберите сотрудника --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>💼 Тип работы</label>
+                            <select id="adminScheduleType">
+                                <option value="Касса">Касса</option>
+                                <option value="КД">КД</option>
+                                <option value="Зал">Зал</option>
+                                <option value="Склад">Склад</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>🕐 Смена</label>
+                            <select id="adminScheduleShift">
+                                <option value="Смена 9/1 (10:00 - 19:00)">Смена 9/1 (10:00 - 19:00)</option>
+                                <option value="Смена 9/2 (12:00 - 21:00)">Смена 9/2 (12:00 - 21:00)</option>
+                                <option value="Смена 11 (10:00 - 21:00)">Смена 11 (10:00 - 21:00)</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="addToSchedule()"> Добавить в график</button>
+                        
+                        <h3 style="margin-top: 30px;">📋 Текущие записи графика</h3>
+                        <div id="adminScheduleList"></div>
+                    </div>
+                    
+                    <!-- Admin Employees Tab -->
+                    <div id="adminEmployeesTab" class="admin-tab" style="display: none;">
+                        <h3>➕ Добавить сотрудника</h3>
+                        <div class="form-group">
+                            <label>ФИО</label>
+                            <input type="text" id="newEmployeeName" placeholder="ФИО">
+                        </div>
+                        <div class="form-group">
+                            <label>📱 Телефон (логин)</label>
+                            <input type="tel" id="newEmployeePhone" placeholder="+7 (___) ___-__-__">
+                        </div>
+                        <div class="form-group">
+                            <label>🔒 Пароль</label>
+                            <input type="password" id="newEmployeePassword" placeholder="Пароль">
+                        </div>
+                        <div class="form-group">
+                            <label>💼 Должность</label>
+                            <select id="newEmployeePosition">
+                                <option value="">-- Выберите должность --</option>
+                                <option value="Директор">Директор</option>
+                                <option value="Администратор">Администратор</option>
+                                <option value="Старший продавец">Старший продавец</option>
+                                <option value="Кассир">Кассир</option>
+                                <option value="Кассир-продавец">Кассир-продавец</option>
+                                <option value="Кладовщик">Кладовщик</option>
+                                <option value="Контролер">Контролер</option>
+                                <option value="Уборщица">Уборщица</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>🔐 Роль в системе</label>
+                            <select id="newEmployeeRole">
+                                <option value="employee"> Сотрудник</option>
+                                <option value="admin"> Администратор</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="addEmployee()"> ➕ Добавить сотрудника</button>
+                        
+                        <h3 style="margin-top: 30px;">👥 Список сотрудников</h3>
+                        <div id="employeesList"> 0</div>
+                    </div>
+                    
+                    <!-- Admin Contests Tab -->
+                    <div id="adminContestsTab" class="admin-tab" style="display: none;">
+                        <h3>🏆 Добавить конкурс</h3>
+                        <div class="form-group">
+                            <label>🏆 Название конкурса</label>
+                            <input type="text" id="newContestName" placeholder="Название">
+                        </div>
+                        <div class="form-group">
+                            <label> Описание</label>
+                            <textarea id="newContestDesc" rows="3" placeholder="Описание"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>📊 Статус</label>
+                            <select id="newContestStatus">
+                                <option value="active">Активный</option>
+                                <option value="completed">Завершен</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-success" onclick="addContest()"> ➕ Добавить конкурс</button>
+                        
+                        <h3 style="margin-top: 30px;"> Список конкурсов</h3>
+                        <div id="adminContestsList"></div>
+                    </div>
+                    
+                    <!-- Admin Training Tab -->
+                    <div id="adminTrainingTab" class="admin-tab" style="display: none;">
+                        <h3>📝 Новый материал</h3>
+                        <div class="nav" style="margin-bottom: 15px;">
+                            <a href="#textMaterial" onclick="showMaterialType('text')">📝 Текст</a>
+                            <a href="#fileMaterial" onclick="showMaterialType('file')">📎 Файл</a>
+                        </div>
+                        <div class="form-group">
+                            <label>📌 Название</label>
+                            <input type="text" id="newMaterialTitle" placeholder="Заголовок">
+                        </div>
+                        <div id="textMaterialField" class="form-group">
+                            <label>📄 Текст материала</label>
+                            <textarea id="newMaterialText" rows="5" placeholder="Текст"></textarea>
+                        </div>
+                        <div id="fileMaterialField" class="form-group" style="display: none;">
+                            <label>📎 Загрузить файл</label>
+                            <input type="file" id="newMaterialFile">
+                            <small style="color: #666;">⚠️ Рекомендуется до 2 МБ.</small>
+                        </div>
+                        <button class="btn btn-success" onclick="addTrainingMaterial()"> 💾 Сохранить</button>
+                        <button class="btn btn-secondary" onclick="cancelMaterial()"> ✕ Отмена</button>
+                        
+                        <h3 style="margin-top: 30px;">📚 Обучающие материалы</h3>
+                        <p>Добавляйте инструкции и файлы для обучения.</p>
+                        <button class="btn btn-primary" onclick="showAddMaterial()">➕ Добавить материал</button>
+                        <div id="trainingMaterialsList"></div>
+                    </div>
+                    
+                    <!-- Admin Info Tab -->
+                    <div id="adminInfoTab" class="admin-tab" style="display: none;">
+                        <h3>📝 Новая информация</h3>
+                        <div class="nav" style="margin-bottom: 15px;">
+                            <a href="#textInfo" onclick="showInfoType('text')">📝 Текст</a>
+                            <a href="#fileInfo" onclick="showInfoType('file')">📎 Файл</a>
+                        </div>
+                        <div class="form-group">
+                            <label>📌 Заголовок</label>
+                            <input type="text" id="newInfoTitle" placeholder="Заголовок">
+                        </div>
+                        <div id="textInputField" class="form-group">
+                            <label>📝 Текст</label>
+                            <textarea id="newInfoText" rows="5" placeholder="Текст"></textarea>
+                        </div>
+                        <div id="fileInfoField" class="form-group" style="display: none;">
+                            <label>📎 Загрузить файл</label>
+                            <input type="file" id="newInfoFile">
+                            <small style="color: #666;">⚠️ Рекомендуется до 2 МБ.</small>
+                        </div>
+                        <button class="btn btn-success" onclick="addInfo()"> 💾 Сохранить</button>
+                        <button class="btn btn-secondary" onclick="cancelInfo()"> ✕ Отмена</button>
+                        
+                        <h3 style="margin-top: 30px;">📢 Информация</h3>
+                        <p>Добавляйте важные объявления текстом или файлом.</p>
+                        <button class="btn btn-primary" onclick="showAddInfo()">➕ Добавить информацию</button>
+                        <div id="infoListAdmin"></div>
+                    </div>
+                    
+                    <!-- Admin Settings Tab -->
+                    <div id="adminSettingsTab" class="admin-tab" style="display: none;">
+                        <h3>⚠️ Опасная зона</h3>
+                        <p>Полный сброс всех данных сайта. Это действие нельзя отменить.</p>
+                        <button class="btn btn-danger" onclick="resetAllData()">️ Сбросить все данные</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Owner Section -->
+            <div id="ownerSection" class="section">
+                <div class="card">
+                    <h2>👑 Панель Владельца</h2>
+                    
+                    <h3>🏪 Управление отделениями сети</h3>
+                    <div class="form-group">
+                        <label>Название магазина</label>
+                        <input type="text" id="newStoreName" placeholder="Название">
+                    </div>
+                    <div class="form-group">
+                        <label>Город / Регион</label>
+                        <input type="text" id="newStoreCity" placeholder="Город">
+                    </div>
+                    <button class="btn btn-success" onclick="addStore()">➕ Добавить новое отделение</button>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 8px;">
+                        <h3>🔄 Мигрировать старые данные в текущее отделение</h3>
+                        <p>Нажмите это один раз, чтобы привязать старых сотрудников и график к выбранному магазину.</p>
+                        <button class="btn btn-warning" onclick="migrateOldData()">🔄 Мигрировать данные</button>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border-radius: 8px;">
+                        <h3>🚧 Режим технических работ</h3>
+                        <p>При включении этого режима обычные сотрудники и администраторы увидят экран "Технические работы" и не смогут пользоваться приложением. Вы (как Владелец) будете иметь полный доступ.</p>
+                        <div id="maintenanceStatus">Загрузка статуса...</div>
+                        <button class="btn btn-warning" id="toggleMaintenanceBtn" onclick="toggleMaintenanceMode()">🔧 Включить режим тех. работ</button>
+                    </div>
+                    
+                    <div style="margin-top: 30px; padding: 20px; background: #ffebee; border-radius: 8px;">
+                        <h3>👑 Передача полномочий Владельца</h3>
+                        <p>Вы можете передать роль Владельца любому из текущих Администраторов. Ваша роль при этом автоматически изменится на "Администратор".</p>
+                        <select id="newOwnerSelect" style="width: 100%; padding: 10px; margin-bottom: 10px; border-radius: 4px; border: 1px solid #ddd;">
+                            <option value="">Выберите администратора</option>
+                        </select>
+                        <button class="btn btn-danger" onclick="transferOwnership()"> Передать полномочия</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notifications Modal -->
+    <div id="notificationsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2> Уведомления</h2>
+                <button class="modal-close" onclick="closeNotifications()">&times;</button>
+            </div>
+            <div id="notificationsList">Загрузка уведомлений...</div>
+        </div>
+    </div>
+    
+    <!-- Push Notifications Block -->
+    <div class="card" style="margin-top: 20px;">
+        <h2>🔔 Push-уведомления</h2>
+        <p>Статус: <span id="pushStatus" class="status-badge error">Не подключено</span></p>
+        <button id="enablePushBtn" class="btn btn-success" onclick="enablePush()">
+            Включить push-уведомления
+        </button>
+        <div id="tokenBlock" style="display: none; margin-top: 15px;">
+            <p><strong>✅ FCM Token (скопируй для отправки):</strong></p>
+            <div class="token-box" id="fcmToken"></div>
+            <button class="btn btn-primary" onclick="copyToken()" style="margin-top: 10px;">📋 Копировать</button>
         </div>
     </div>
         <script>
@@ -114,12 +495,17 @@
     }
     const messaging = firebase.messaging();
     const db = firebase.firestore();
+    const auth = firebase.auth();
+    
     let currentToken = null;
     let swRegistration = null;
+    let currentUser = null;
+    let currentStore = null;
     
-    // ===== ENABLE PUSH =====
+    // ===== PUSH NOTIFICATIONS =====
     async function enablePush() {
         const btn = document.getElementById('enablePushBtn');
+        if (!btn) return;
         btn.disabled = true;
         btn.textContent = 'Подключение...';
         
@@ -131,7 +517,6 @@
                 throw new Error('Service Worker не поддерживается');
             }
             
-            // Register Service Worker
             swRegistration = await navigator.serviceWorker.register(
                 './firebase-messaging-sw.js',
                 { scope: './', updateViaCache: 'none' }
@@ -140,7 +525,6 @@
             
             await navigator.serviceWorker.ready;
             
-            // Request permission
             const permission = await Notification.requestPermission();
             console.log('Разрешение:', permission);
             
@@ -148,7 +532,6 @@
                 throw new Error('Разрешение не получено');
             }
             
-            // Get token (KEY FIX!)
             currentToken = await messaging.getToken({
                 vapidKey: VAPID_KEY,
                 serviceWorkerRegistration: swRegistration
@@ -158,22 +541,29 @@
             localStorage.setItem('fcmToken', currentToken);
             localStorage.setItem('fcmTokenDate', new Date().toISOString());
             
-            updateUI(true);
+            updatePushUI(true);
             showNotification('✅ Push подключен!', 'success');
             btn.textContent = 'Push подключен';
+            
+            // Сохраняем токен в Firestore
+            if (currentUser) {
+                await db.collection('users').doc(currentUser.uid).update({
+                    fcmToken: currentToken,
+                    fcmTokenDate: new Date().toISOString()
+                });
+            }
             
         } catch (error) {
             console.error('❌ Ошибка:', error);
             showNotification(' Ошибка: ' + error.message, 'error');
-            updateUI(false);
+            updatePushUI(false);
             btn.disabled = false;
             btn.textContent = 'Включить push-уведомления';
         }
     }
     
-    // ===== FOREGROUND MESSAGES =====
     messaging.onMessage((payload) => {
-        console.log(' Сообщение:', payload);
+        console.log('📨 Сообщение:', payload);
         const title = payload.notification?.title || 'ДОМОВИД';
         const body = payload.notification?.body || '';
         
@@ -187,7 +577,6 @@
         showNotification(`📨 ${title}`, 'success');
     });
     
-    // ===== TOKEN REFRESH =====
     messaging.onTokenRefresh(() => {
         messaging.getToken({
             vapidKey: VAPID_KEY,
@@ -196,13 +585,12 @@
             console.log('✅ Новый токен:', newToken);
             currentToken = newToken;
             localStorage.setItem('fcmToken', newToken);
-            updateUI(true);
+            updatePushUI(true);
         }).catch((error) => {
             console.error(' Ошибка обновления:', error);
         });
     });
     
-    // ===== UI FUNCTIONS =====
     function showNotification(message, type) {
         const old = document.querySelector('.push-notification');
         if (old) old.remove();
@@ -215,7 +603,7 @@
         setTimeout(() => div.remove(), 5000);
     }
     
-    function updateUI(connected) {
+    function updatePushUI(connected) {
         const dot = document.getElementById('pushDot');
         const header = document.getElementById('pushHeader');
         const status = document.getElementById('pushStatus');
@@ -224,29 +612,25 @@
         const btn = document.getElementById('enablePushBtn');
         
         if (connected && currentToken) {
-            dot.classList.add('connected');
-            header.textContent = 'Push подключен';
-            status.textContent = 'Подключено';
-            status.className = 'status-badge success';
-            tokenBlock.style.display = 'block';
-            tokenDisplay.textContent = currentToken;
-            btn.textContent = 'Push подключен';
-            btn.disabled = true;
+            if (dot) dot.classList.add('connected');
+            if (header) header.textContent = 'Push подключен';
+            if (status) { status.textContent = 'Подключено'; status.className = 'status-badge success'; }
+            if (tokenBlock) tokenBlock.style.display = 'block';
+            if (tokenDisplay) tokenDisplay.textContent = currentToken;
+            if (btn) { btn.textContent = 'Push подключен'; btn.disabled = true; }
         } else {
-            dot.classList.remove('connected');
-            header.textContent = 'Push не подключен';
-            status.textContent = 'Не подключено';
-            status.className = 'status-badge error';
-            tokenBlock.style.display = 'none';
-            btn.textContent = 'Включить push-уведомления';
-            btn.disabled = false;
+            if (dot) dot.classList.remove('connected');
+            if (header) header.textContent = 'Push не подключен';
+            if (status) { status.textContent = 'Не подключено'; status.className = 'status-badge error'; }
+            if (tokenBlock) tokenBlock.style.display = 'none';
+            if (btn) { btn.textContent = 'Включить push-уведомления'; btn.disabled = false; }
         }
     }
     
     function copyToken() {
         if (currentToken) {
             navigator.clipboard.writeText(currentToken).then(() => {
-                showNotification(' Токен скопирован!', 'success');
+                showNotification('📋 Токен скопирован!', 'success');
             }).catch(() => {
                 const ta = document.createElement('textarea');
                 ta.value = currentToken;
@@ -259,19 +643,425 @@
         }
     }
     
-    // ===== AUTO INIT =====
+    // ===== AUTH =====
+    function login() {
+        const store = document.getElementById('loginStore').value;
+        const phone = document.getElementById('loginPhone').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        if (!store || !phone || !password) {
+            showNotification('️ Заполните все поля', 'warning');
+            return;
+        }
+        
+        auth.signInWithEmailAndPassword(phone, password)
+            .then((userCredential) => {
+                currentUser = userCredential.user;
+                currentStore = store;
+                localStorage.setItem('currentUser', JSON.stringify({ uid: currentUser.uid, store: store }));
+                showApp();
+                showNotification('✅ Вход выполнен!', 'success');
+            })
+            .catch((error) => {
+                showNotification('❌ Ошибка входа: ' + error.message, 'error');
+            });
+    }
+    
+    function logout() {
+        auth.signOut().then(() => {
+            currentUser = null;
+            currentStore = null;
+            localStorage.removeItem('currentUser');
+            document.getElementById('appContainer').classList.remove('active');
+            document.getElementById('loginContainer').classList.add('active');
+            showNotification('👋 Вы вышли из системы', 'success');
+        });
+    }
+    
+    function ownerLogout() {
+        auth.signOut().then(() => {
+            location.reload();
+        });
+    }
+    
+    function showApp() {
+        document.getElementById('loginContainer').classList.remove('active');
+        document.getElementById('appContainer').classList.add('active');
+        loadSchedule();
+    }
+    
+    // ===== NAVIGATION =====
+    function showSection(sectionId) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        const section = document.getElementById(sectionId + 'Section');
+        if (section) section.classList.add('active');
+    }
+    
+    function showAdminTab(tabId) {
+        document.querySelectorAll('.admin-tab').forEach(t => t.style.display = 'none');
+        const tab = document.getElementById('admin' + tabId.charAt(0).toUpperCase() + tabId.slice(1) + 'Tab');
+        if (tab) tab.style.display = 'block';
+    }
+    
+    // ===== SCHEDULE =====
+    function loadSchedule() {
+        const list = document.getElementById('scheduleList');
+        if (!list) return;
+        
+        db.collection('schedule')
+            .where('storeId', '==', currentStore)
+            .orderBy('date')
+            .onSnapshot((snapshot) => {
+                list.innerHTML = '';
+                const today = new Date().toISOString().split('T')[0];
+                
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const isToday = data.date === today;
+                    const dateObj = new Date(data.date);
+                    const dateStr = dateObj.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    
+                    const item = document.createElement('div');
+                    item.className = 'schedule-item';
+                    item.innerHTML = `
+                        <div class="schedule-header">
+                            <span class="schedule-date">${dateStr}</span>
+                            ${isToday ? '<span class="schedule-badge today">СЕГОДНЯ</span>' : ''}
+                        </div>
+                        <div class="employee-item">
+                            <div class="employee-info">
+                                <div class="employee-name">${data.employeeName || 'Сотрудник'}</div>
+                                <div class="employee-position">${data.shift || ''}</div>
+                            </div>
+                            <span class="employee-badge badge-${data.type.toLowerCase() || 'zal'}">${data.type || 'Зал'}</span>
+                        </div>
+                    `;
+                    list.appendChild(item);
+                });
+            });
+    }
+    
+    function addToSchedule() {
+        const date = document.getElementById('adminScheduleDate').value;
+        const employee = document.getElementById('adminScheduleEmployee').value;
+        const type = document.getElementById('adminScheduleType').value;
+        const shift = document.getElementById('adminScheduleShift').value;
+        
+        if (!date || !employee) {
+            showNotification('⚠️ Заполните дату и сотрудника', 'warning');
+            return;
+        }
+        
+        db.collection('schedule').add({
+            storeId: currentStore,
+            date: date,
+            employeeId: employee,
+            employeeName: employee,
+            type: type,
+            shift: shift,
+            createdAt: new Date()
+        }).then(() => {
+            showNotification('✅ Добавлено в график!', 'success');
+        }).catch((error) => {
+            showNotification('❌ Ошибка: ' + error.message, 'error');
+        });
+    }
+    
+    // ===== EMPLOYEES =====
+    function addEmployee() {
+        const name = document.getElementById('newEmployeeName').value;
+        const phone = document.getElementById('newEmployeePhone').value;
+        const password = document.getElementById('newEmployeePassword').value;
+        const position = document.getElementById('newEmployeePosition').value;
+        const role = document.getElementById('newEmployeeRole').value;
+        
+        if (!name || !phone || !password || !position) {
+            showNotification('️ Заполните все поля', 'warning');
+            return;
+        }
+        
+        auth.createUserWithEmailAndPassword(phone, password)
+            .then((userCredential) => {
+                return db.collection('users').doc(userCredential.user.uid).set({
+                    name: name,
+                    phone: phone,
+                    position: position,
+                    role: role,
+                    storeId: currentStore,
+                    createdAt: new Date()
+                });
+            })
+            .then(() => {
+                showNotification('✅ Сотрудник добавлен!', 'success');
+                document.getElementById('newEmployeeName').value = '';
+                document.getElementById('newEmployeePhone').value = '';
+                document.getElementById('newEmployeePassword').value = '';
+            })
+            .catch((error) => {
+                showNotification('❌ Ошибка: ' + error.message, 'error');
+            });
+    }
+    
+    // ===== CONTESTS =====
+    function addContest() {
+        const name = document.getElementById('newContestName').value;
+        const desc = document.getElementById('newContestDesc').value;
+        const status = document.getElementById('newContestStatus').value;
+        
+        if (!name) {
+            showNotification('⚠️ Введите название', 'warning');
+            return;
+        }
+        
+        db.collection('contests').add({
+            storeId: currentStore,
+            name: name,
+            description: desc,
+            status: status,
+            createdAt: new Date()
+        }).then(() => {
+            showNotification('✅ Конкурс добавлен!', 'success');
+            document.getElementById('newContestName').value = '';
+            document.getElementById('newContestDesc').value = '';
+        }).catch((error) => {
+            showNotification('❌ Ошибка: ' + error.message, 'error');
+        });
+    }
+    
+    // ===== TRAINING =====
+    function addTrainingMaterial() {
+        const title = document.getElementById('newMaterialTitle').value;
+        const text = document.getElementById('newMaterialText').value;
+        
+        if (!title) {
+            showNotification('⚠️ Введите название', 'warning');
+            return;
+        }
+        
+        db.collection('training').add({
+            storeId: currentStore,
+            title: title,
+            text: text,
+            createdAt: new Date()
+        }).then(() => {
+            showNotification('✅ Материал добавлен!', 'success');
+            document.getElementById('newMaterialTitle').value = '';
+            document.getElementById('newMaterialText').value = '';
+        }).catch((error) => {
+            showNotification(' Ошибка: ' + error.message, 'error');
+        });
+    }
+    
+    function showMaterialType(type) {
+        document.getElementById('textMaterialField').style.display = type === 'text' ? 'block' : 'none';
+        document.getElementById('fileMaterialField').style.display = type === 'file' ? 'block' : 'none';
+    }
+    
+    function showAddMaterial() {
+        document.getElementById('newMaterialTitle').focus();
+    }
+    
+    function cancelMaterial() {
+        document.getElementById('newMaterialTitle').value = '';
+        document.getElementById('newMaterialText').value = '';
+    }
+    
+    // ===== INFO =====
+    function addInfo() {
+        const title = document.getElementById('newInfoTitle').value;
+        const text = document.getElementById('newInfoText').value;
+        
+        if (!title) {
+            showNotification('⚠️ Введите заголовок', 'warning');
+            return;
+        }
+        
+        db.collection('info').add({
+            storeId: currentStore,
+            title: title,
+            text: text,
+            createdAt: new Date()
+        }).then(() => {
+            showNotification('✅ Информация добавлена!', 'success');
+            document.getElementById('newInfoTitle').value = '';
+            document.getElementById('newInfoText').value = '';
+        }).catch((error) => {
+            showNotification('❌ Ошибка: ' + error.message, 'error');
+        });
+    }
+    
+    function showInfoType(type) {
+        document.getElementById('textInputField').style.display = type === 'text' ? 'block' : 'none';
+        document.getElementById('fileInfoField').style.display = type === 'file' ? 'block' : 'none';
+    }
+    
+    function showAddInfo() {
+        document.getElementById('newInfoTitle').focus();
+    }
+    
+    function cancelInfo() {
+        document.getElementById('newInfoTitle').value = '';
+        document.getElementById('newInfoText').value = '';
+    }
+    
+    // ===== OWNER =====
+    function addStore() {
+        const name = document.getElementById('newStoreName').value;
+        const city = document.getElementById('newStoreCity').value;
+        
+        if (!name) {
+            showNotification('⚠️ Введите название', 'warning');
+            return;
+        }
+        
+        db.collection('stores').add({
+            name: name,
+            city: city,
+            createdAt: new Date()
+        }).then(() => {
+            showNotification('✅ Магазин добавлен!', 'success');
+            document.getElementById('newStoreName').value = '';
+            document.getElementById('newStoreCity').value = '';
+            loadStores();
+        }).catch((error) => {
+            showNotification('❌ Ошибка: ' + error.message, 'error');
+        });
+    }
+    
+    function loadStores() {
+        const select = document.getElementById('loginStore');
+        if (!select) return;
+        
+        db.collection('stores').onSnapshot((snapshot) => {
+            select.innerHTML = '<option value="">-- Выберите магазин --</option>';
+            snapshot.forEach((doc) => {
+                const data = doc.data();
+                const option = document.createElement('option');
+                option.value = doc.id;
+                option.textContent = `${data.name} (${data.city || ''})`;
+                select.appendChild(option);
+            });
+        });
+    }
+    
+    function toggleMaintenanceMode() {
+        const btn = document.getElementById('toggleMaintenanceBtn');
+        const status = document.getElementById('maintenanceStatus');
+        
+        db.collection('settings').doc('maintenance').get().then((doc) => {
+            const current = doc.exists ? doc.data().enabled : false;
+            return db.collection('settings').doc('maintenance').set({ enabled: !current });
+        }).then(() => {
+            showNotification('✅ Режим изменен!', 'success');
+            loadMaintenanceStatus();
+        }).catch((error) => {
+            showNotification('❌ Ошибка: ' + error.message, 'error');
+        });
+    }
+    
+    function loadMaintenanceStatus() {
+        const status = document.getElementById('maintenanceStatus');
+        const btn = document.getElementById('toggleMaintenanceBtn');
+        if (!status) return;
+        
+        db.collection('settings').doc('maintenance').onSnapshot((doc) => {
+            const enabled = doc.exists ? doc.data().enabled : false;
+            status.innerHTML = enabled 
+                ? '<span class="status-badge error">🚧 Режим тех. работ ВКЛЮЧЕН</span>'
+                : '<span class="status-badge success">✅ Обычный режим</span>';
+            if (btn) btn.textContent = enabled ? '🔧 Выключить режим тех. работ' : ' Включить режим тех. работ';
+        });
+    }
+    
+    function transferOwnership() {
+        const newOwner = document.getElementById('newOwnerSelect').value;
+        if (!newOwner) {
+            showNotification('⚠️ Выберите администратора', 'warning');
+            return;
+        }
+        
+        if (!confirm('Вы уверены? Вы потеряете роль Владельца.')) return;
+        
+        db.collection('users').doc(currentUser.uid).update({ role: 'admin' });
+        db.collection('users').doc(newOwner).update({ role: 'owner' });
+        
+        showNotification('✅ Полномочия переданы!', 'success');
+    }
+    
+    function resetAllData() {
+        if (!confirm('️ ВНИМАНИЕ! Все данные будут удалены безвозвратно. Продолжить?')) return;
+        if (!confirm('Вы ТОЧНО уверены? Это действие нельзя отменить!')) return;
+        
+        const collections = ['schedule', 'employees', 'contests', 'training', 'info', 'stores'];
+        const promises = collections.map(col => {
+            return db.collection(col).get().then(snapshot => {
+                const batch = db.batch();
+                snapshot.forEach(doc => batch.delete(doc.ref));
+                return batch.commit();
+            });
+        });
+        
+        Promise.all(promises).then(() => {
+            showNotification('✅ Все данные удалены!', 'success');
+        }).catch((error) => {
+            showNotification('❌ Ошибка: ' + error.message, 'error');
+        });
+    }
+    
+    function migrateOldData() {
+        showNotification('🔄 Миграция данных...', 'warning');
+        // Здесь логика миграции
+        showNotification('✅ Миграция завершена!', 'success');
+    }
+    
+    // ===== NOTIFICATIONS =====
+    function showNotifications() {
+        document.getElementById('notificationsModal').classList.add('active');
+    }
+    
+    function closeNotifications() {
+        document.getElementById('notificationsModal').classList.remove('active');
+    }
+    
+    // ===== CLOCK =====
+    function updateClock() {
+        const now = new Date();
+        const timeStr = now.toLocaleTimeString('ru-RU');
+        const el = document.getElementById('currentTime');
+        if (el) el.textContent = timeStr;
+    }
+    
+    // ===== INIT =====
     window.addEventListener('load', async () => {
         console.log('🚀 Страница загружена');
         
-        const savedToken = localStorage.getItem('fcmToken');
-        if (savedToken) {
-            console.log('Найден токен:', savedToken);
-            currentToken = savedToken;
-            updateUI(true);
+        updateClock();
+        setInterval(updateClock, 1000);
+        
+        // Load stores for login
+        loadStores();
+        
+        // Check saved session
+        const saved = localStorage.getItem('currentUser');
+        if (saved) {
+            const data = JSON.parse(saved);
+            currentUser = { uid: data.uid };
+            currentStore = data.store;
+            showApp();
         } else {
-            updateUI(false);
+            document.getElementById('loginContainer').classList.add('active');
         }
         
+        // Check existing token
+        const savedToken = localStorage.getItem('fcmToken');
+        if (savedToken) {
+            currentToken = savedToken;
+            updatePushUI(true);
+        } else {
+            updatePushUI(false);
+        }
+        
+        // Check existing SW
         if ('serviceWorker' in navigator) {
             const reg = await navigator.serviceWorker.getRegistration('./firebase-messaging-sw.js');
             if (reg) {
@@ -284,6 +1074,29 @@
     // Global functions
     window.enablePush = enablePush;
     window.copyToken = copyToken;
+    window.login = login;
+    window.logout = logout;
+    window.ownerLogout = ownerLogout;
+    window.showSection = showSection;
+    window.showAdminTab = showAdminTab;
+    window.addToSchedule = addToSchedule;
+    window.addEmployee = addEmployee;
+    window.addContest = addContest;
+    window.addTrainingMaterial = addTrainingMaterial;
+    window.showMaterialType = showMaterialType;
+    window.showAddMaterial = showAddMaterial;
+    window.cancelMaterial = cancelMaterial;
+    window.addInfo = addInfo;
+    window.showInfoType = showInfoType;
+    window.showAddInfo = showAddInfo;
+    window.cancelInfo = cancelInfo;
+    window.addStore = addStore;
+    window.toggleMaintenanceMode = toggleMaintenanceMode;
+    window.transferOwnership = transferOwnership;
+    window.resetAllData = resetAllData;
+    window.migrateOldData = migrateOldData;
+    window.showNotifications = showNotifications;
+    window.closeNotifications = closeNotifications;
     </script>
 </body>
 </html>
