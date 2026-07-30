@@ -22,18 +22,18 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .chat-search { padding: 12px; }
 .chat-search input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 0.9em; }
 .chats { flex: 1; overflow-y: auto; }
-.chat-item { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: background 0.2s; display: flex; gap: 12px; align-items: center; position: relative; }
+.chat-item { padding: 12px 16px; cursor: pointer; border-bottom: 1px solid #f0f0f0; transition: background 0.2s; display: flex; gap: 12px; align-items: center; }
 .chat-item:hover { background: #f5f5f5; }
 .chat-item.active { background: #e8f5e9; border-left: 3px solid #2d8b4d; }
-.chat-item.has-unread { background: #fff3e0; }
-.chat-item.has-unread .chat-name { font-weight: 700; }
+.chat-item.unread { background: #e3f2fd; }
 .chat-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #2d8b4d, #e87722); display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2em; flex-shrink: 0; }
 .chat-avatar.group { background: linear-gradient(135deg, #17a2b8, #667eea); }
 .chat-info { flex: 1; min-width: 0; }
 .chat-name { font-weight: 600; color: #333; margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
 .chat-time { font-size: 0.75em; color: #999; }
 .chat-last-message { font-size: 0.85em; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.chat-badge { background: #dc3545; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75em; font-weight: 700; min-width: 20px; text-align: center; }
+.chat-badge { background: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7em; margin-left: 8px; }
+.chat-window { display: flex; flex-direction: column; }
 .chat-header { padding: 12px 16px; background: white; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 12px; }
 .back-btn { display: none; background: none; border: none; font-size: 1.5em; cursor: pointer; color: #2d8b4d; margin-right: 8px; padding: 4px 8px; }
 .chat-header-info { flex: 1; }
@@ -176,9 +176,7 @@ let currentUser = null;
 let chats = [];
 let currentChatId = null;
 let messagesUnsubscribe = null;
-let chatsUnsubscribe = null;
 let selectedFileData = null;
-
 const sessionStr = localStorage.getItem('domovidSession');
 if (sessionStr) {
 const session = JSON.parse(sessionStr);
@@ -206,7 +204,6 @@ window.location.href = 'index.html';
 alert('Войдите через основной сайт.');
 window.location.href = 'index.html';
 }
-
 async function cleanupOldMessages() {
 try {
 const chatsSnap = await db.collection('chats').get();
@@ -223,19 +220,13 @@ totalDeleted++;
 if (totalDeleted > 0) console.log(`🧹 Удалено ${totalDeleted} старых сообщений`);
 } catch (e) { console.error('Ошибка очистки:', e); }
 }
-
-function loadChats() {
-if (chatsUnsubscribe) chatsUnsubscribe();
-chatsUnsubscribe = db.collection('chats').where('participants', 'array-contains', currentUser.id)
-.onSnapshot((snapshot) => {
-chats = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+async function loadChats() {
+const chatsQuery = db.collection('chats').where('participants', 'array-contains', currentUser.id);
+const chatsSnap = await chatsQuery.get();
+chats = chatsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 chats.sort((a, b) => (b.lastMessageAt || 0) - (a.lastMessageAt || 0));
 renderChatsList();
-}, (error) => {
-console.error('Ошибка загрузки чатов:', error);
-});
 }
-
 function renderChatsList() {
 const container = document.getElementById('chatsList');
 if (!container) return;
@@ -248,22 +239,20 @@ const isGroup = chat.isGroup || false;
 const avatar = isGroup ? '👥' : (chat.participantName || '?')[0].toUpperCase();
 const avatarClass = isGroup ? 'group' : '';
 const name = isGroup ? chat.name : chat.participantName;
-const unread = (chat.unread && chat.unread[currentUser.id]) || 0;
-const hasUnread = unread > 0;
+const unreadCount = chat.unreadCount || 0;
 const lastMsg = chat.lastMessage || 'Нет сообщений';
 const time = chat.lastMessageAt ? formatMessageTime(chat.lastMessageAt) : '';
-return `<div class="chat-item ${currentChatId === chat.id ? 'active' : ''} ${hasUnread ? 'has-unread' : ''}" onclick="openChat('${chat.id}')">
+return `<div class="chat-item ${currentChatId === chat.id ? 'active' : ''} ${unreadCount > 0 ? 'unread' : ''}" onclick="openChat('${chat.id}')">
 <div class="chat-avatar ${avatarClass}">${avatar}</div>
 <div class="chat-info">
-<div class="chat-name">${escapeHtml(name)}${hasUnread ? `<span class="chat-badge">${unread}</span>` : ''}</div>
+<div class="chat-name">${escapeHtml(name)}${unreadCount > 0 ? `<span class="chat-badge">${unreadCount}</span>` : ''}</div>
 <div class="chat-last-message">${escapeHtml(lastMsg)}</div>
 <div class="chat-time">${time}</div>
 </div>
 </div>`;
 }).join('');
 }
-
-async function openChat(chatId) {
+function openChat(chatId) {
 currentChatId = chatId;
 const chat = chats.find(c => c.id === chatId);
 if (!chat) return;
@@ -280,20 +269,16 @@ document.getElementById('chatHeaderName').textContent = isGroup ? chat.name : ch
 document.getElementById('chatHeaderStatus').textContent = isGroup ? `${chat.participantsCount || 0} участников` : 'Личный чат';
 renderChatsList();
 loadMessages(chatId);
-// Сбрасываем счётчик непрочитанных
-await markMessagesAsRead(chatId);
 }
-
 function backToChatList() {
 document.getElementById('chatList').classList.remove('hidden');
 document.getElementById('chatWindow').classList.remove('active');
 currentChatId = null;
 if (messagesUnsubscribe) messagesUnsubscribe();
 }
-
 function loadMessages(chatId) {
 if (messagesUnsubscribe) messagesUnsubscribe();
-const messagesQuery = db.collection(`chats/${chatId}/messages`).orderBy('createdAt', 'asc').limit(100);
+const messagesQuery = db.collection(`chats/${chatId}/messages`).orderBy('createdAt', 'asc').limit(50);
 messagesUnsubscribe = messagesQuery.onSnapshot((snapshot) => {
 const container = document.getElementById('messagesContainer');
 if (!container) return;
@@ -315,22 +300,19 @@ ${msg.fileUrl ? `<div class="message-file">📎 <a href="${msg.fileUrl}" target=
 </div>`;
 }).join('');
 container.scrollTop = container.scrollHeight;
+markMessagesAsRead(chatId);
 });
 }
-
 async function markMessagesAsRead(chatId) {
-const chatRef = db.collection('chats').doc(chatId);
-const unreadPath = `unread.${currentUser.id}`;
-await chatRef.update({ [unreadPath]: 0 });
+const chat = chats.find(c => c.id === chatId);
+if (!chat || chat.isGroup) return;
+await db.collection(`chats/${chatId}/unread`).doc(currentUser.id).set({ count: 0 }, { merge: true });
 }
-
 async function sendMessage() {
 const input = document.getElementById('messageInput');
 const text = input.value.trim();
 if (!text && !selectedFileData) return;
 if (!currentChatId) return;
-const chat = chats.find(c => c.id === currentChatId);
-if (!chat) return;
 const messageData = { senderId: currentUser.id, senderName: currentUser.name, text: text, createdAt: Date.now(), read: false };
 if (selectedFileData) {
 try {
@@ -340,25 +322,14 @@ messageData.fileUrl = await fileRef.getDownloadURL();
 messageData.fileName = selectedFileData.name;
 } catch (e) { alert('Ошибка загрузки файла: ' + e.message); return; }
 }
-// Увеличиваем счётчик непрочитанных для всех участников кроме отправителя
-const unreadUpdates = {};
-chat.participants.forEach(participantId => {
-if (participantId !== currentUser.id) {
-const currentCount = (chat.unread && chat.unread[participantId]) || 0;
-unreadUpdates[`unread.${participantId}`] = currentCount + 1;
-}
-});
-try {
 await db.collection(`chats/${currentChatId}/messages`).add(messageData);
-const updateData = { lastMessage: text || ' Файл', lastMessageAt: Date.now(), ...unreadUpdates };
-await db.collection('chats').doc(currentChatId).update(updateData);
-} catch (e) { alert('Ошибка отправки: ' + e.message); return; }
+await db.collection('chats').doc(currentChatId).update({ lastMessage: text || '📄 Файл', lastMessageAt: Date.now() });
 input.value = '';
 selectedFileData = null;
 if (messagesUnsubscribe) messagesUnsubscribe();
 loadMessages(currentChatId);
+loadChats();
 }
-
 function handleMessageKeyPress(event) { if (event.key === 'Enter') sendMessage(); }
 function handleFileSelect(event) {
 const file = event.target.files[0];
@@ -366,7 +337,6 @@ if (!file) return;
 if (file.size > 5 * 1024 * 1024) { alert('Файл слишком большой! Максимум: 5 МБ'); return; }
 selectedFileData = { file, name: file.name };
 }
-
 function openNewChatModal() {
 const modal = document.getElementById('newChatModal');
 const participantsContainer = document.getElementById('newChatParticipants');
@@ -382,7 +352,6 @@ return `<label style="display:flex;align-items:center;gap:8px;padding:8px;cursor
 modal.classList.add('open');
 }
 function closeNewChatModal() { document.getElementById('newChatModal').classList.remove('open'); }
-
 async function createNewChat() {
 const name = document.getElementById('newChatName').value.trim();
 const checkboxes = document.querySelectorAll('#newChatParticipants input[type="checkbox"]:checked');
@@ -390,15 +359,14 @@ if (!name) { alert('Введите название чата'); return; }
 if (checkboxes.length === 0) { alert('Выберите хотя бы одного участника'); return; }
 const participants = Array.from(checkboxes).map(cb => cb.value);
 participants.push(currentUser.id);
-const chatData = { name, isGroup: true, participants, participantsCount: participants.length, createdBy: currentUser.id, createdAt: Date.now(), lastMessage: '', lastMessageAt: 0, unread: {} };
-try {
+const chatData = { name, isGroup: true, participants, participantsCount: participants.length, createdBy: currentUser.id, createdAt: Date.now(), lastMessage: '', lastMessageAt: 0 };
 const chatRef = await db.collection('chats').add(chatData);
 closeNewChatModal();
 document.getElementById('newChatName').value = '';
+await loadChats();
+renderChatsList();
 openChat(chatRef.id);
-} catch (e) { alert('Ошибка: ' + e.message); }
 }
-
 function filterChats() {
 const search = document.getElementById('chatSearch').value.toLowerCase();
 const items = document.querySelectorAll('.chat-item');
@@ -407,7 +375,6 @@ const name = item.querySelector('.chat-name').textContent.toLowerCase();
 item.style.display = name.includes(search) ? 'flex' : 'none';
 });
 }
-
 function formatMessageTime(timestamp) {
 const date = new Date(timestamp);
 const now = new Date();
