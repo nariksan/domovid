@@ -3,458 +3,435 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ДОМОВИД</title>
+<title>ДОМОВИД - Мессенджер</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma,sans-serif;background:#0b141a;color:#e9edef;min-height:100vh}
-.container{max-width:1200px;margin:0 auto;padding:20px}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:#0b141a;color:#e9edef;height:100vh;overflow:hidden}
 
-/* Login */
-.login-box{max-width:400px;margin:100px auto;background:#202c33;padding:30px;border-radius:12px}
-.login-box h1{text-align:center;margin-bottom:30px;color:#00a884}
-.form-group{margin-bottom:20px}
-.form-group label{display:block;margin-bottom:8px;color:#8696a0}
-.form-group input,.form-group select{width:100%;padding:12px;background:#2a3942;border:none;border-radius:6px;color:#e9edef;font-size:14px}
-.btn{width:100%;padding:12px;background:#00a884;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:16px}
-.btn:hover{background:#06cf9c}
-.error{color:#f5c542;margin-top:10px;text-align:center}
+/* Тех. работы */
+.maintenance{display:none;position:fixed;inset:0;background:#0b141a;z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
+.maintenance.active{display:flex}
+.maintenance h1{font-size:64px;margin-bottom:16px}
+.maintenance h2{color:#f5c542;margin-bottom:12px}
+.maintenance p{color:#8696a0;margin-bottom:24px;max-width:400px}
+.maintenance a{color:#00a884;text-decoration:none;padding:10px 20px;background:#202c33;border-radius:8px}
 
-/* Header */
-.header{background:#202c33;padding:15px 20px;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-radius:8px}
-.header h2{color:#00a884}
-.user-info{display:flex;align-items:center;gap:15px}
-.btn-logout{background:#2a3942;color:#e9edef;padding:8px 16px;border:none;border-radius:6px;cursor:pointer}
+/* Layout */
+.app{display:flex;height:100vh}
 
-/* Navigation */
-.nav{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
-.nav-btn{background:#2a3942;color:#e9edef;padding:10px 16px;border:none;border-radius:6px;cursor:pointer}
-.nav-btn:hover,.nav-btn.active{background:#00a884}
+/* Sidebar */
+.sidebar{width:360px;min-width:300px;background:#111b21;border-right:1px solid #2a3942;display:flex;flex-direction:column}
+.sidebar-header{padding:12px 16px;background:#202c33;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sidebar-header a{color:#00a884;text-decoration:none;font-size:14px}
+.sidebar-header h2{font-size:16px;flex:1;text-align:center}
+.btn-new{background:#00a884;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px}
+.btn-new:hover{background:#06cf9c}
 
-/* Sections */
-.section{display:none;background:#202c33;padding:20px;border-radius:8px}
-.section.active{display:block}
-.section h3{margin-bottom:20px;color:#00a884}
+.chat-list{flex:1;overflow-y:auto}
+.chat-item{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid #2a3942;transition:background .15s}
+.chat-item:hover,.chat-item.active{background:#2a3942}
+.chat-icon{width:48px;height:48px;border-radius:50%;background:#2a3942;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
+.chat-info{flex:1;min-width:0}
+.chat-name{font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-preview{font-size:13px;color:#8696a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.empty-list{text-align:center;padding:40px 20px;color:#8696a0}
 
-/* Owner Panel */
-.owner-panel{background:#1a252a;padding:20px;border-radius:8px;margin-bottom:20px}
-.toggle{display:flex;align-items:center;gap:10px;margin-bottom:20px}
-.toggle input{width:20px;height:20px}
-.chat-list-admin{background:#2a3942;padding:15px;border-radius:6px}
-.chat-item-admin{padding:10px;border-bottom:1px solid #202c33;display:flex;justify-content:space-between;align-items:center}
-.chat-item-admin:last-child{border:none}
-.btn-small{padding:6px 12px;font-size:12px}
+/* Chat window */
+.chat-window{flex:1;display:flex;flex-direction:column;background:#0b141a}
+.chat-header{padding:12px 16px;background:#202c33;display:flex;align-items:center;gap:12px;border-bottom:1px solid #2a3942}
+.chat-header h3{font-size:16px}
+.chat-header .subtitle{font-size:12px;color:#8696a0;margin-top:2px}
+
+.messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:8px;background-image:linear-gradient(rgba(11,20,26,.9),rgba(11,20,26,.9))}
+.message{max-width:70%;padding:8px 12px;border-radius:8px;word-wrap:break-word;position:relative}
+.message.me{background:#005c4b;align-self:flex-end}
+.message.other{background:#202c33;align-self:flex-start}
+.message .author{font-size:12px;color:#06cf9c;font-weight:600;margin-bottom:2px}
+.message .time{font-size:10px;color:#8696a0;margin-top:4px;text-align:right}
+
+.input-area{padding:12px 16px;background:#202c33;display:flex;gap:8px;align-items:center}
+.input-area input{flex:1;background:#2a3942;border:none;color:#e9edef;padding:12px 16px;border-radius:24px;font-size:14px;outline:none}
+.input-area button{background:#00a884;color:#fff;border:none;width:46px;height:46px;border-radius:50%;cursor:pointer;font-size:18px}
+.input-area button:hover{background:#06cf9c}
+
+.no-chat-selected{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#8696a0;gap:16px}
+.no-chat-selected .icon{font-size:80px}
+.no-chat-selected h3{font-size:20px}
+.no-chat-selected p{font-size:14px}
 
 /* Modal */
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;align-items:center;justify-content:center}
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center}
 .modal.active{display:flex}
-.modal-content{background:#202c33;padding:24px;border-radius:12px;max-width:500px;width:90%}
-.modal-content h3{margin-bottom:16px}
+.modal-content{background:#202c33;border-radius:12px;padding:24px;width:90%;max-width:500px;max-height:90vh;overflow-y:auto}
+.modal-content h3{margin-bottom:20px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;margin-bottom:6px;color:#8696a0;font-size:13px}
+.form-group input,.form-group select{width:100%;background:#2a3942;border:none;color:#e9edef;padding:10px;border-radius:6px;font-size:14px;outline:none}
+.members-list{max-height:200px;overflow-y:auto;background:#2a3942;border-radius:6px;padding:8px}
+.members-list label{display:flex;align-items:center;gap:8px;padding:6px;cursor:pointer}
+.members-list label:hover{background:#0b141a;border-radius:4px}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
+.modal-actions button{padding:10px 16px;border:none;border-radius:6px;cursor:pointer;font-size:14px}
+.btn-primary{background:#00a884;color:#fff}
+.btn-primary:hover{background:#06cf9c}
+.btn-secondary{background:#2a3942;color:#e9edef}
 </style>
 </head>
 <body>
 
-<!-- LOGIN FORM -->
-<div id="loginSection" class="login-box">
-  <h1>🏠 ДОМОВИД</h1>
-  <div class="form-group">
-    <label> Выберите отделение</label>
-    <select id="loginBranch">
-      <option value="">Загрузка...</option>
-    </select>
-  </div>
-  <div class="form-group">
-    <label>📱 Телефон</label>
-    <input type="tel" id="loginPhone" placeholder="+7 (___) ___-__-__">
-  </div>
-  <div class="form-group">
-    <label>🔒 Пароль</label>
-    <input type="password" id="loginPassword" placeholder="••••••••">
-  </div>
-  <button class="btn" onclick="login()">Войти</button>
-  <div id="loginError" class="error"></div>
+<!-- Тех. работы -->
+<div class="maintenance" id="maintenance">
+  <h1>🔧</h1>
+  <h2>Мессенджер на тех. работах</h2>
+  <p>Владелец временно отключил мессенджер. Попробуйте позже.</p>
+  <a href="index.html">← Вернуться на сайт</a>
 </div>
 
-<!-- MAIN APP (скрыт до входа) -->
-<div id="mainApp" style="display:none">
-  <div class="container">
-    <div class="header">
-      <h2>🏠 ДОМОВИД</h2>
-      <div class="user-info">
-        <span id="userName">—</span>
-        <button class="btn-logout" onclick="logout()">🚪 Выйти</button>
-      </div>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html">← На сайт</a>
+      <h2> Чаты</h2>
+      <button class="btn-new" id="btnNewChat" style="display:none">➕</button>
+    </div>
+    <div class="chat-list" id="chatList">
+      <div class="empty-list">Загрузка чатов...</div>
+    </div>
+  </aside>
+
+  <!-- Chat Window -->
+  <main class="chat-window">
+    <div class="no-chat-selected" id="noChat">
+      <div class="icon">💬</div>
+      <h3>Выберите чат</h3>
+      <p>Выберите чат из списка слева</p>
     </div>
 
-    <div class="nav">
-      <button class="nav-btn active" onclick="showSection('schedule')">📅 График</button>
-      <button class="nav-btn" onclick="showSection('plan')">📈 План</button>
-      <button class="nav-btn" onclick="openMessenger()">💬 Мессенджер</button>
-      <button class="nav-btn" id="ownerBtn" style="display:none" onclick="showSection('owner')">👑 Владелец</button>
-    </div>
-
-    <!-- OWNER SECTION -->
-    <div id="ownerSection" class="section">
-      <h3>👑 Панель Владельца</h3>
-      
-      <div class="owner-panel">
-        <h4>💬 Управление мессенджером</h4>
-        <div class="toggle">
-          <input type="checkbox" id="messengerToggle" checked onchange="toggleMessenger()">
-          <label for="messengerToggle">✅ Мессенджер работает</label>
-        </div>
-        
-        <div style="display:flex;gap:10px;margin:15px 0;flex-wrap:wrap">
-          <button class="nav-btn" onclick="openModal('branchChatModal')">🏪 Чат подразделения</button>
-          <button class="nav-btn" onclick="openModal('globalChatModal')">🌐 Общий чат сети</button>
-          <button class="nav-btn" onclick="openModal('manualChatModal')">👥 Чат вручную</button>
-        </div>
-
-        <div class="chat-list-admin">
-          <h4>📋 Существующие чаты</h4>
-          <div id="adminChatList">Загрузка...</div>
+    <div id="activeChat" style="display:none;flex:1;flex-direction:column;height:100%">
+      <div class="chat-header">
+        <div class="chat-icon" id="activeIcon">💬</div>
+        <div>
+          <h3 id="activeName">—</h3>
+          <div class="subtitle" id="activeSubtitle">—</div>
         </div>
       </div>
+      <div class="messages" id="messages"></div>
+      <div class="input-area">
+        <input type="text" id="msgInput" placeholder="Введите сообщение..." autocomplete="off">
+        <button id="btnSend">➤</button>
+      </div>
     </div>
-
-    <!-- SCHEDULE SECTION -->
-    <div id="scheduleSection" class="section active">
-      <h3> График работы</h3>
-      <p>Раздел в разработке...</p>
-    </div>
-
-    <!-- PLAN SECTION -->
-    <div id="planSection" class="section">
-      <h3>📈 План</h3>
-      <p>Раздел в разработке...</p>
-    </div>
-  </div>
+  </main>
 </div>
 
-<!-- MODALS FOR CREATING CHATS -->
-<div id="branchChatModal" class="modal">
+<!-- Modal: New Chat -->
+<div class="modal" id="newChatModal">
   <div class="modal-content">
-    <h3> Создать чат подразделения</h3>
+    <h3>💬 Новый чат</h3>
     <div class="form-group">
-      <label>Выберите отделение:</label>
-      <select id="branchChatBranch"></select>
+      <label>Тип чата</label>
+      <select id="chatType">
+        <option value="manual">👥 Чат вручную</option>
+        <option value="branch">🏪 Чат подразделения</option>
+        <option value="global">🌐 Общий чат сети</option>
+      </select>
     </div>
     <div class="form-group">
-      <label>Название чата (необязательно):</label>
-      <input type="text" id="branchChatName" placeholder="Например: Продавцы">
+      <label>Название чата</label>
+      <input type="text" id="chatName" placeholder="Например: Продавцы">
+    </div>
+    <div class="form-group" id="branchBlock" style="display:none">
+      <label>Отделение</label>
+      <select id="chatBranch"></select>
+    </div>
+    <div class="form-group" id="membersBlock">
+      <label>Участники</label>
+      <div class="members-list" id="membersList"></div>
     </div>
     <div class="modal-actions">
-      <button class="nav-btn" onclick="closeModal('branchChatModal')">Отмена</button>
-      <button class="nav-btn" style="background:#00a884" onclick="createBranchChat()">Создать</button>
-    </div>
-  </div>
-</div>
-
-<div id="globalChatModal" class="modal">
-  <div class="modal-content">
-    <h3>🌐 Создать общий чат сети</h3>
-    <div class="form-group">
-      <label>Название общего чата:</label>
-      <input type="text" id="globalChatName" placeholder="Например: Общие новости">
-    </div>
-    <div class="modal-actions">
-      <button class="nav-btn" onclick="closeModal('globalChatModal')">Отмена</button>
-      <button class="nav-btn" style="background:#00a884" onclick="createGlobalChat()">Создать</button>
-    </div>
-  </div>
-</div>
-
-<div id="manualChatModal" class="modal">
-  <div class="modal-content">
-    <h3> Создать чат вручную</h3>
-    <div class="form-group">
-      <label>Название чата:</label>
-      <input type="text" id="manualChatName" placeholder="Название">
-    </div>
-    <div class="form-group">
-      <label>Выберите участников:</label>
-      <div id="manualChatMembers" style="max-height:200px;overflow-y:auto;background:#2a3942;padding:10px;border-radius:6px"></div>
-    </div>
-    <div class="modal-actions">
-      <button class="nav-btn" onclick="closeModal('manualChatModal')">Отмена</button>
-      <button class="nav-btn" style="background:#00a884" onclick="createManualChat()">Создать</button>
+      <button class="btn-secondary" onclick="closeModal()">Отмена</button>
+      <button class="btn-primary" onclick="createChat()">Создать</button>
     </div>
   </div>
 </div>
 
 <script>
-// localStorage keys
+// ====== ДОМОВИД МЕССЕНДЖЕР ======
+
 const LS = {
+  user: 'currentUser',
   users: 'employees',
   branches: 'branches',
   chats: 'chats',
-  currentUser: 'currentUser',
-  messengerEnabled: 'messengerEnabled'
+  enabled: 'messengerEnabled'
 };
 
 let currentUser = null;
 let allUsers = [];
 let allBranches = [];
 let chats = [];
+let activeChatId = null;
 
-/* ========== INITIALIZATION ========== */
+// Инициализация
 function init() {
-  loadData();
-  
-  // If no branches, create demo data
-  if (allBranches.length === 0) {
-    createDemoData();
+  // Проверяем вход
+  const saved = localStorage.getItem(LS.user);
+  if (!saved) {
+    // Показываем сообщение вместо редиректа
+    document.body.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:20px;background:#0b141a;color:#e9edef">
+        <div style="font-size:64px">⚠️</div>
+        <h2>Сначала войдите в систему</h2>
+        <p style="color:#8696a0">Перейдите на главную страницу для входа</p>
+        <a href="index.html" style="background:#00a884;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none">→ Перейти на сайт</a>
+      </div>
+    `;
+    return;
   }
-  
-  // Check if user already logged in
-  const saved = localStorage.getItem(LS.currentUser);
-  if (saved) {
-    currentUser = JSON.parse(saved);
-    showMainApp();
-  } else {
-    showLogin();
-  }
-}
 
-function createDemoData() {
-  // Create demo branches
-  allBranches = [
-    {id: 'b1', name: 'Главный офис', city: 'Москва'},
-    {id: 'b2', name: 'Филиал №1', city: 'Санкт-Петербург'}
-  ];
-  
-  // Create demo users
-  allUsers = [
-    {id: 'u1', name: 'Владелец', phone: '999', password: '123', role: 'owner', branchId: 'b1', position: 'Директор'},
-    {id: 'u2', name: 'Админ', phone: '998', password: '123', role: 'admin', branchId: 'b1', position: 'Администратор'},
-    {id: 'u3', name: 'Продавец 1', phone: '997', password: '123', role: 'employee', branchId: 'b1', position: 'Продавец'},
-    {id: 'u4', name: 'Продавец 2', phone: '996', password: '123', role: 'employee', branchId: 'b2', position: 'Продавец'}
-  ];
-  
-  saveData();
-  
-  // Enable messenger by default
-  localStorage.setItem(LS.messengerEnabled, 'true');
+  currentUser = JSON.parse(saved);
+
+  // Проверяем тех. работы
+  const enabled = localStorage.getItem(LS.enabled);
+  if (enabled === 'false') {
+    document.getElementById('maintenance').classList.add('active');
+    return;
+  }
+
+  // Загружаем данные
+  loadData();
+
+  // Показываем кнопку создания чата для владельца/админа
+  if (['owner','admin','helper'].includes(currentUser.role)) {
+    document.getElementById('btnNewChat').style.display = 'inline-block';
+  }
+
+  // Рендерим чаты
+  renderChatList();
+
+  // Автообновление
+  setInterval(() => {
+    loadData();
+    renderChatList();
+    if (activeChatId) renderMessages();
+  }, 2000);
+
+  // Обработчики
+  document.getElementById('btnNewChat').addEventListener('click', openModal);
+  document.getElementById('btnSend').addEventListener('click', sendMessage);
+  document.getElementById('msgInput').addEventListener('keypress', e => {
+    if (e.key === 'Enter') sendMessage();
+  });
+  document.getElementById('chatType').addEventListener('change', onTypeChange);
 }
 
 function loadData() {
-  allBranches = JSON.parse(localStorage.getItem(LS.branches) || '[]');
   allUsers = JSON.parse(localStorage.getItem(LS.users) || '[]');
+  allBranches = JSON.parse(localStorage.getItem(LS.branches) || '[]');
   chats = JSON.parse(localStorage.getItem(LS.chats) || '[]');
 }
 
-function saveData() {
-  localStorage.setItem(LS.branches, JSON.stringify(allBranches));
-  localStorage.setItem(LS.users, JSON.stringify(allUsers));
-  localStorage.setItem(LS.chats, JSON.stringify(chats));
+// Фильтрация чатов по правам
+function getVisibleChats() {
+  return chats.filter(c => {
+    if (c.type === 'global') return true;
+    if (c.type === 'branch') return c.branchId === currentUser.branchId;
+    if (c.type === 'manual') {
+      if (['owner','admin','helper'].includes(currentUser.role)) return true;
+      return c.members && c.members.includes(currentUser.id);
+    }
+    return false;
+  });
 }
 
-/* ========== LOGIN ========== */
-function showLogin() {
-  document.getElementById('loginSection').style.display = 'block';
-  document.getElementById('mainApp').style.display = 'none';
-  
-  // Fill branches
-  const sel = document.getElementById('loginBranch');
-  if (allBranches.length > 0) {
-    sel.innerHTML = allBranches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
-  } else {
-    sel.innerHTML = '<option value="">Нет отделений</option>';
-  }
-}
+// Рендер списка чатов
+function renderChatList() {
+  const list = document.getElementById('chatList');
+  const visible = getVisibleChats();
 
-function showMainApp() {
-  document.getElementById('loginSection').style.display = 'none';
-  document.getElementById('mainApp').style.display = 'block';
-  document.getElementById('userName').textContent = `${currentUser.name} (${currentUser.position})`;
-  
-  // Show owner panel only for owner/admin/helper
-  const canOwner = ['owner','admin','helper'].includes(currentUser.role);
-  document.getElementById('ownerBtn').style.display = canOwner ? 'inline-block' : 'none';
-  
-  if (canOwner) {
-    loadOwnerPanel();
-  }
-}
-
-function login() {
-  const branchId = document.getElementById('loginBranch').value;
-  const phone = document.getElementById('loginPhone').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  
-  if (!branchId || !phone || !password) {
-    document.getElementById('loginError').textContent = 'Заполните все поля';
+  if (visible.length === 0) {
+    list.innerHTML = '<div class="empty-list">Нет доступных чатов<br><small>Попросите владельца создать чат</small></div>';
     return;
   }
-  
-  // Find user
-  const user = allUsers.find(u => u.phone === phone && u.password === password && u.branchId === branchId);
-  
-  if (!user) {
-    document.getElementById('loginError').textContent = 'Неверный телефон, пароль или отделение';
-    return;
-  }
-  
-  // Login success
-  currentUser = user;
-  localStorage.setItem(LS.currentUser, JSON.stringify(user));
-  document.getElementById('loginError').textContent = '';
-  showMainApp();
-}
 
-function logout() {
-  localStorage.removeItem(LS.currentUser);
-  currentUser = null;
-  showLogin();
-}
-
-/* ========== SECTIONS ========== */
-function showSection(name) {
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  
-  document.getElementById(name + 'Section').classList.add('active');
-  event.target.classList.add('active');
-}
-
-function openMessenger() {
-  window.location.href = 'messenger.html';
-}
-
-/* ========== OWNER PANEL ========== */
-function loadOwnerPanel() {
-  // Messenger toggle
-  const enabled = localStorage.getItem(LS.messengerEnabled) !== 'false';
-  document.getElementById('messengerToggle').checked = enabled;
-  
-  // Load chat list
-  renderAdminChatList();
-}
-
-function toggleMessenger() {
-  const enabled = document.getElementById('messengerToggle').checked;
-  localStorage.setItem(LS.messengerEnabled, enabled ? 'true' : 'false');
-}
-
-function renderAdminChatList() {
-  const div = document.getElementById('adminChatList');
-  if (chats.length === 0) {
-    div.innerHTML = '<p style="color:#8696a0">Чатов пока нет</p>';
-    return;
-  }
-  
-  div.innerHTML = chats.map(c => {
-    const typeLabel = c.type === 'global' ? '🌐 Сеть' : c.type === 'branch' ? '🏪 Отделение' : '👥 Ручной';
+  list.innerHTML = visible.map(c => {
+    const icon = c.type === 'global' ? '🌐' : c.type === 'branch' ? '🏪' : '💬';
+    const msgs = c.messages || [];
+    const last = msgs[msgs.length - 1];
+    const preview = last ? last.text : 'Нет сообщений';
     return `
-      <div class="chat-item-admin">
-        <span>${typeLabel} — ${c.name || 'Без названия'}</span>
-        <button class="nav-btn btn-small" onclick="deleteChat('${c.id}')">🗑️</button>
+      <div class="chat-item ${c.id === activeChatId ? 'active' : ''}" data-id="${c.id}">
+        <div class="chat-icon">${icon}</div>
+        <div class="chat-info">
+          <div class="chat-name">${escapeHtml(c.name)}</div>
+          <div class="chat-preview">${escapeHtml(preview.substring(0, 50))}</div>
+        </div>
       </div>
     `;
   }).join('');
+
+  list.querySelectorAll('.chat-item').forEach(el => {
+    el.addEventListener('click', () => openChat(el.dataset.id));
+  });
 }
 
-function deleteChat(id) {
-  if (!confirm('Удалить этот чат?')) return;
-  chats = chats.filter(c => c.id !== id);
-  saveData();
-  renderAdminChatList();
-}
+// Открытие чата
+function openChat(id) {
+  activeChatId = id;
+  document.getElementById('noChat').style.display = 'none';
+  document.getElementById('activeChat').style.display = 'flex';
 
-/* ========== CREATE CHATS ========== */
-function openModal(id) {
-  document.getElementById(id).classList.add('active');
-  
-  if (id === 'branchChatModal') {
-    const sel = document.getElementById('branchChatBranch');
-    sel.innerHTML = allBranches.map(b => `<option value="${b.id}">${b.name}</option>`).join('');
+  const c = chats.find(x => x.id === id);
+  if (!c) return;
+
+  document.getElementById('activeIcon').textContent = c.type === 'global' ? '' : c.type === 'branch' ? '🏪' : '💬';
+  document.getElementById('activeName').textContent = c.name;
+
+  let subtitle = '';
+  if (c.type === 'global') subtitle = 'Общий чат сети';
+  else if (c.type === 'branch') {
+    const b = allBranches.find(x => x.id === c.branchId);
+    subtitle = 'Отделение: ' + (b ? b.name : '—');
+  } else {
+    subtitle = 'Участников: ' + (c.members ? c.members.length : 0);
   }
-  
-  if (id === 'manualChatModal') {
-    const div = document.getElementById('manualChatMembers');
-    div.innerHTML = allUsers.map(u => `
-      <label style="display:block;padding:5px;cursor:pointer">
-        <input type="checkbox" value="${u.id}"> ${u.name} (${u.position})
+  document.getElementById('activeSubtitle').textContent = subtitle;
+
+  renderMessages();
+  renderChatList();
+}
+
+// Рендер сообщений
+function renderMessages() {
+  const c = chats.find(x => x.id === activeChatId);
+  const box = document.getElementById('messages');
+
+  if (!c) { box.innerHTML = ''; return; }
+
+  const msgs = c.messages || [];
+  if (msgs.length === 0) {
+    box.innerHTML = '<div class="empty-list">Сообщений пока нет</div>';
+    return;
+  }
+
+  box.innerHTML = msgs.map(m => {
+    const me = m.authorId === currentUser.id;
+    return `
+      <div class="message ${me ? 'me' : 'other'}">
+        ${!me ? '<div class="author">' + escapeHtml(m.authorName || '—') + '</div>' : ''}
+        <div>${escapeHtml(m.text)}</div>
+        <div class="time">${formatTime(m.timestamp)}</div>
+      </div>
+    `;
+  }).join('');
+
+  box.scrollTop = box.scrollHeight;
+}
+
+// Отправка сообщения
+function sendMessage() {
+  const input = document.getElementById('msgInput');
+  const text = input.value.trim();
+  if (!text || !activeChatId) return;
+
+  const c = chats.find(x => x.id === activeChatId);
+  if (!c) return;
+
+  if (!c.messages) c.messages = [];
+  c.messages.push({
+    id: 'm_' + Date.now(),
+    authorId: currentUser.id,
+    authorName: currentUser.name,
+    text: text,
+    timestamp: Date.now()
+  });
+
+  localStorage.setItem(LS.chats, JSON.stringify(chats));
+  input.value = '';
+  renderMessages();
+  renderChatList();
+}
+
+// Создание чата
+function openModal() {
+  document.getElementById('newChatModal').classList.add('active');
+  document.getElementById('chatName').value = '';
+  document.getElementById('chatType').value = 'manual';
+  onTypeChange();
+}
+
+function closeModal() {
+  document.getElementById('newChatModal').classList.remove('active');
+}
+
+function onTypeChange() {
+  const type = document.getElementById('chatType').value;
+  document.getElementById('branchBlock').style.display = type === 'branch' ? 'block' : 'none';
+  document.getElementById('membersBlock').style.display = type === 'manual' ? 'block' : 'none';
+
+  if (type === 'branch') {
+    document.getElementById('chatBranch').innerHTML = allBranches.map(b => 
+      '<option value="' + b.id + '">' + escapeHtml(b.name) + '</option>'
+    ).join('');
+  }
+
+  if (type === 'manual') {
+    document.getElementById('membersList').innerHTML = allUsers.map(u => `
+      <label>
+        <input type="checkbox" value="${u.id}">
+        <span>${escapeHtml(u.name)}</span>
+        <small style="color:#8696a0">(${escapeHtml(u.position || '')})</small>
       </label>
     `).join('');
   }
 }
 
-function closeModal(id) {
-  document.getElementById(id).classList.remove('active');
-}
+function createChat() {
+  const type = document.getElementById('chatType').value;
+  const name = document.getElementById('chatName').value.trim();
 
-function createBranchChat() {
-  const branchId = document.getElementById('branchChatBranch').value;
-  const name = document.getElementById('branchChatName').value.trim();
-  
   const chat = {
     id: 'c_' + Date.now(),
-    type: 'branch',
-    name: name || 'Чат подразделения',
-    branchId: branchId,
-    members: [],
-    createdBy: currentUser.id,
-    createdAt: Date.now(),
-    messages: []
-  };
-  
-  chats.push(chat);
-  saveData();
-  closeModal('branchChatModal');
-  renderAdminChatList();
-  alert('Чат создан!');
-}
-
-function createGlobalChat() {
-  const name = document.getElementById('globalChatName').value.trim();
-  
-  const chat = {
-    id: 'c_' + Date.now(),
-    type: 'global',
-    name: name || 'Общий чат',
+    type: type,
+    name: name || (type === 'global' ? 'Общий чат' : type === 'branch' ? 'Чат отделения' : 'Новый чат'),
     branchId: null,
     members: [],
     createdBy: currentUser.id,
     createdAt: Date.now(),
     messages: []
   };
-  
-  chats.push(chat);
-  saveData();
-  closeModal('globalChatModal');
-  renderAdminChatList();
-  alert('Чат создан!');
-}
 
-function createManualChat() {
-  const name = document.getElementById('manualChatName').value.trim();
-  const checked = [...document.querySelectorAll('#manualChatMembers input:checked')].map(i => i.value);
-  
-  if (checked.length === 0) {
-    alert('Выберите хотя бы одного участника');
-    return;
+  if (type === 'branch') {
+    chat.branchId = document.getElementById('chatBranch').value;
   }
-  
-  const chat = {
-    id: 'c_' + Date.now(),
-    type: 'manual',
-    name: name || 'Новый чат',
-    branchId: null,
-    members: checked,
-    createdBy: currentUser.id,
-    createdAt: Date.now(),
-    messages: []
-  };
-  
+  if (type === 'manual') {
+    const checked = [...document.querySelectorAll('#membersList input:checked')].map(i => i.value);
+    if (checked.length === 0) { alert('Выберите участников'); return; }
+    chat.members = checked;
+  }
+
   chats.push(chat);
-  saveData();
-  closeModal('manualChatModal');
-  renderAdminChatList();
-  alert('Чат создан!');
+  localStorage.setItem(LS.chats, JSON.stringify(chats));
+  closeModal();
+  renderChatList();
+  openChat(chat.id);
 }
 
-/* ========== START ========== */
+// Утилиты
+function escapeHtml(s) {
+  return String(s || '').replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
+function formatTime(ts) {
+  if (!ts) return '';
+  const d = new Date(ts);
+  return d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+}
+
+// Старт
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
