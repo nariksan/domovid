@@ -133,7 +133,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <input type="text" id="messageInput" placeholder="Введите сообщение..." onkeypress="handleMessageKeyPress(event)">
 </div>
 <div class="message-actions">
-<button class="btn-icon" onclick="document.getElementById('fileInput').click()"></button>
+<button class="btn-icon" onclick="document.getElementById('fileInput').click()">📎</button>
 <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)">
 <button class="btn-icon btn-send" onclick="sendMessage()">➤</button>
 </div>
@@ -220,7 +220,7 @@ await msgDoc.ref.delete();
 totalDeleted++;
 }
 }
-if (totalDeleted > 0) console.log(` Удалено ${totalDeleted} старых сообщений`);
+if (totalDeleted > 0) console.log(`🧹 Удалено ${totalDeleted} старых сообщений`);
 } catch (e) { console.error('Ошибка очистки:', e); }
 }
 
@@ -280,6 +280,7 @@ document.getElementById('chatHeaderName').textContent = isGroup ? chat.name : ch
 document.getElementById('chatHeaderStatus').textContent = isGroup ? `${chat.participantsCount || 0} участников` : 'Личный чат';
 renderChatsList();
 loadMessages(chatId);
+// Сбрасываем счётчик непрочитанных
 await markMessagesAsRead(chatId);
 }
 
@@ -339,7 +340,7 @@ messageData.fileUrl = await fileRef.getDownloadURL();
 messageData.fileName = selectedFileData.name;
 } catch (e) { alert('Ошибка загрузки файла: ' + e.message); return; }
 }
-// Обновляем счётчики непрочитанных для всех участников кроме отправителя
+// Увеличиваем счётчик непрочитанных для всех участников кроме отправителя
 const unreadUpdates = {};
 chat.participants.forEach(participantId => {
 if (participantId !== currentUser.id) {
@@ -349,7 +350,7 @@ unreadUpdates[`unread.${participantId}`] = currentCount + 1;
 });
 try {
 await db.collection(`chats/${currentChatId}/messages`).add(messageData);
-const updateData = { lastMessage: text || '📄 Файл', lastMessageAt: Date.now(), ...unreadUpdates };
+const updateData = { lastMessage: text || ' Файл', lastMessageAt: Date.now(), ...unreadUpdates };
 await db.collection('chats').doc(currentChatId).update(updateData);
 } catch (e) { alert('Ошибка отправки: ' + e.message); return; }
 input.value = '';
