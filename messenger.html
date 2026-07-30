@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2d8b4d">
 <title>ДОМОВИД - Мессенджер</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -12,8 +13,10 @@
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; height: 100vh; overflow: hidden; }
 .messenger-container { display: grid; grid-template-columns: 320px 1fr; height: 100vh; background: white; }
 .chat-list { border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; background: #fafafa; }
-.chat-list-header { padding: 16px; background: #2d8b4d; color: white; display: flex; justify-content: space-between; align-items: center; }
-.chat-list-header h3 { font-size: 1.2em; }
+.chat-list-header { padding: 12px 16px; background: #2d8b4d; color: white; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.chat-list-header h3 { font-size: 1.1em; flex: 1; }
+.back-to-site { background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85em; display: flex; align-items: center; gap: 4px; text-decoration: none; }
+.back-to-site:hover { background: rgba(255,255,255,0.3); }
 .new-chat-btn { padding: 8px 16px; background: white; color: #2d8b4d; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
 .new-chat-btn:hover { background: #f0f0f0; }
 .chat-search { padding: 12px; }
@@ -31,8 +34,8 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .chat-last-message { font-size: 0.85em; color: #666; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chat-badge { background: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7em; margin-left: 8px; }
 .chat-window { display: flex; flex-direction: column; }
-.chat-header { padding: 16px; background: white; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 12px; }
-.back-btn { display: none; background: none; border: none; font-size: 1.5em; cursor: pointer; color: #2d8b4d; margin-right: 8px; }
+.chat-header { padding: 12px 16px; background: white; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 12px; }
+.back-btn { display: none; background: none; border: none; font-size: 1.5em; cursor: pointer; color: #2d8b4d; margin-right: 8px; padding: 4px 8px; }
 .chat-header-info { flex: 1; }
 .chat-header-name { font-weight: 700; color: #333; }
 .chat-header-status { font-size: 0.8em; color: #28a745; }
@@ -70,54 +73,40 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .btn { padding: 10px 16px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9em; }
 .btn-primary { background: #2d8b4d; color: white; width: 100%; }
 .btn-primary:hover { background: #236b3d; }
-
-/* МОБИЛЬНАЯ АДАПТАЦИЯ */
+.maintenance-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%); z-index: 9999; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.maintenance-content { background: white; border-radius: 16px; padding: 30px; max-width: 400px; text-align: center; }
+.maintenance-icon { font-size: 4em; margin-bottom: 16px; }
+.maintenance-title { color: #dc3545; font-size: 1.5em; margin-bottom: 12px; }
+.maintenance-text { color: #666; margin-bottom: 20px; line-height: 1.5; }
 @media (max-width: 768px) {
-.messenger-container { 
-    grid-template-columns: 1fr; 
-}
-.chat-list { 
-    display: flex; 
-}
-.chat-list.hidden { 
-    display: none; 
-}
-.chat-window { 
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 10;
-    display: none;
-}
-.chat-window.active { 
-    display: flex; 
-}
-.back-btn { 
-    display: block; 
-}
-.message-content { 
-    max-width: 85%; 
-}
-.chat-header {
-    padding: 12px 16px;
-}
-.messages {
-    padding: 12px;
-}
-.message-input-area {
-    padding: 12px;
-}
+.messenger-container { grid-template-columns: 1fr; }
+.chat-list { display: flex; }
+.chat-list.hidden { display: none; }
+.chat-window { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 10; display: none; background: white; }
+.chat-window.active { display: flex; }
+.back-btn { display: block; }
+.message-content { max-width: 85%; }
+.chat-list-header { flex-wrap: wrap; }
+.back-to-site { order: 3; width: 100%; justify-content: center; margin-top: 8px; }
 }
 </style>
 </head>
 <body>
-<div class="messenger-container">
+<div id="maintenanceOverlay" class="maintenance-overlay" style="display: none;">
+<div class="maintenance-content">
+<div class="maintenance-icon">🔧</div>
+<div class="maintenance-title">Мессенджер на тех. работах</div>
+<div class="maintenance-text">Владелец временно отключил мессенджер. Попробуйте позже.</div>
+<a href="index.html" class="btn btn-primary">← Вернуться на сайт</a>
+</div>
+</div>
+
+<div class="messenger-container" id="messengerContainer">
 <div class="chat-list" id="chatList">
 <div class="chat-list-header">
 <h3>💬 Чаты</h3>
 <button class="new-chat-btn" onclick="openNewChatModal()">➕ Новый</button>
+<a href="index.html" class="back-to-site">← На сайт</a>
 </div>
 <div class="chat-search">
 <input type="text" placeholder="🔍 Поиск чатов..." id="chatSearch" oninput="filterChats()">
@@ -147,7 +136,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <div class="message-actions">
 <button class="btn-icon" onclick="document.getElementById('fileInput').click()">📎</button>
 <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)">
-<button class="btn-icon btn-send" onclick="sendMessage()">➤</button>
+<button class="btn-icon btn-send" onclick="sendMessage()"></button>
 </div>
 </div>
 </div>
@@ -194,14 +183,26 @@ let currentChatId = null;
 let messagesUnsubscribe = null;
 let selectedFileData = null;
 
-// Проверяем авторизацию
+// Проверяем авторизацию и статус мессенджера
 const sessionStr = localStorage.getItem('domovidSession');
 if (sessionStr) {
 const session = JSON.parse(sessionStr);
-db.collection('users').doc(session.id).get().then(doc => {
+db.collection('users').doc(session.id).get().then(async (doc) => {
 if (doc.exists) {
 const userData = doc.data();
 currentUser = { id: session.id, name: userData.name, phone: userData.phone, role: userData.role, branchId: session.branchId || userData.branchId };
+
+// Проверяем статус мессенджера
+const messengerDoc = await db.collection('settings').doc('messenger').get();
+if (messengerDoc.exists && messengerDoc.data().maintenanceMode && userData.role !== 'superadmin' && userData.role !== 'assistant') {
+document.getElementById('maintenanceOverlay').style.display = 'flex';
+document.getElementById('messengerContainer').style.display = 'none';
+return;
+}
+
+// Запускаем очистку старых сообщений
+cleanupOldMessages();
+
 loadChats();
 } else {
 alert('Сессия истекла. Войдите через основной сайт.');
@@ -214,6 +215,24 @@ window.location.href = 'index.html';
 } else {
 alert('Войдите через основной сайт.');
 window.location.href = 'index.html';
+}
+
+// Очистка сообщений старше 10 дней
+async function cleanupOldMessages() {
+try {
+const chatsSnap = await db.collection('chats').get();
+const tenDaysAgo = Date.now() - (10 * 24 * 60 * 60 * 1000);
+let totalDeleted = 0;
+for (const chatDoc of chatsSnap.docs) {
+const messagesQuery = db.collection(`chats/${chatDoc.id}/messages`).where('createdAt', '<', tenDaysAgo);
+const messagesSnap = await messagesQuery.get();
+for (const msgDoc of messagesSnap.docs) {
+await msgDoc.ref.delete();
+totalDeleted++;
+}
+}
+if (totalDeleted > 0) console.log(`🧹 Удалено ${totalDeleted} старых сообщений`);
+} catch (e) { console.error('Ошибка очистки:', e); }
 }
 
 async function loadChats() {
@@ -261,7 +280,6 @@ currentChatId = chatId;
 const chat = chats.find(c => c.id === chatId);
 if (!chat) return;
 
-// Показываем чат на мобильных
 if (window.innerWidth <= 768) {
 document.getElementById('chatList').classList.add('hidden');
 document.getElementById('chatWindow').classList.add('active');
@@ -281,7 +299,6 @@ loadMessages(chatId);
 }
 
 function backToChatList() {
-// Возвращаемся к списку чатов на мобильных
 document.getElementById('chatList').classList.remove('hidden');
 document.getElementById('chatWindow').classList.remove('active');
 currentChatId = null;
@@ -325,7 +342,6 @@ markMessagesAsRead(chatId);
 async function markMessagesAsRead(chatId) {
 const chat = chats.find(c => c.id === chatId);
 if (!chat || chat.isGroup) return;
-
 await db.collection(`chats/${chatId}/unread`).doc(currentUser.id).set({ count: 0 }, { merge: true });
 }
 
@@ -356,7 +372,6 @@ return;
 }
 
 await db.collection(`chats/${currentChatId}/messages`).add(messageData);
-
 await db.collection('chats').doc(currentChatId).update({
 lastMessage: text || '📄 Файл',
 lastMessageAt: Date.now()
@@ -371,9 +386,7 @@ loadChats();
 }
 
 function handleMessageKeyPress(event) {
-if (event.key === 'Enter') {
-sendMessage();
-}
+if (event.key === 'Enter') sendMessage();
 }
 
 function handleFileSelect(event) {
@@ -413,15 +426,8 @@ async function createNewChat() {
 const name = document.getElementById('newChatName').value.trim();
 const checkboxes = document.querySelectorAll('#newChatParticipants input[type="checkbox"]:checked');
 
-if (!name) {
-alert('Введите название чата');
-return;
-}
-
-if (checkboxes.length === 0) {
-alert('Выберите хотя бы одного участника');
-return;
-}
+if (!name) { alert('Введите название чата'); return; }
+if (checkboxes.length === 0) { alert('Выберите хотя бы одного участника'); return; }
 
 const participants = Array.from(checkboxes).map(cb => cb.value);
 participants.push(currentUser.id);
@@ -438,10 +444,8 @@ lastMessageAt: 0
 };
 
 const chatRef = await db.collection('chats').add(chatData);
-
 closeNewChatModal();
 document.getElementById('newChatName').value = '';
-
 await loadChats();
 renderChatsList();
 openChat(chatRef.id);
@@ -450,7 +454,6 @@ openChat(chatRef.id);
 function filterChats() {
 const search = document.getElementById('chatSearch').value.toLowerCase();
 const items = document.querySelectorAll('.chat-item');
-
 items.forEach(item => {
 const name = item.querySelector('.chat-name').textContent.toLowerCase();
 item.style.display = name.includes(search) ? 'flex' : 'none';
@@ -461,11 +464,9 @@ function formatMessageTime(timestamp) {
 const date = new Date(timestamp);
 const now = new Date();
 const diff = now - date;
-
 if (diff < 60000) return 'только что';
 if (diff < 3600000) return `${Math.floor(diff / 60000)} мин назад`;
 if (diff < 86400000) return `${Math.floor(diff / 3600000)} ч назад`;
-
 return `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
 
@@ -475,7 +476,6 @@ div.textContent = text;
 return div.innerHTML;
 }
 
-// Обработка изменения размера окна
 window.addEventListener('resize', () => {
 if (window.innerWidth > 768) {
 document.getElementById('chatList').classList.remove('hidden');
