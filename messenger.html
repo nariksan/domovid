@@ -7,139 +7,107 @@
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:'Segoe UI',Tahoma,sans-serif;background:#0b141a;color:#e9edef;height:100vh;overflow:hidden}
-
-/* Тех. работы */
 .maintenance{display:none;position:fixed;inset:0;background:#0b141a;z-index:9999;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:20px}
 .maintenance.active{display:flex}
 .maintenance h1{font-size:64px;margin-bottom:16px}
 .maintenance h2{color:#f5c542;margin-bottom:12px}
-.maintenance p{color:#8696a0;margin-bottom:24px;max-width:400px}
+.maintenance p{color:#8696a0;margin-bottom:24px}
 .maintenance a{color:#00a884;text-decoration:none;padding:10px 20px;background:#202c33;border-radius:8px}
-
-/* Layout */
 .app{display:flex;height:100vh}
-
-/* Sidebar */
-.sidebar{width:360px;min-width:300px;background:#111b21;border-right:1px solid #2a3942;display:flex;flex-direction:column}
-.sidebar-header{padding:12px 16px;background:#202c33;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sidebar{width:360px;background:#111b21;border-right:1px solid #2a3942;display:flex;flex-direction:column}
+.sidebar-header{padding:12px 16px;background:#202c33;display:flex;align-items:center;justify-content:space-between}
 .sidebar-header a{color:#00a884;text-decoration:none;font-size:14px}
-.sidebar-header h2{font-size:16px;flex:1;text-align:center}
-.btn-new{background:#00a884;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:14px}
-.btn-new:hover{background:#06cf9c}
-
+.sidebar-header h2{font-size:16px}
+.btn-new{background:#00a884;color:#fff;border:none;padding:8px 14px;border-radius:8px;cursor:pointer}
 .chat-list{flex:1;overflow-y:auto}
-.chat-item{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid #2a3942;transition:background .15s}
+.chat-item{padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid #2a3942}
 .chat-item:hover,.chat-item.active{background:#2a3942}
-.chat-icon{width:48px;height:48px;border-radius:50%;background:#2a3942;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0}
-.chat-info{flex:1;min-width:0}
-.chat-name{font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.chat-preview{font-size:13px;color:#8696a0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
-.empty-list{text-align:center;padding:40px 20px;color:#8696a0}
-
-/* Chat window */
-.chat-window{flex:1;display:flex;flex-direction:column;background:#0b141a}
-.chat-header{padding:12px 16px;background:#202c33;display:flex;align-items:center;gap:12px;border-bottom:1px solid #2a3942}
-.chat-header h3{font-size:16px}
-.chat-header .subtitle{font-size:12px;color:#8696a0;margin-top:2px}
-
-.messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:8px;background-image:linear-gradient(rgba(11,20,26,.9),rgba(11,20,26,.9))}
-.message{max-width:70%;padding:8px 12px;border-radius:8px;word-wrap:break-word;position:relative}
-.message.me{background:#005c4b;align-self:flex-end}
-.message.other{background:#202c33;align-self:flex-start}
-.message .author{font-size:12px;color:#06cf9c;font-weight:600;margin-bottom:2px}
-.message .time{font-size:10px;color:#8696a0;margin-top:4px;text-align:right}
-
-.input-area{padding:12px 16px;background:#202c33;display:flex;gap:8px;align-items:center}
-.input-area input{flex:1;background:#2a3942;border:none;color:#e9edef;padding:12px 16px;border-radius:24px;font-size:14px;outline:none}
-.input-area button{background:#00a884;color:#fff;border:none;width:46px;height:46px;border-radius:50%;cursor:pointer;font-size:18px}
-.input-area button:hover{background:#06cf9c}
-
-.no-chat-selected{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#8696a0;gap:16px}
-.no-chat-selected .icon{font-size:80px}
-.no-chat-selected h3{font-size:20px}
-.no-chat-selected p{font-size:14px}
-
-/* Modal */
+.chat-icon{width:48px;height:48px;border-radius:50%;background:#2a3942;display:flex;align-items:center;justify-content:center;font-size:24px}
+.chat-info{flex:1}
+.chat-name{font-size:16px;font-weight:500}
+.chat-preview{font-size:13px;color:#8696a0;margin-top:2px}
+.chat-window{flex:1;display:flex;flex-direction:column}
+.chat-head{padding:12px 16px;background:#202c33;border-bottom:1px solid #2a3942;display:flex;align-items:center;gap:12px}
+.messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:70%;padding:8px 12px;border-radius:8px}
+.msg.me{background:#005c4b;align-self:flex-end}
+.msg.other{background:#202c33;align-self:flex-start}
+.msg .author{font-size:12px;color:#06cf9c;font-weight:600;margin-bottom:2px}
+.msg .time{font-size:10px;color:#8696a0;margin-top:4px;text-align:right}
+.input-bar{padding:12px 16px;background:#202c33;display:flex;gap:8px}
+.input-bar input{flex:1;background:#2a3942;border:none;color:#e9edef;padding:12px;border-radius:20px}
+.input-bar button{background:#00a884;color:#fff;border:none;width:46px;height:46px;border-radius:50%;cursor:pointer}
+.no-chat{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#8696a0;gap:16px}
 .modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;align-items:center;justify-content:center}
 .modal.active{display:flex}
-.modal-content{background:#202c33;border-radius:12px;padding:24px;width:90%;max-width:500px;max-height:90vh;overflow-y:auto}
+.modal-content{background:#202c33;border-radius:12px;padding:24px;width:90%;max-width:500px}
 .modal-content h3{margin-bottom:20px}
 .form-group{margin-bottom:16px}
 .form-group label{display:block;margin-bottom:6px;color:#8696a0;font-size:13px}
-.form-group input,.form-group select{width:100%;background:#2a3942;border:none;color:#e9edef;padding:10px;border-radius:6px;font-size:14px;outline:none}
+.form-group input,.form-group select{width:100%;background:#2a3942;border:none;color:#e9edef;padding:10px;border-radius:6px}
 .members-list{max-height:200px;overflow-y:auto;background:#2a3942;border-radius:6px;padding:8px}
 .members-list label{display:flex;align-items:center;gap:8px;padding:6px;cursor:pointer}
-.members-list label:hover{background:#0b141a;border-radius:4px}
 .modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px}
-.modal-actions button{padding:10px 16px;border:none;border-radius:6px;cursor:pointer;font-size:14px}
+.modal-actions button{padding:10px 16px;border:none;border-radius:6px;cursor:pointer}
 .btn-primary{background:#00a884;color:#fff}
-.btn-primary:hover{background:#06cf9c}
 .btn-secondary{background:#2a3942;color:#e9edef}
 </style>
 </head>
 <body>
 
-<!-- Тех. работы -->
 <div class="maintenance" id="maintenance">
-  <h1>🔧</h1>
+  <h1></h1>
   <h2>Мессенджер на тех. работах</h2>
-  <p>Владелец временно отключил мессенджер. Попробуйте позже.</p>
+  <p>Владелец временно отключил мессенджер</p>
   <a href="index.html">← Вернуться на сайт</a>
 </div>
 
 <div class="app">
-  <!-- Sidebar -->
   <aside class="sidebar">
     <div class="sidebar-header">
       <a href="index.html">← На сайт</a>
-      <h2> Чаты</h2>
-      <button class="btn-new" id="btnNewChat" style="display:none">➕</button>
+      <h2>💬 Чаты</h2>
+      <button class="btn-new" id="btnNew" style="display:none">➕ Новый</button>
     </div>
     <div class="chat-list" id="chatList">
-      <div class="empty-list">Загрузка чатов...</div>
+      <div class="chat-item"><div class="chat-info"><div class="chat-name">Загрузка...</div></div></div>
     </div>
   </aside>
 
-  <!-- Chat Window -->
   <main class="chat-window">
-    <div class="no-chat-selected" id="noChat">
-      <div class="icon">💬</div>
+    <div class="no-chat" id="noChat">
+      <div style="font-size:80px">💬</div>
       <h3>Выберите чат</h3>
       <p>Выберите чат из списка слева</p>
     </div>
-
     <div id="activeChat" style="display:none;flex:1;flex-direction:column;height:100%">
-      <div class="chat-header">
+      <div class="chat-head">
         <div class="chat-icon" id="activeIcon">💬</div>
-        <div>
-          <h3 id="activeName">—</h3>
-          <div class="subtitle" id="activeSubtitle">—</div>
-        </div>
+        <h3 id="activeName">—</h3>
       </div>
       <div class="messages" id="messages"></div>
-      <div class="input-area">
-        <input type="text" id="msgInput" placeholder="Введите сообщение..." autocomplete="off">
+      <div class="input-bar">
+        <input type="text" id="msgInput" placeholder="Введите сообщение...">
         <button id="btnSend">➤</button>
       </div>
     </div>
   </main>
 </div>
 
-<!-- Modal: New Chat -->
 <div class="modal" id="newChatModal">
   <div class="modal-content">
-    <h3>💬 Новый чат</h3>
+    <h3> Новый чат</h3>
     <div class="form-group">
       <label>Тип чата</label>
       <select id="chatType">
-        <option value="manual">👥 Чат вручную</option>
+        <option value="manual"> Чат вручную</option>
         <option value="branch">🏪 Чат подразделения</option>
         <option value="global">🌐 Общий чат сети</option>
       </select>
     </div>
     <div class="form-group">
-      <label>Название чата</label>
-      <input type="text" id="chatName" placeholder="Например: Продавцы">
+      <label>Название</label>
+      <input type="text" id="chatName" placeholder="Название чата">
     </div>
     <div class="form-group" id="branchBlock" style="display:none">
       <label>Отделение</label>
@@ -157,8 +125,6 @@ body{font-family:'Segoe UI',Tahoma,sans-serif;background:#0b141a;color:#e9edef;h
 </div>
 
 <script>
-// ====== ДОМОВИД МЕССЕНДЖЕР ======
-
 const LS = {
   user: 'currentUser',
   users: 'employees',
@@ -173,56 +139,33 @@ let allBranches = [];
 let chats = [];
 let activeChatId = null;
 
-// Инициализация
 function init() {
-  // Проверяем вход
   const saved = localStorage.getItem(LS.user);
   if (!saved) {
-    // Показываем сообщение вместо редиректа
-    document.body.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:center;height:100vh;flex-direction:column;gap:20px;background:#0b141a;color:#e9edef">
-        <div style="font-size:64px">⚠️</div>
-        <h2>Сначала войдите в систему</h2>
-        <p style="color:#8696a0">Перейдите на главную страницу для входа</p>
-        <a href="index.html" style="background:#00a884;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none">→ Перейти на сайт</a>
-      </div>
-    `;
+    window.location.href = 'index.html';
     return;
   }
 
   currentUser = JSON.parse(saved);
 
-  // Проверяем тех. работы
   const enabled = localStorage.getItem(LS.enabled);
   if (enabled === 'false') {
     document.getElementById('maintenance').classList.add('active');
     return;
   }
 
-  // Загружаем данные
   loadData();
 
-  // Показываем кнопку создания чата для владельца/админа
   if (['owner','admin','helper'].includes(currentUser.role)) {
-    document.getElementById('btnNewChat').style.display = 'inline-block';
+    document.getElementById('btnNew').style.display = 'inline-block';
   }
 
-  // Рендерим чаты
   renderChatList();
+  setInterval(() => { loadData(); renderChatList(); if (activeChatId) renderMessages(); }, 2000);
 
-  // Автообновление
-  setInterval(() => {
-    loadData();
-    renderChatList();
-    if (activeChatId) renderMessages();
-  }, 2000);
-
-  // Обработчики
-  document.getElementById('btnNewChat').addEventListener('click', openModal);
+  document.getElementById('btnNew').addEventListener('click', openModal);
   document.getElementById('btnSend').addEventListener('click', sendMessage);
-  document.getElementById('msgInput').addEventListener('keypress', e => {
-    if (e.key === 'Enter') sendMessage();
-  });
+  document.getElementById('msgInput').addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
   document.getElementById('chatType').addEventListener('change', onTypeChange);
 }
 
@@ -232,7 +175,6 @@ function loadData() {
   chats = JSON.parse(localStorage.getItem(LS.chats) || '[]');
 }
 
-// Фильтрация чатов по правам
 function getVisibleChats() {
   return chats.filter(c => {
     if (c.type === 'global') return true;
@@ -245,18 +187,17 @@ function getVisibleChats() {
   });
 }
 
-// Рендер списка чатов
 function renderChatList() {
   const list = document.getElementById('chatList');
   const visible = getVisibleChats();
 
   if (visible.length === 0) {
-    list.innerHTML = '<div class="empty-list">Нет доступных чатов<br><small>Попросите владельца создать чат</small></div>';
+    list.innerHTML = '<div class="chat-item"><div class="chat-info"><div class="chat-name">Нет доступных чатов</div></div></div>';
     return;
   }
 
   list.innerHTML = visible.map(c => {
-    const icon = c.type === 'global' ? '🌐' : c.type === 'branch' ? '🏪' : '💬';
+    const icon = c.type === 'global' ? '' : c.type === 'branch' ? '' : '💬';
     const msgs = c.messages || [];
     const last = msgs[msgs.length - 1];
     const preview = last ? last.text : 'Нет сообщений';
@@ -264,8 +205,8 @@ function renderChatList() {
       <div class="chat-item ${c.id === activeChatId ? 'active' : ''}" data-id="${c.id}">
         <div class="chat-icon">${icon}</div>
         <div class="chat-info">
-          <div class="chat-name">${escapeHtml(c.name)}</div>
-          <div class="chat-preview">${escapeHtml(preview.substring(0, 50))}</div>
+          <div class="chat-name">${c.name}</div>
+          <div class="chat-preview">${preview.substring(0, 50)}</div>
         </div>
       </div>
     `;
@@ -276,52 +217,35 @@ function renderChatList() {
   });
 }
 
-// Открытие чата
 function openChat(id) {
   activeChatId = id;
   document.getElementById('noChat').style.display = 'none';
   document.getElementById('activeChat').style.display = 'flex';
 
   const c = chats.find(x => x.id === id);
-  if (!c) return;
-
-  document.getElementById('activeIcon').textContent = c.type === 'global' ? '' : c.type === 'branch' ? '🏪' : '💬';
   document.getElementById('activeName').textContent = c.name;
-
-  let subtitle = '';
-  if (c.type === 'global') subtitle = 'Общий чат сети';
-  else if (c.type === 'branch') {
-    const b = allBranches.find(x => x.id === c.branchId);
-    subtitle = 'Отделение: ' + (b ? b.name : '—');
-  } else {
-    subtitle = 'Участников: ' + (c.members ? c.members.length : 0);
-  }
-  document.getElementById('activeSubtitle').textContent = subtitle;
+  document.getElementById('activeIcon').textContent = c.type === 'global' ? '🌐' : c.type === 'branch' ? '' : '💬';
 
   renderMessages();
   renderChatList();
 }
 
-// Рендер сообщений
 function renderMessages() {
   const c = chats.find(x => x.id === activeChatId);
   const box = document.getElementById('messages');
 
-  if (!c) { box.innerHTML = ''; return; }
-
-  const msgs = c.messages || [];
-  if (msgs.length === 0) {
-    box.innerHTML = '<div class="empty-list">Сообщений пока нет</div>';
+  if (!c || !c.messages || c.messages.length === 0) {
+    box.innerHTML = '<div style="text-align:center;color:#8696a0;padding:20px">Нет сообщений</div>';
     return;
   }
 
-  box.innerHTML = msgs.map(m => {
+  box.innerHTML = c.messages.map(m => {
     const me = m.authorId === currentUser.id;
     return `
-      <div class="message ${me ? 'me' : 'other'}">
-        ${!me ? '<div class="author">' + escapeHtml(m.authorName || '—') + '</div>' : ''}
-        <div>${escapeHtml(m.text)}</div>
-        <div class="time">${formatTime(m.timestamp)}</div>
+      <div class="msg ${me ? 'me' : 'other'}">
+        ${!me ? '<div class="author">' + (m.authorName || '—') + '</div>' : ''}
+        <div>${m.text}</div>
+        <div class="time">${new Date(m.timestamp).toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'})}</div>
       </div>
     `;
   }).join('');
@@ -329,15 +253,12 @@ function renderMessages() {
   box.scrollTop = box.scrollHeight;
 }
 
-// Отправка сообщения
 function sendMessage() {
   const input = document.getElementById('msgInput');
   const text = input.value.trim();
   if (!text || !activeChatId) return;
 
   const c = chats.find(x => x.id === activeChatId);
-  if (!c) return;
-
   if (!c.messages) c.messages = [];
   c.messages.push({
     id: 'm_' + Date.now(),
@@ -353,7 +274,6 @@ function sendMessage() {
   renderChatList();
 }
 
-// Создание чата
 function openModal() {
   document.getElementById('newChatModal').classList.add('active');
   document.getElementById('chatName').value = '';
@@ -372,17 +292,13 @@ function onTypeChange() {
 
   if (type === 'branch') {
     document.getElementById('chatBranch').innerHTML = allBranches.map(b => 
-      '<option value="' + b.id + '">' + escapeHtml(b.name) + '</option>'
+      '<option value="' + b.id + '">' + b.name + '</option>'
     ).join('');
   }
 
   if (type === 'manual') {
     document.getElementById('membersList').innerHTML = allUsers.map(u => `
-      <label>
-        <input type="checkbox" value="${u.id}">
-        <span>${escapeHtml(u.name)}</span>
-        <small style="color:#8696a0">(${escapeHtml(u.position || '')})</small>
-      </label>
+      <label><input type="checkbox" value="${u.id}"><span>${u.name}</span></label>
     `).join('');
   }
 }
@@ -402,9 +318,7 @@ function createChat() {
     messages: []
   };
 
-  if (type === 'branch') {
-    chat.branchId = document.getElementById('chatBranch').value;
-  }
+  if (type === 'branch') chat.branchId = document.getElementById('chatBranch').value;
   if (type === 'manual') {
     const checked = [...document.querySelectorAll('#membersList input:checked')].map(i => i.value);
     if (checked.length === 0) { alert('Выберите участников'); return; }
@@ -418,20 +332,6 @@ function createChat() {
   openChat(chat.id);
 }
 
-// Утилиты
-function escapeHtml(s) {
-  return String(s || '').replace(/[&<>"']/g, m => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[m]));
-}
-
-function formatTime(ts) {
-  if (!ts) return '';
-  const d = new Date(ts);
-  return d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
-}
-
-// Старт
 document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
