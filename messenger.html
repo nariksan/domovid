@@ -100,7 +100,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <a href="index.html" class="btn btn-primary">← Вернуться на сайт</a>
 </div>
 </div>
-
 <div class="messenger-container" id="messengerContainer">
 <div class="chat-list" id="chatList">
 <div class="chat-list-header">
@@ -136,13 +135,12 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 <div class="message-actions">
 <button class="btn-icon" onclick="document.getElementById('fileInput').click()">📎</button>
 <input type="file" id="fileInput" style="display: none;" onchange="handleFileSelect(event)">
-<button class="btn-icon btn-send" onclick="sendMessage()"></button>
+<button class="btn-icon btn-send" onclick="sendMessage()">➤</button>
 </div>
 </div>
 </div>
 </div>
 </div>
-
 <div class="modal" id="newChatModal">
 <div class="modal-content">
 <div class="modal-header">
@@ -162,7 +160,6 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </div>
 </div>
 </div>
-
 <script>
 const firebaseConfig = {
 apiKey: "AIzaSyDTHWwfpt059YCSt5YI9Aou1n1GjHxgQ6s",
@@ -172,18 +169,14 @@ storageBucket: "domovidi.firebasestorage.app",
 messagingSenderId: "261930585857",
 appId: "1:261930585857:web:856cf36981d8e0c2d51500"
 };
-
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const storage = firebase.storage();
-
 let currentUser = null;
 let chats = [];
 let currentChatId = null;
 let messagesUnsubscribe = null;
 let selectedFileData = null;
-
-// Проверяем авторизацию и статус мессенджера
 const sessionStr = localStorage.getItem('domovidSession');
 if (sessionStr) {
 const session = JSON.parse(sessionStr);
@@ -191,18 +184,13 @@ db.collection('users').doc(session.id).get().then(async (doc) => {
 if (doc.exists) {
 const userData = doc.data();
 currentUser = { id: session.id, name: userData.name, phone: userData.phone, role: userData.role, branchId: session.branchId || userData.branchId };
-
-// Проверяем статус мессенджера
 const messengerDoc = await db.collection('settings').doc('messenger').get();
 if (messengerDoc.exists && messengerDoc.data().maintenanceMode && userData.role !== 'superadmin' && userData.role !== 'assistant') {
 document.getElementById('maintenanceOverlay').style.display = 'flex';
 document.getElementById('messengerContainer').style.display = 'none';
 return;
 }
-
-// Запускаем очистку старых сообщений
 cleanupOldMessages();
-
 loadChats();
 } else {
 alert('Сессия истекла. Войдите через основной сайт.');
@@ -216,8 +204,6 @@ window.location.href = 'index.html';
 alert('Войдите через основной сайт.');
 window.location.href = 'index.html';
 }
-
-// Очистка сообщений старше 10 дней
 async function cleanupOldMessages() {
 try {
 const chatsSnap = await db.collection('chats').get();
@@ -234,7 +220,6 @@ totalDeleted++;
 if (totalDeleted > 0) console.log(`🧹 Удалено ${totalDeleted} старых сообщений`);
 } catch (e) { console.error('Ошибка очистки:', e); }
 }
-
 async function loadChats() {
 const chatsQuery = db.collection('chats').where('participants', 'array-contains', currentUser.id);
 const chatsSnap = await chatsQuery.get();
@@ -242,16 +227,13 @@ chats = chatsSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 chats.sort((a, b) => (b.lastMessageAt || 0) - (a.lastMessageAt || 0));
 renderChatsList();
 }
-
 function renderChatsList() {
 const container = document.getElementById('chatsList');
 if (!container) return;
-
 if (chats.length === 0) {
 container.innerHTML = '<div style="text-align:center;padding:40px;color:#999;">💬<br><br>Нет чатов<br><small>Создайте новый чат</small></div>';
 return;
 }
-
 container.innerHTML = chats.map(chat => {
 const isGroup = chat.isGroup || false;
 const avatar = isGroup ? '👥' : (chat.participantName || '?')[0].toUpperCase();
@@ -260,67 +242,51 @@ const name = isGroup ? chat.name : chat.participantName;
 const unreadCount = chat.unreadCount || 0;
 const lastMsg = chat.lastMessage || 'Нет сообщений';
 const time = chat.lastMessageAt ? formatMessageTime(chat.lastMessageAt) : '';
-
 return `<div class="chat-item ${currentChatId === chat.id ? 'active' : ''} ${unreadCount > 0 ? 'unread' : ''}" onclick="openChat('${chat.id}')">
 <div class="chat-avatar ${avatarClass}">${avatar}</div>
 <div class="chat-info">
-<div class="chat-name">
-${escapeHtml(name)}
-${unreadCount > 0 ? `<span class="chat-badge">${unreadCount}</span>` : ''}
-</div>
+<div class="chat-name">${escapeHtml(name)}${unreadCount > 0 ? `<span class="chat-badge">${unreadCount}</span>` : ''}</div>
 <div class="chat-last-message">${escapeHtml(lastMsg)}</div>
 <div class="chat-time">${time}</div>
 </div>
 </div>`;
 }).join('');
 }
-
 function openChat(chatId) {
 currentChatId = chatId;
 const chat = chats.find(c => c.id === chatId);
 if (!chat) return;
-
 if (window.innerWidth <= 768) {
 document.getElementById('chatList').classList.add('hidden');
 document.getElementById('chatWindow').classList.add('active');
 }
-
 document.getElementById('emptyChat').style.display = 'none';
 document.getElementById('activeChat').style.display = 'flex';
-
 const isGroup = chat.isGroup || false;
-const avatar = isGroup ? '' : (chat.participantName || '?')[0].toUpperCase();
+const avatar = isGroup ? '👥' : (chat.participantName || '?')[0].toUpperCase();
 document.getElementById('chatAvatar').textContent = avatar;
 document.getElementById('chatHeaderName').textContent = isGroup ? chat.name : chat.participantName;
 document.getElementById('chatHeaderStatus').textContent = isGroup ? `${chat.participantsCount || 0} участников` : 'Личный чат';
-
 renderChatsList();
 loadMessages(chatId);
 }
-
 function backToChatList() {
 document.getElementById('chatList').classList.remove('hidden');
 document.getElementById('chatWindow').classList.remove('active');
 currentChatId = null;
 if (messagesUnsubscribe) messagesUnsubscribe();
 }
-
 function loadMessages(chatId) {
 if (messagesUnsubscribe) messagesUnsubscribe();
-
 const messagesQuery = db.collection(`chats/${chatId}/messages`).orderBy('createdAt', 'asc').limit(50);
-
 messagesUnsubscribe = messagesQuery.onSnapshot((snapshot) => {
 const container = document.getElementById('messagesContainer');
 if (!container) return;
-
 const messages = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-
 container.innerHTML = messages.map(msg => {
 const isOwn = msg.senderId === currentUser.id;
 const sender = msg.senderName || 'Unknown';
 const avatar = sender[0].toUpperCase();
-
 return `<div class="message ${isOwn ? 'own' : ''}">
 <div class="message-avatar">${avatar}</div>
 <div class="message-content">
@@ -333,80 +299,49 @@ ${msg.fileUrl ? `<div class="message-file">📎 <a href="${msg.fileUrl}" target=
 </div>
 </div>`;
 }).join('');
-
 container.scrollTop = container.scrollHeight;
 markMessagesAsRead(chatId);
 });
 }
-
 async function markMessagesAsRead(chatId) {
 const chat = chats.find(c => c.id === chatId);
 if (!chat || chat.isGroup) return;
 await db.collection(`chats/${chatId}/unread`).doc(currentUser.id).set({ count: 0 }, { merge: true });
 }
-
 async function sendMessage() {
 const input = document.getElementById('messageInput');
 const text = input.value.trim();
 if (!text && !selectedFileData) return;
 if (!currentChatId) return;
-
-const messageData = {
-senderId: currentUser.id,
-senderName: currentUser.name,
-text: text,
-createdAt: Date.now(),
-read: false
-};
-
+const messageData = { senderId: currentUser.id, senderName: currentUser.name, text: text, createdAt: Date.now(), read: false };
 if (selectedFileData) {
 try {
 const fileRef = storage.ref(`chat_files/${currentChatId}/${Date.now()}_${selectedFileData.name}`);
 await fileRef.put(selectedFileData.file);
 messageData.fileUrl = await fileRef.getDownloadURL();
 messageData.fileName = selectedFileData.name;
-} catch (e) {
-alert('Ошибка загрузки файла: ' + e.message);
-return;
+} catch (e) { alert('Ошибка загрузки файла: ' + e.message); return; }
 }
-}
-
 await db.collection(`chats/${currentChatId}/messages`).add(messageData);
-await db.collection('chats').doc(currentChatId).update({
-lastMessage: text || '📄 Файл',
-lastMessageAt: Date.now()
-});
-
+await db.collection('chats').doc(currentChatId).update({ lastMessage: text || '📄 Файл', lastMessageAt: Date.now() });
 input.value = '';
 selectedFileData = null;
-
 if (messagesUnsubscribe) messagesUnsubscribe();
 loadMessages(currentChatId);
 loadChats();
 }
-
-function handleMessageKeyPress(event) {
-if (event.key === 'Enter') sendMessage();
-}
-
+function handleMessageKeyPress(event) { if (event.key === 'Enter') sendMessage(); }
 function handleFileSelect(event) {
 const file = event.target.files[0];
 if (!file) return;
-if (file.size > 5 * 1024 * 1024) {
-alert('Файл слишком большой! Максимум: 5 МБ');
-return;
-}
+if (file.size > 5 * 1024 * 1024) { alert('Файл слишком большой! Максимум: 5 МБ'); return; }
 selectedFileData = { file, name: file.name };
 }
-
 function openNewChatModal() {
 const modal = document.getElementById('newChatModal');
 const participantsContainer = document.getElementById('newChatParticipants');
-
 db.collection('users').where('branchId', '==', currentUser.branchId).get().then(snap => {
-participantsContainer.innerHTML = snap.docs
-.filter(doc => doc.id !== currentUser.id)
-.map(doc => {
+participantsContainer.innerHTML = snap.docs.filter(doc => doc.id !== currentUser.id).map(doc => {
 const emp = doc.data();
 return `<label style="display:flex;align-items:center;gap:8px;padding:8px;cursor:pointer;">
 <input type="checkbox" value="${doc.id}" data-name="${emp.name}">
@@ -414,35 +349,17 @@ return `<label style="display:flex;align-items:center;gap:8px;padding:8px;cursor
 </label>`;
 }).join('');
 });
-
 modal.classList.add('open');
 }
-
-function closeNewChatModal() {
-document.getElementById('newChatModal').classList.remove('open');
-}
-
+function closeNewChatModal() { document.getElementById('newChatModal').classList.remove('open'); }
 async function createNewChat() {
 const name = document.getElementById('newChatName').value.trim();
 const checkboxes = document.querySelectorAll('#newChatParticipants input[type="checkbox"]:checked');
-
 if (!name) { alert('Введите название чата'); return; }
 if (checkboxes.length === 0) { alert('Выберите хотя бы одного участника'); return; }
-
 const participants = Array.from(checkboxes).map(cb => cb.value);
 participants.push(currentUser.id);
-
-const chatData = {
-name,
-isGroup: true,
-participants,
-participantsCount: participants.length,
-createdBy: currentUser.id,
-createdAt: Date.now(),
-lastMessage: '',
-lastMessageAt: 0
-};
-
+const chatData = { name, isGroup: true, participants, participantsCount: participants.length, createdBy: currentUser.id, createdAt: Date.now(), lastMessage: '', lastMessageAt: 0 };
 const chatRef = await db.collection('chats').add(chatData);
 closeNewChatModal();
 document.getElementById('newChatName').value = '';
@@ -450,7 +367,6 @@ await loadChats();
 renderChatsList();
 openChat(chatRef.id);
 }
-
 function filterChats() {
 const search = document.getElementById('chatSearch').value.toLowerCase();
 const items = document.querySelectorAll('.chat-item');
@@ -459,7 +375,6 @@ const name = item.querySelector('.chat-name').textContent.toLowerCase();
 item.style.display = name.includes(search) ? 'flex' : 'none';
 });
 }
-
 function formatMessageTime(timestamp) {
 const date = new Date(timestamp);
 const now = new Date();
@@ -469,13 +384,7 @@ if (diff < 3600000) return `${Math.floor(diff / 60000)} мин назад`;
 if (diff < 86400000) return `${Math.floor(diff / 3600000)} ч назад`;
 return `${String(date.getDate()).padStart(2, '0')}.${String(date.getMonth() + 1).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 }
-
-function escapeHtml(text) {
-const div = document.createElement('div');
-div.textContent = text;
-return div.innerHTML;
-}
-
+function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 window.addEventListener('resize', () => {
 if (window.innerWidth > 768) {
 document.getElementById('chatList').classList.remove('hidden');
