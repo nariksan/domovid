@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>ДОМОВИД - Мессенджер</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -32,6 +32,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .chat-badge { background: #dc3545; color: white; padding: 2px 6px; border-radius: 10px; font-size: 0.7em; margin-left: 8px; }
 .chat-window { display: flex; flex-direction: column; }
 .chat-header { padding: 16px; background: white; border-bottom: 1px solid #e0e0e0; display: flex; align-items: center; gap: 12px; }
+.back-btn { display: none; background: none; border: none; font-size: 1.5em; cursor: pointer; color: #2d8b4d; margin-right: 8px; }
 .chat-header-info { flex: 1; }
 .chat-header-name { font-weight: 700; color: #333; }
 .chat-header-status { font-size: 0.8em; color: #28a745; }
@@ -69,11 +70,45 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 .btn { padding: 10px 16px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s; font-size: 0.9em; }
 .btn-primary { background: #2d8b4d; color: white; width: 100%; }
 .btn-primary:hover { background: #236b3d; }
+
+/* МОБИЛЬНАЯ АДАПТАЦИЯ */
 @media (max-width: 768px) {
-.messenger-container { grid-template-columns: 1fr; }
-.chat-list { display: none; }
-.chat-list.mobile-show { display: flex; }
-.chat-window.mobile-hide { display: none; }
+.messenger-container { 
+    grid-template-columns: 1fr; 
+}
+.chat-list { 
+    display: flex; 
+}
+.chat-list.hidden { 
+    display: none; 
+}
+.chat-window { 
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 10;
+    display: none;
+}
+.chat-window.active { 
+    display: flex; 
+}
+.back-btn { 
+    display: block; 
+}
+.message-content { 
+    max-width: 85%; 
+}
+.chat-header {
+    padding: 12px 16px;
+}
+.messages {
+    padding: 12px;
+}
+.message-input-area {
+    padding: 12px;
+}
 }
 </style>
 </head>
@@ -97,6 +132,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-
 </div>
 <div id="activeChat" style="display: none; height: 100%; flex-direction: column;">
 <div class="chat-header">
+<button class="back-btn" onclick="backToChatList()">←</button>
 <div class="chat-avatar" id="chatAvatar">A</div>
 <div class="chat-header-info">
 <div class="chat-header-name" id="chatHeaderName">Имя чата</div>
@@ -220,10 +256,16 @@ ${unreadCount > 0 ? `<span class="chat-badge">${unreadCount}</span>` : ''}
 }).join('');
 }
 
-async function openChat(chatId) {
+function openChat(chatId) {
 currentChatId = chatId;
 const chat = chats.find(c => c.id === chatId);
 if (!chat) return;
+
+// Показываем чат на мобильных
+if (window.innerWidth <= 768) {
+document.getElementById('chatList').classList.add('hidden');
+document.getElementById('chatWindow').classList.add('active');
+}
 
 document.getElementById('emptyChat').style.display = 'none';
 document.getElementById('activeChat').style.display = 'flex';
@@ -236,6 +278,14 @@ document.getElementById('chatHeaderStatus').textContent = isGroup ? `${chat.part
 
 renderChatsList();
 loadMessages(chatId);
+}
+
+function backToChatList() {
+// Возвращаемся к списку чатов на мобильных
+document.getElementById('chatList').classList.remove('hidden');
+document.getElementById('chatWindow').classList.remove('active');
+currentChatId = null;
+if (messagesUnsubscribe) messagesUnsubscribe();
 }
 
 function loadMessages(chatId) {
@@ -424,6 +474,17 @@ const div = document.createElement('div');
 div.textContent = text;
 return div.innerHTML;
 }
+
+// Обработка изменения размера окна
+window.addEventListener('resize', () => {
+if (window.innerWidth > 768) {
+document.getElementById('chatList').classList.remove('hidden');
+document.getElementById('chatWindow').classList.remove('active');
+} else if (currentChatId) {
+document.getElementById('chatList').classList.add('hidden');
+document.getElementById('chatWindow').classList.add('active');
+}
+});
 </script>
 </body>
 </html>
