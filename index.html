@@ -357,11 +357,34 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 .admin-plan-item-title { font-weight: 700; color: var(--dark); font-size: 0.95em; }
 .admin-plan-item-subtitle { font-size: 0.82em; color: var(--gray); margin-top: 2px; }
 .admin-plan-item-actions { display: flex; gap: 4px; flex-shrink: 0; }
+/* ===== Самоконтроль времени ===== */
+.tc-month-nav { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 14px; background: white; padding: 8px; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+.tc-month-nav button { background: var(--bg); border: none; border-radius: var(--radius-sm); padding: 8px 14px; font-size: 1em; cursor: pointer; min-width: 44px; min-height: 40px; color: var(--brand-green); font-weight: 800; transition: all 0.2s; }
+.tc-month-nav button:hover { background: #e8f5e9; }
+.tc-month-nav button:active { transform: scale(0.93); }
+.tc-month-title { font-weight: 800; color: var(--brand-green); font-size: 1.05em; text-align: center; flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.tc-summary { background: linear-gradient(135deg, var(--brand-green) 0%, var(--brand-orange) 100%); color: white; border-radius: var(--radius-xl); padding: 20px; margin-bottom: 16px; box-shadow: var(--shadow-md); }
+.tc-stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(135px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.tc-stat { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); padding: 12px 8px; border-radius: var(--radius-md); text-align: center; border: 1px solid rgba(255,255,255,0.15); }
+.tc-stat-value { font-size: 1.35em; font-weight: 800; font-variant-numeric: tabular-nums; word-break: break-word; }
+.tc-stat-label { font-size: 0.7em; opacity: 0.95; margin-top: 3px; font-weight: 600; }
+.tc-progress-wrap { background: rgba(255,255,255,0.25); border-radius: var(--radius-md); padding: 12px; margin-bottom: 10px; }
+.tc-progress-header { display: flex; justify-content: space-between; font-size: 0.82em; font-weight: 700; margin-bottom: 6px; gap: 6px; flex-wrap: wrap; }
+.tc-progress-bar { height: 14px; background: rgba(0,0,0,0.25); border-radius: 8px; overflow: hidden; }
+.tc-progress-fill { height: 100%; background: linear-gradient(90deg, #fff9e6, #ffffff); border-radius: 8px; transition: width 0.6s ease; box-shadow: 0 0 8px rgba(255,255,255,0.6); }
+.tc-progress-fill.done { background: linear-gradient(90deg, #ffe259, #ffa751); }
+.tc-settings-card { background: white; padding: 16px; border-radius: var(--radius-lg); margin-bottom: 14px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
+.tc-entry-row { background: var(--bg); padding: 10px 12px; border-radius: var(--radius-sm); margin-bottom: 6px; display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; border-left: 4px solid var(--brand-green); }
+.tc-entry-info { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; font-size: 0.88em; }
+.tc-entry-hours { background: var(--brand-green); color: white; padding: 3px 10px; border-radius: 10px; font-weight: 700; font-size: 0.85em; white-space: nowrap; }
+.tc-entry-money { background: #fff9e6; color: #856404; border: 1px solid var(--gold); padding: 3px 10px; border-radius: 10px; font-weight: 700; font-size: 0.85em; white-space: nowrap; }
+.tc-preview { background: #e8f5e9; border: 1px dashed var(--brand-green); border-radius: var(--radius-sm); padding: 10px 12px; margin-top: 4px; font-size: 0.88em; color: var(--brand-green); font-weight: 600; }
 @media (max-width: 480px) {
 .employee-row { grid-template-columns: 35px 1fr; gap: 8px; padding: 8px; }
 .employee-settings { grid-template-columns: 1fr 1fr; gap: 6px; }
 .employee-select { font-size: 0.8em; padding: 5px 6px; }
 .today-shift-stats { grid-template-columns: repeat(3, 1fr); }
+.tc-stats-grid { grid-template-columns: repeat(2, 1fr); }
 }
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
@@ -425,6 +448,7 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <button class="top-nav-btn" onclick="showSection('archive', this)"><span class="nav-icon">📦</span><span>Архив</span></button>
 <button class="top-nav-btn" onclick="showSection('contests', this)"><span class="nav-icon">🏆</span><span>Конкурсы</span></button>
 <button class="top-nav-btn" onclick="showSection('info', this)"><span class="nav-icon">📢</span><span>Инфо</span></button>
+<button class="top-nav-btn" onclick="showSection('timecontrol', this)"><span class="nav-icon">⏱️</span><span>Учёт</span></button>
 <button class="top-nav-btn" onclick="showSection('admin', this)" id="topNavAdminBtn" style="display:none;"><span class="nav-icon">⚙️</span><span>Админ</span></button>
 <button class="top-nav-btn" onclick="showSection('superadmin', this)" id="topNavSuperAdminBtn" style="display:none; color: var(--danger);"><span class="nav-icon">👑</span><span>Владелец</span></button>
 <button class="top-nav-logout" onclick="doLogout()"><span>🚪</span><span>Выйти</span></button>
@@ -458,6 +482,13 @@ html, body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
 <div id="info-events" class="plan-section"><div id="eventsPlanContent"></div></div>
 <div id="info-revisions" class="plan-section"><div id="revisionsPlanContent"></div></div>
 <div id="info-materials" class="plan-section"><div id="materialsList" class="materials-list"></div></div>
+</div>
+<div id="timecontrol" class="section">
+<h2 class="section-title">⏱️ Самоконтроль времени</h2>
+<div id="tcAdminView" style="display:none;">
+<div class="form-group"><label>👁️ Чьи данные смотреть</label><select id="tcUserSelect" onchange="onTcUserChange(this.value)"></select></div>
+</div>
+<div id="tcContent"><div style="text-align:center;padding:40px;color:var(--light-gray);">Загрузка...</div></div>
 </div>
 <div id="admin" class="section">
 <h2 class="section-title">️ Админ-панель</h2>
@@ -662,7 +693,9 @@ if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID || TELEGRAM_BOT_TOKEN.includes('Т�
 const currentBranch = data.branches.find(b => b.id === currentUser.branchId);
 const branchName = currentBranch ? currentBranch.name : 'Неизвестное отделение';
 const datesString = datesArray.join(', ');
-const text = `📅 Изменение/добавления в графике!\n🏢 Отделение: ${branchName}\n🗓 Даты: ${datesString}`;
+const text = `📅 Изменение/добавления в графике!
+🏢 Отделение: ${branchName}
+🗓 Даты: ${datesString}`;
 try {
 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
 method: 'POST',
@@ -1697,6 +1730,287 @@ window.closeModal = function() { document.getElementById('materialModal').classL
 document.getElementById('materialModal').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { closeModal(); closeNotificationModal(); closeTransferModal(); closeSubstRequestModal(); } });
 window.resetAllData = async function() { if (!confirm('⚠️ ВСЕ данные будут удалены!') || !confirm('Точно-точно?')) return; try { const collections = ["users", "schedule", "materials", "contests", "info", "settings", "branches", "notifications", "plans", "substRequests"]; for (const colName of collections) { const snap = await getDocs(collection(db, colName)); for (const d of snap.docs) await deleteDoc(doc(db, colName, d.id)); } alert('✅ Все данные удалены'); doLogout(); } catch (e) { alert('Ошибка: ' + e.message); } };
+// ============================================================
+// ⏱️ САМОКОНТРОЛЬ ВРЕМЕНИ — учёт отработанных часов и заработка
+// ============================================================
+data.timeEntries = [];
+let tcViewMonth = new Date().getMonth();
+let tcViewYear = new Date().getFullYear();
+let tcViewUserId = null;
+let editingTimeEntry = null;
+let tcEntriesLoaded = false;
+const tcSettingsCache = {};
+const TC_MONTHS = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+const TC_WEEKDAYS = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+const pad2 = n => String(n).padStart(2, '0');
+function formatMoney(v) { return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 }).format(v || 0) + ' ₽'; }
+function fmtHours(h) { return new Intl.NumberFormat('ru-RU', { maximumFractionDigits: 2 }).format(h || 0); }
+function getTcUserId() {
+if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin') && tcViewUserId) return tcViewUserId;
+return currentUser ? currentUser.id : null;
+}
+function getTcUserSettings(userId) {
+const emp = data.employees.find(e => e.id === userId);
+const cached = tcSettingsCache[userId] || {};
+return {
+timeNorm: (emp && emp.timeNorm) || cached.timeNorm || 0,
+hourlyRate: (emp && emp.hourlyRate) || cached.hourlyRate || 0,
+name: emp ? emp.name : (currentUser && userId === currentUser.id ? currentUser.name : '—')
+};
+}
+async function loadTimeEntries() {
+if (!currentUser) return;
+try {
+const snap = await getDocs(query(collection(db, "timeEntries"), where("branchId", "==", currentUser.branchId)));
+data.timeEntries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+} catch (e) { console.error('Ошибка загрузки учёта времени:', e); }
+}
+async function ensureTimeEntries() { if (!tcEntriesLoaded) { await loadTimeEntries(); tcEntriesLoaded = true; } }
+window.onTcUserChange = function (v) { tcViewUserId = v; editingTimeEntry = null; renderTimeControl(); };
+window.tcPrevMonth = function () { tcViewMonth--; if (tcViewMonth < 0) { tcViewMonth = 11; tcViewYear--; } editingTimeEntry = null; renderTimeControl(); };
+window.tcNextMonth = function () { tcViewMonth++; if (tcViewMonth > 11) { tcViewMonth = 0; tcViewYear++; } editingTimeEntry = null; renderTimeControl(); };
+window.saveTcSettings = async function () {
+const userId = getTcUserId();
+if (!userId) return;
+const norm = parseFloat(document.getElementById('tcNorm').value) || 0;
+const rate = parseFloat(document.getElementById('tcRate').value) || 0;
+try {
+await updateDoc(doc(db, "users", userId), { timeNorm: norm, hourlyRate: rate });
+tcSettingsCache[userId] = { timeNorm: norm, hourlyRate: rate };
+const emp = data.employees.find(e => e.id === userId);
+if (emp) { emp.timeNorm = norm; emp.hourlyRate = rate; }
+renderTimeControl();
+alert('✅ Настройки сохранены');
+} catch (e) { alert('Ошибка: ' + e.message); }
+};
+window.updateTcPreview = function () {
+const el = document.getElementById('tcPreview');
+if (!el) return;
+const hours = parseFloat(document.getElementById('tcEntryHours').value) || 0;
+const settings = getTcUserSettings(getTcUserId());
+if (hours > 0 && settings.hourlyRate > 0) {
+el.innerHTML = '💰 ' + fmtHours(hours) + ' ч × ' + formatMoney(settings.hourlyRate) + '/ч = <strong>' + formatMoney(hours * settings.hourlyRate) + '</strong> за этот день';
+} else if (hours > 0) {
+el.innerHTML = '⚠️ Сначала укажите ставку в час в настройках выше';
+} else {
+el.innerHTML = '💰 Введите часы — сумма появится автоматически';
+}
+};
+window.saveTimeEntry = async function () {
+const userId = getTcUserId();
+const dateInput = document.getElementById('tcEntryDate').value;
+const hours = parseFloat(document.getElementById('tcEntryHours').value);
+const settings = getTcUserSettings(userId);
+if (!dateInput) { alert('⚠️ Выберите дату'); return; }
+if (!hours || hours <= 0 || hours > 24) { alert('⚠️ Укажите часы (от 0,5 до 24)'); return; }
+if (!settings.hourlyRate) { alert('⚠️ Сначала сохраните ставку в час в настройках выше'); return; }
+const btn = document.getElementById('tcSubmitBtn');
+const original = btn.innerHTML;
+btn.innerHTML = '<span class="spinner"></span> Сохранение...'; btn.disabled = true;
+try {
+const entryData = {
+userId: userId,
+branchId: currentUser.branchId,
+date: formatDate(dateInput),
+hours: hours,
+rate: settings.hourlyRate,
+earnings: Math.round(hours * settings.hourlyRate * 100) / 100,
+updatedAt: Date.now()
+};
+if (editingTimeEntry) {
+await updateDoc(doc(db, "timeEntries", editingTimeEntry.id), entryData);
+} else {
+entryData.createdAt = Date.now();
+await addDoc(collection(db, "timeEntries"), entryData);
+}
+if (userId !== currentUser.id) {
+await window.createNotification(userId, '⏱️ Учёт времени', `Добавлена запись за ${entryData.date}: ${fmtHours(hours)} ч (${formatMoney(entryData.earnings)})`, 'general');
+}
+const parts = dateInput.split('-').map(Number);
+tcViewYear = parts[0]; tcViewMonth = parts[1] - 1;
+editingTimeEntry = null;
+await loadTimeEntries();
+renderTimeControl();
+updateTcHomeTile();
+alert('✅ Запись сохранена');
+} catch (e) { alert('Ошибка: ' + e.message); }
+finally { btn.innerHTML = original; btn.disabled = false; }
+};
+window.editTimeEntry = function (id) {
+editingTimeEntry = (data.timeEntries || []).find(x => x.id === id) || null;
+renderTimeControl();
+setTimeout(() => { const f = document.getElementById('tcEntryDate'); if (f) f.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
+};
+window.cancelEditTimeEntry = function () { editingTimeEntry = null; renderTimeControl(); };
+window.deleteTimeEntry = async function (id) {
+if (!confirm('Удалить запись?')) return;
+try {
+await deleteDoc(doc(db, "timeEntries", id));
+await loadTimeEntries();
+renderTimeControl();
+updateTcHomeTile();
+} catch (e) { alert('Ошибка: ' + e.message); }
+};
+window.renderTimeControl = async function () {
+const container = document.getElementById('tcContent');
+if (!container || !currentUser) return;
+await ensureTimeEntries();
+const isAdmin = currentUser.role === 'admin' || currentUser.role === 'superadmin';
+const adminView = document.getElementById('tcAdminView');
+const sel = document.getElementById('tcUserSelect');
+if (isAdmin && adminView && sel) {
+adminView.style.display = 'block';
+sel.innerHTML = '<option value="' + currentUser.id + '">👤 Я (' + escapeHtml(currentUser.name) + ')</option>' +
+data.employees.filter(e => e.id !== currentUser.id && e.role !== 'superadmin')
+.map(e => '<option value="' + e.id + '">' + escapeHtml(e.name) + '</option>').join('');
+sel.value = getTcUserId();
+if (sel.value !== getTcUserId()) sel.value = currentUser.id;
+} else if (adminView) adminView.style.display = 'none';
+const userId = getTcUserId();
+const settings = getTcUserSettings(userId);
+const norm = settings.timeNorm;
+const rate = settings.hourlyRate;
+const monthEntries = (data.timeEntries || [])
+.filter(e => e.userId === userId)
+.filter(e => { const p = String(e.date).split('.').map(Number); return p.length === 3 && (p[1] - 1) === tcViewMonth && p[2] === tcViewYear; })
+.sort((a, b) => {
+const pa = a.date.split('.').map(Number), pb = b.date.split('.').map(Number);
+return new Date(pa[2], pa[1] - 1, pa[0]) - new Date(pb[2], pb[1] - 1, pb[0]);
+});
+const totalHours = monthEntries.reduce((s, e) => s + (e.hours || 0), 0);
+const totalEarnings = monthEntries.reduce((s, e) => s + (e.earnings != null ? e.earnings : (e.hours || 0) * (e.rate || rate)), 0);
+const progress = norm > 0 ? Math.min(100, (totalHours / norm) * 100) : 0;
+const remainHours = Math.max(0, norm - totalHours);
+const remainMoney = remainHours * rate;
+const workedDays = new Set(monthEntries.map(e => e.date)).size;
+const avgPerDay = workedDays > 0 ? totalHours / workedDays : 0;
+const today = new Date();
+const isCurrentMonth = tcViewMonth === today.getMonth() && tcViewYear === today.getFullYear();
+const daysInMonth = new Date(tcViewYear, tcViewMonth + 1, 0).getDate();
+const daysLeft = isCurrentMonth ? Math.max(0, daysInMonth - today.getDate()) : 0;
+const defaultDate = tcViewYear + '-' + pad2(tcViewMonth + 1) + '-' + pad2(isCurrentMonth ? today.getDate() : 1);
+const editDateInput = editingTimeEntry
+? editingTimeEntry.date.split('.')[2] + '-' + editingTimeEntry.date.split('.')[1] + '-' + editingTimeEntry.date.split('.')[0]
+: defaultDate;
+let entriesHtml = '';
+if (monthEntries.length === 0) {
+entriesHtml = '<div style="text-align:center;color:var(--light-gray);padding:20px;font-style:italic;">Записей за этот месяц пока нет</div>';
+} else {
+entriesHtml = monthEntries.map(e => {
+const p = e.date.split('.').map(Number);
+const wd = TC_WEEKDAYS[new Date(p[2], p[1] - 1, p[0]).getDay()];
+const earn = e.earnings != null ? e.earnings : (e.hours || 0) * (e.rate || rate);
+return `<div class="tc-entry-row">
+<div class="tc-entry-info">
+<span style="font-weight:700;">📅 ${e.date} <span style="color:var(--gray);font-weight:400;">${wd}</span></span>
+<span class="tc-entry-hours">🕐 ${fmtHours(e.hours)} ч</span>
+<span class="tc-entry-money">💰 ${formatMoney(earn)}</span>
+</div>
+<div style="display:flex;gap:4px;">
+<button class="btn btn-warning btn-sm" onclick="editTimeEntry('${e.id}')">✏️</button>
+<button class="btn btn-danger btn-sm" onclick="deleteTimeEntry('${e.id}')">🗑️</button>
+</div>
+</div>`;
+}).join('');
+entriesHtml += `<div style="margin-top:10px;padding-top:10px;border-top:2px solid var(--border);display:flex;justify-content:space-between;font-weight:800;color:var(--brand-green);flex-wrap:wrap;gap:6px;"><span>ИТОГО ЗА МЕСЯЦ:</span><span>${fmtHours(totalHours)} ч • ${formatMoney(totalEarnings)}</span></div>`;
+}
+container.innerHTML = `
+<div class="tc-month-nav">
+<button onclick="tcPrevMonth()">◀</button>
+<div class="tc-month-title">📆 ${TC_MONTHS[tcViewMonth]} ${tcViewYear}${isCurrentMonth ? ' <span class="today-badge">текущий</span>' : ''}</div>
+<button onclick="tcNextMonth()">▶</button>
+</div>
+<div class="tc-summary">
+<div style="font-size:0.92em;opacity:0.95;margin-bottom:12px;font-weight:700;">⏱️ Учёт времени — ${escapeHtml(settings.name)}</div>
+<div class="tc-stats-grid">
+<div class="tc-stat"><div class="tc-stat-value">${fmtHours(totalHours)}</div><div class="tc-stat-label">Отработано часов</div></div>
+<div class="tc-stat"><div class="tc-stat-value">${formatMoney(totalEarnings)}</div><div class="tc-stat-label">Заработано</div></div>
+<div class="tc-stat"><div class="tc-stat-value">${fmtHours(remainHours)}</div><div class="tc-stat-label">Осталось до нормы</div></div>
+<div class="tc-stat"><div class="tc-stat-value">${formatMoney(remainMoney)}</div><div class="tc-stat-label">Осталось заработать</div></div>
+<div class="tc-stat"><div class="tc-stat-value">${workedDays}</div><div class="tc-stat-label">Дней отработано</div></div>
+<div class="tc-stat"><div class="tc-stat-value">${fmtHours(avgPerDay)}</div><div class="tc-stat-label">В среднем ч/день</div></div>
+</div>
+${norm > 0 ? `
+<div class="tc-progress-wrap">
+<div class="tc-progress-header"><span>Прогресс: ${fmtHours(totalHours)} из ${fmtHours(norm)} ч</span><span>${progress.toFixed(0)}%</span></div>
+<div class="tc-progress-bar"><div class="tc-progress-fill ${progress >= 100 ? 'done' : ''}" style="width:${progress}%"></div></div>
+${progress >= 100 ? '<div style="margin-top:8px;font-weight:800;text-align:center;">🎉 Норма месяца выполнена!</div>' : ''}
+</div>` : '<div style="background:rgba(255,255,255,0.25);padding:10px;border-radius:10px;font-size:0.85em;text-align:center;">⚠️ Укажите норму часов и ставку ниже — тогда появится прогресс и все расчёты</div>'}
+${isCurrentMonth && daysLeft > 0 && remainHours > 0 ? `<div style="font-size:0.82em;opacity:0.95;text-align:center;">💡 До конца месяца ${daysLeft} дн.${avgPerDay > 0 ? ' • текущий темп ≈ ' + fmtHours(avgPerDay) + ' ч/день • чтобы закрыть норму, нужно ≈ ' + fmtHours(remainHours / daysLeft) + ' ч/день' : ''}</div>` : ''}
+</div>
+<div class="tc-settings-card">
+<div class="admin-card-title">🎯 Настройки — ${escapeHtml(settings.name)}</div>
+<div class="form-row" style="grid-template-columns:1fr 1fr;">
+<div class="form-group"><label>📊 Норма часов в месяц</label><input type="number" id="tcNorm" min="0" step="1" value="${norm || ''}" placeholder="напр. 176"></div>
+<div class="form-group"><label>💵 Ставка, ₽ в час</label><input type="number" id="tcRate" min="0" step="1" value="${rate || ''}" placeholder="напр. 130"></div>
+</div>
+<button class="btn btn-primary btn-block" onclick="saveTcSettings()">💾 Сохранить настройки</button>
+</div>
+<div class="tc-settings-card">
+<div class="admin-card-title">${editingTimeEntry ? '✏️ Редактирование записи' : '➕ Добавить отработанный день'}</div>
+<div class="form-row" style="grid-template-columns:1fr 1fr;">
+<div class="form-group"><label>📅 Дата</label><input type="date" id="tcEntryDate" value="${editDateInput}"></div>
+<div class="form-group"><label>🕐 Отработано часов</label><input type="number" id="tcEntryHours" min="0.5" max="24" step="0.5" value="${editingTimeEntry ? editingTimeEntry.hours : ''}" placeholder="напр. 9" oninput="updateTcPreview()"></div>
+</div>
+<div class="tc-preview" id="tcPreview"></div>
+<button class="btn ${editingTimeEntry ? 'btn-warning' : 'btn-success'} btn-block" id="tcSubmitBtn" onclick="saveTimeEntry()" style="margin-top:10px;">${editingTimeEntry ? '💾 Сохранить изменения' : '➕ Добавить запись'}</button>
+${editingTimeEntry ? '<button class="btn btn-secondary btn-block" onclick="cancelEditTimeEntry()" style="margin-top:6px;">✕ Отмена</button>' : ''}
+</div>
+<div class="tc-settings-card">
+<div class="admin-card-title">📋 Записи за ${TC_MONTHS[tcViewMonth]} ${tcViewYear} <span style="background:var(--brand-green);color:white;padding:2px 10px;border-radius:10px;font-size:0.8em;">${monthEntries.length}</span></div>
+${entriesHtml}
+</div>`;
+updateTcPreview();
+};
+function updateTcHomeTile() {
+const grid = document.getElementById('homeGrid');
+if (!grid || !currentUser) return;
+let tile = document.getElementById('tcHomeTile');
+if (!tile) {
+tile = document.createElement('div');
+tile.id = 'tcHomeTile';
+tile.className = 'home-tile';
+tile.style.cursor = 'pointer';
+grid.appendChild(tile);
+}
+const now = new Date();
+const entries = (data.timeEntries || []).filter(e => {
+if (e.userId !== currentUser.id) return false;
+const p = String(e.date).split('.').map(Number);
+return p.length === 3 && (p[1] - 1) === now.getMonth() && p[2] === now.getFullYear();
+});
+const hours = entries.reduce((s, e) => s + (e.hours || 0), 0);
+const money = entries.reduce((s, e) => s + (e.earnings || 0), 0);
+tile.onclick = function () { showSection('timecontrol', document.querySelectorAll('.top-nav-btn')[5]); };
+tile.innerHTML = `
+<div class="home-tile-header"><div class="home-tile-icon">⏱️</div><div class="home-tile-title">Самоконтроль</div></div>
+<div class="home-tile-subtitle">Личный учёт отработанного времени и заработка</div>
+<div class="home-tile-badges">
+<span class="home-tile-badge ${hours > 0 ? 'active' : ''}"><span>🕐</span><span class="badge-count">${fmtHours(hours)}</span><span>ч за месяц</span></span>
+<span class="home-tile-badge ${money > 0 ? 'gold' : ''}"><span>💰</span><span class="badge-count">${formatMoney(money)}</span></span>
+</div>`;
+}
+const _origRenderHomeTC = window.renderHome;
+window.renderHome = function () {
+_origRenderHomeTC();
+updateTcHomeTile();
+ensureTimeEntries().then(updateTcHomeTile);
+};
+const _origShowSectionTC = window.showSection;
+window.showSection = function (sectionId, btn) {
+_origShowSectionTC(sectionId, btn);
+if (sectionId === 'timecontrol') renderTimeControl();
+};
+const _origDoLogoutTC = window.doLogout;
+window.doLogout = function () {
+tcEntriesLoaded = false;
+data.timeEntries = [];
+tcViewUserId = null;
+editingTimeEntry = null;
+tcViewMonth = new Date().getMonth();
+tcViewYear = new Date().getFullYear();
+_origDoLogoutTC();
+};
 loadBranchesToLogin();
 autoLogin();
 </script>
